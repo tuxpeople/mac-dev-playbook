@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# set -e
+
 _step_counter=0
 function step() {
         _step_counter=$(( _step_counter + 1 ))
