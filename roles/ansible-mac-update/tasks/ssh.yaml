@@ -1,5 +1,5 @@
 - name: Regenerating ssh config
-  ansible.builtin.shell: "truncate -s0 {{myhomedir}}/.ssh/config; for i in {{myhomedir}}/iCloudDrive/Allgemein/dotfiles/ssh_config/*; do cat $i >> {{myhomedir}}/.ssh/config; echo '' >> {{myhomedir}}/.ssh/config; done; chmod 700 {{myhomedir}}/.ssh/config"
+  ansible.builtin.shell: "truncate -s0 {{myhomedir}}/.ssh/config; for i in {{ ssh_config_src }}/*; do cat $i >> {{myhomedir}}/.ssh/config; echo '' >> {{myhomedir}}/.ssh/config; done; chmod 700 {{myhomedir}}/.ssh/config"
   become: no
 
 - name: Update SSH Keys
