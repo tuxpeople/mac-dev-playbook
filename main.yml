@@ -12,6 +12,7 @@
       tags: ['always']
 
     - import_tasks: tasks/pre/additional_facts.yaml
+    - import_tasks: tasks/pre/install_rosetta2.yaml
 
   roles:
     - role: elliotweiser.osx-command-line-tools
