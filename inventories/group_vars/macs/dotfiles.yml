@@ -21,3 +21,4 @@ dotfiles_files:
   - .tmux.conf
   - .wgetrc
   - .vimrc
+  - .k9s
