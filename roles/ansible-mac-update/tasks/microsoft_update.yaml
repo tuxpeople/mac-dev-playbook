@@ -1,0 +1,28 @@
+---
+# tasks file for Microsoft AutoUpdate
+- name: Check if Microsoft AutoUpdate exists
+  ansible.builtin.stat:
+    path: "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app/Contents/MacOS/msupdate"
+  register: mau_exists
+  become: no
+
+- name: Microsoft Update
+  block:
+    - name: Check for Microsoft updates
+      ansible.builtin.command: "./msupdate --list"
+      become: no
+      args:
+        chdir: "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app/Contents/MacOS"
+      register: softwareupdate_mau
+      changed_when: "softwareupdate_mau.rc != 0 and 'No updates available' not in softwareupdate_mau.stdout"
+
+    - name: Install Microsoft updates
+      ansible.builtin.command: "./msupdate -i"
+      become: no
+      args:
+        chdir: "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app/Contents/MacOS"
+      when: "'No updates available' not in softwareupdate_mau.stdout"
+      register: updateinstalled_mau
+      changed_when: "updateinstalled_mau.rc != 0 and 'No result returned from Update Assistant' not in updateinstalled_mau.stdout"
+      #ignore_errors: yes
+  when: mau_exists.stat.exists

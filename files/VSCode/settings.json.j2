@@ -1,0 +1,39 @@
+{
+    "telemetry.telemetryLevel": "off",
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter.notebook.ipynb"
+    },
+    "git.confirmSync": false,
+    "git.autofetch": true,
+    "yaml.customTags": [
+        "!encrypted/pkcs1-oaep scalar",
+        "!vault scalar"
+    ],
+    "redhat.telemetry.enabled": true,
+    "ansibleVault.keyfile": "~/iCloudDrive/Allgemein/bin/vault_password_file",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "kubeseal.executablePath": "{{ mybrewbindir }}/kubeseal",
+    "gitlens.gitCommands.skipConfirmations": [
+        "fetch:command",
+        "stash-push:command",
+        "switch:command",
+        "push:command"
+    ],
+    "terraform.languageServer": {
+        "external": true,
+        "pathToBinary": "{{ mybrewbindir }}/terraform-ls",
+        "args": [
+            "serve"
+        ],
+        "maxNumberOfProblems": 100,
+        "trace.server": "off"
+    },
+    "sops.configPath": "./.sops.yaml",
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "git.ignoreRebaseWarning": true,
+    "[markdown]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+}

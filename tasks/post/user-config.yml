@@ -1,0 +1,32 @@
+- name: Ensure homebrew-bash is in /etc/shells
+  ansible.builtin.lineinfile:
+    path: /etc/shells
+    line: "{{ mybrewbindir }}/bash"
+  become: true
+
+- name: change user shell to homebrew-bash  
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    shell: "{{ mybrewbindir }}/bash"
+  become: true
+
+- name: change root shell to homebrew-bash  
+  ansible.builtin.user:
+    name: root
+    shell: "{{ mybrewbindir }}/bash"
+  become: true
+
+- name: "Ensure homedir/bin exists" 
+  ansible.builtin.file:
+    path: "{{ myhomedir }}/bin"
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: 0750
+
+- name: Ensure we have a link to iCloudDrive in homedir
+  file:
+    src: "{{ myhomedir }}/Library/Mobile Documents/com~apple~CloudDocs/Dateien"
+    dest: "{{ myhomedir }}/iCloudDrive"
+    owner: "{{ ansible_user }}"
+    state: link
+    force: yes

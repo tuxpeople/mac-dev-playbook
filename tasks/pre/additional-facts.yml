@@ -1,12 +1,4 @@
-- name: "Detect who am I"
-  ansible.builtin.command: "whoami"
-  register: whoami
-  changed_when: whoami.rc != 0
-
-- name: "Set fact ansible_user to {{ whoami.stdout }}"
-  set_fact:
-    ansible_user: "{{ whoami.stdout }}"
-
+# gathering additional facts
 - name: Check if this is a MacBook
   block:
     # https://apple.stackexchange.com/a/98089
@@ -22,15 +14,23 @@
 
 - name: Check if this is a business or a private device
   block:
-    - name: "Set fact myenv to business"
+    - name: Set hostname
       set_fact:
-        myenv: "business"
+        myhostname: "{{ newhostname | default(ansible_hostname) }}"
+
+    - name: "Check if it is a business device"
+      set_fact:
+          myenv: "business_mac"
       when: myhostname is match("ws.*")
 
-    - name: "Set fact myenv to private"
+    - name: "Else it is a private device"
       set_fact:
-        myenv: "private"
+        myenv: "private_mac"
       when: not myhostname is match("ws.*")
+
+    - name: Group by purpose
+      group_by: key=myenv
+      changed_when: False
 
 - name: Set homedir
   block:

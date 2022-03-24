@@ -1,0 +1,23 @@
+dotfiles_repo: git@github.com:tuxpeople/dotfiles.git
+dotfiles_repo_accept_hostkey: true
+dotfiles_repo_version: main
+dotfiles_repo_local_destination: "{{myhomedir}}/development/github/tuxpeople/dotfiles"
+dotfiles_files:
+  - .aliases
+  - .bash_profile
+  - .bash_prompt
+  - .bashrc
+  - .curlrc
+  - .exports
+  - .functions
+  - .gitattributes
+  - .git_config
+  - .gitconfig
+  - .gitignore
+  - .gvimrc
+  - .inputrc
+  - .macos
+  - .screenrc
+  - .tmux.conf
+  - .wgetrc
+  - .vimrc

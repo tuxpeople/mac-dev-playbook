@@ -1,0 +1,22 @@
+---
+- name: Mac Update
+  hosts: macs
+
+  vars:
+    microsoft_update: true
+    brew_cu: true
+    kubectl: true
+    ssh: true
+    gpg: true
+
+  environment:
+    PATH: "{{env_path}}"
+
+  pre_tasks:
+    - import_tasks: ../tasks/pre/additional-facts.yml
+
+  roles:
+    - role: geerlingguy.dotfiles
+    - role: geerlingguy.mac.homebrew
+    - role: ansible-mac-update
+    - role: aadl.softwareupdate

@@ -1,0 +1,9 @@
+[macs:children]
+business_mac
+private_mac
+
+[business_mac]
+ws547
+
+[private_mac]
+odin

@@ -1,0 +1,21 @@
+---
+# tasks file for ansible-mac-update
+- include_tasks: microsoft_update.yaml
+  tags:
+    - microsoft_update
+  when: microsoft_update
+
+- include_tasks: brew_cu.yaml
+  tags:
+    - brew_cu
+  when: brew_cu
+
+- include_tasks: kubectl.yaml
+  tags:
+    - kubectl
+  when: kubectl
+
+- include_tasks: ssh.yaml
+  tags:
+    - ssh
+  when: ssh

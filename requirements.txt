@@ -1,0 +1,6 @@
+ansible>=5.5.0
+bcrypt>=3.2.0
+cryptography>=36.0.2
+paramiko>=2.10.3
+pyparsing>=3.0.7
+jmespath>=0.10.0

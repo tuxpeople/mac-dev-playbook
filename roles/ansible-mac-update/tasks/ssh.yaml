@@ -1,0 +1,38 @@
+- name: Regenerating ssh config
+  ansible.builtin.shell: "truncate -s0 {{myhomedir}}/.ssh/config; for i in {{myhomedir}}/iCloudDrive/Allgemein/dotfiles/ssh_config/*; do cat $i >> {{myhomedir}}/.ssh/config; echo '' >> {{myhomedir}}/.ssh/config; done; chmod 700 {{myhomedir}}/.ssh/config"
+  become: no
+
+- name: Update SSH Keys
+  ansible.builtin.copy:
+    src: "{{ssh_keys_src}}"
+    dest: "{{myhomedir}}/.ssh/"
+    remote_src: "true"
+  become: no
+
+- name: Compiling list of SSH private keys
+  ansible.builtin.shell: "ls {{myhomedir}}/.ssh/id* | grep -v pub"
+  register: installed_ssh_private_keys
+  changed_when: "installed_ssh_private_keys.rc != 0"
+  become: no
+
+- name: Fix permissions of SSH private keys
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ ansible_user }}"
+    group: staff
+    mode: '0600'
+  with_items: "{{ installed_ssh_private_keys.stdout_lines }}"
+
+- name: Compiling list of SSH public keys
+  ansible.builtin.shell: "ls {{myhomedir}}/.ssh/id*pub"
+  register: installed_ssh_public_keys
+  changed_when: "installed_ssh_public_keys.rc != 0"
+  become: no
+
+- name: Fix permissions of SSH public keys
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ ansible_user }}"
+    group: staff
+    mode: '0644'
+  with_items: "{{ installed_ssh_public_keys.stdout_lines }}"

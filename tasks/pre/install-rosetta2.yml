@@ -9,5 +9,4 @@
     - name: Install Rosetta2
       ansible.builtin.shell: "/usr/sbin/softwareupdate --install-rosetta --agree-to-license"
       when: rosetta_check.rc != '0'
-
   when: (ansible_architecture == 'arm64') and (ansible_distribution_version >= '12.3')

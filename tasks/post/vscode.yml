@@ -1,0 +1,25 @@
+---
+#https://dev.to/0xdonut/why-and-how-you-should-to-migrate-from-visual-studio-code-to-vscodium-j7d
+- name: Remove extended attributes from Visual Studio Code.app
+  shell: xattr -c "/Applications/Visual Studio Code.app"
+  changed_when: false
+  ignore_errors: true
+  
+- name: Creates settings directory
+  file:
+    path: "{{ myhomedir }}/Library/Application\ Support/Code/User/"
+    state: directory
+
+- name: Copy settings
+  ansible.builtin.template:
+    src: "files/VSCode/settings.json.j2"
+    dest: "{{ myhomedir }}/Library/Application\ Support/Code/User/settings.json"
+    owner: "{{ ansible_user }}"
+
+# - name: Install or update extensions
+#   shell: xargs -n1 code --install-extension < files/VSCode/extensions.txt
+#   changed_when: false
+
+# - name: Kill Electron
+#   shell: kill -9 $(pgrep Electron)
+#   changed_when: false

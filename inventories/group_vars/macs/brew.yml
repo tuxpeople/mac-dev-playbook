@@ -1,0 +1,23 @@
+homebrew_uninstalled_packages:
+  - osxfuse
+  - sshfs
+  - forticlient-vpn
+  - lastpass-cli
+homebrew_cask_uninstalled_apps:
+  - nextcloud
+  - lastpass
+  - rambox
+  - chromedriver
+homebrew_cask_apps:
+  - skype-for-business
+homebrew_use_brewfile: true
+homebrew_clear_cache: true
+homebrew_upgrade_all_packages: true
+homebrew_cask_accept_external_apps: true
+homebrew_group: "staff"
+homebrew_user: "{{ ansible_user }}"
+homebrew_brewfile_dir: "{{dotfiles_repo_local_destination}}/machine/{{ myenv }}/"
+homebrew_cask_appdir: /Applications
+homebrew_installed_packages: []
+homebrew_taps: []
+

@@ -1,0 +1,117 @@
+---
+# https://www.maketecheasier.com/use-touch-id-authenticate-sudo-commands-mac/
+- name: Enable Touch ID for sudo if this is a MacBook
+  lineinfile:
+    path: /etc/pam.d/sudo
+    insertafter: "^(#)? sudo: auth account password session"
+    line: "auth       sufficient     pam_tid.so"
+    firstmatch: yes
+    state: present
+  become: true
+  when: macbook is defined
+
+- name: Install base utilities
+  homebrew:
+    name: ['m-cli', 'dockutil']
+
+- name: Remove all items from the Dock
+  shell: "{{ mybrewbindir }}/dockutil --remove all; sleep 3"
+
+- name: Set the default Dock items
+  shell: "{{ mybrewbindir }}/dockutil --add {{ item }}; sleep 5"
+  with_items:
+    - /System/Applications/Launchpad.app
+    - /Applications/Safari.app
+    - /System/Applications/Mail.app
+    - "\"/Applications/Microsoft Outlook.app\""
+    - "\"/Applications/Microsoft Teams.app\""
+    - "\"/Applications/Visual Studio Code.app\""
+    - /System/Applications/Messages.app
+    - /System/Applications/Calendar.app
+    - /System/Applications/Notes.app
+    - /System/Applications/Photos.app
+    - /Applications/Todoist.app
+    - /Applications/iTerm.app
+    - /System/Applications/Utilities/Terminal.app
+    - /System/Applications/Utilities/Console.app
+    - "\"/Applications/Royal TSX.app\""
+    - "\"/Applications/Citrix Workspace.app\""
+    - "\"/System/Applications/App Store.app\""
+    - "\"/System/Applications/System Preferences.app\""
+    - /Applications --section others
+    - ~/Downloads --section others
+
+- name: Set the UMB Dock items
+  shell: "{{ mybrewbindir }}/dockutil --add {{ item }}; sleep 5"
+  with_items:
+    - "\"/Applications/Open Umb.app\" --position 2"
+  when: myenv == "business"
+
+- name: Reduce the size of the Dock to 30 points
+  shell: defaults write com.apple.dock tilesize -int 30; sleep 2
+
+- name: Change Dock's position to the bottom of the screen
+  shell: "{{ mybrewbindir }}/m dock position BOTTOM; sleep 2"
+
+- name: Turn magnification on
+  shell: "{{ mybrewbindir }}/m dock magnification YES; sleep 2"
+
+- name: Disable Dock's auto hide feature
+  shell: "{{ mybrewbindir }}/m dock autohide no; sleep 2"
+
+- name: Disable the Screensaver
+  shell: defaults write com.apple.screensaver idleTime 0
+
+- name: Arrange Files by Kind
+  shell: |
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
+
+- name: Set the Grid Spacing for Files
+  shell: |
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 54" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:gridSpacing 30" ~/Library/Preferences/com.apple.finder.plist
+
+- name: Use Smaller Icons
+  shell: |
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 48" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 64" ~/Library/Preferences/com.apple.finder.plist
+
+- name: Show ~/Library
+  shell: chflags nohidden ~/Library
+
+- name: Show Drives on the Desktop
+  shell: defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
+
+- name: Show External Drives on the Desktop
+  shell: defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+
+- name: Show Removable Media on the Desktop
+  shell: defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+
+- name: Show Hidden Files
+  shell: defaults write com.apple.finder AppleShowAllFiles -bool true
+
+- name: Show File Extensions
+  shell: defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+- name: Show the Status Bar in Finder
+  shell: defaults write com.apple.finder ShowStatusBar -bool true
+
+- name: Show the Path Bar in Finder
+  shell: defaults write com.apple.finder ShowPathbar -bool true
+
+- name: Allow unlock with apple watch
+  shell: sudo defaults write com.apple.applicationaccess allowAutoUnlock -bool true
+
+- name: Set wallpaper
+  shell: files/bgimage.sh
+  changed_when: false
+
+- name: Enable SSH access
+  shell: systemsetup -setremotelogin on
+  become: true
+
+- name: Add Pictures folder to sidebar
+  shell: "mysides add Bilder file://$HOME/Pictures/"
+
