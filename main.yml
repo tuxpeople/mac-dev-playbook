@@ -11,6 +11,8 @@
         - "{{ playbook_dir }}/config.yml"
       tags: ['always']
 
+    - import_tasks: tasks/pre/additional_facts.yaml
+
   roles:
     - role: elliotweiser.osx-command-line-tools
     - role: geerlingguy.mac.homebrew
