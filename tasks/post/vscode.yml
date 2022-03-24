@@ -12,12 +12,12 @@
 
 - name: Copy settings
   ansible.builtin.template:
-    src: "files/VSCode/settings.json.j2"
+    src: "../files/VSCode/settings.json.j2"
     dest: "{{ myhomedir }}/Library/Application\ Support/Code/User/settings.json"
     owner: "{{ ansible_user }}"
 
 # - name: Install or update extensions
-#   shell: xargs -n1 code --install-extension < files/VSCode/extensions.txt
+#   shell: xargs -n1 code --install-extension < ../files/VSCode/extensions.txt
 #   changed_when: false
 
 # - name: Kill Electron

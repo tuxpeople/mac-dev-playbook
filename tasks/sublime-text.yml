@@ -19,7 +19,7 @@
 
 - name: Ensure Sublime text user Preferences and theme are set.
   copy:
-    src: "files/sublime/{{ item }}"
+    src: "../files/sublime/{{ item }}"
     dest: "{{ sublime_base_path }}/{{ sublime_config_path }}/{{ item }}"
   loop:
     - "Cobalt (SL).tmTheme"

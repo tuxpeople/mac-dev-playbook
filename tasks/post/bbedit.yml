@@ -9,6 +9,6 @@
 
 - name: Install BBEdit color themes
   ansible.builtin.copy:
-    src: files/bbedit/
+    src: ../files/bbedit/
     dest: "{{ ansible_user_dir }}/Library/Containers/com.barebones.bbedit/Data/Library/Application Support/BBEdit/Color Schemes/"
     mode: 0750

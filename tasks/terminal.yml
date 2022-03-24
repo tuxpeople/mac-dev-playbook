@@ -8,7 +8,7 @@
 
 - name: Ensure custom Terminal profile is added.
   copy:
-    src: files/terminal/JJG-Term.terminal
+    src: ../files/terminal/JJG-Term.terminal
     dest: /tmp/JJG-Term.terminal
   changed_when: false
   when: "'JJG-Term' not in terminal_theme.stdout"
