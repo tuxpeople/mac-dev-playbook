@@ -51,7 +51,7 @@ jobs:
           sudo rm -rf /Applications/Google\ Chrome.app
 
       - name: Install test dependencies.
-        run: sudo pip3 install ansible
+        run: sudo pip3 install --requirement requirements.txt
 
       - name: Set up the test environment.
         run: |
