@@ -16,5 +16,6 @@ configure_sublime: false
 
 timezone: "Europe/Zurich"
 ntpserver: "time.euro.apple.com"
+usenetworktime: "on"
 
 github_user: tuxpeople

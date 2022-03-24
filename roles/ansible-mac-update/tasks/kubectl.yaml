@@ -1,47 +1,47 @@
 - name: Test for installed kubectl krew
   ansible.builtin.shell: "command -v kubectl krew -h"
   register: krew_exists
-  become: no
+  become: false
 
 - name: Update Krew plugin index
   ansible.builtin.shell: "kubectl krew update"
-  become: no
+  become: false
 
 - name: Update Krew plugins
   ansible.builtin.shell: "kubectl krew upgrade"
-  become: no
+  become: false
 
 - name: Getting list of installed Krew plugins
   ansible.builtin.shell: "kubectl krew list | grep -v PLUGIN | awk '{ print $1 }'"
   register: installed_krew_plugins
-  become: no
+  become: false
 
 - name: Detecting which Krew plugins to uninstall
   set_fact:
     uninstall_krew_plugins: "{{ installed_krew_plugins.stdout_lines | difference(desired_krew_plugins) | list }}"
   when: desired_krew_plugins is defined
-  become: no
+  become: false
 
 - name: Uninstalling Krew plugins
   ansible.builtin.shell: "kubectl krew uninstall {{ item }}"
   with_items: "{{ uninstall_krew_plugins }}"
   when: uninstall_krew_plugins is defined
-  become: no
+  become: false
 
 - name: Detecting which Krew plugins to install
   set_fact:
     krew_plugins: "{{ desired_krew_plugins | difference(installed_krew_plugins.stdout_lines) | list }}"
   when: desired_krew_plugins is defined
-  become: no
+  become: false
 
 - name: Install Krew plugins
   ansible.builtin.shell: "kubectl krew install {{ item }}"
   with_items: "{{ krew_plugins }}"
   when: krew_plugins is defined
-  become: no
+  become: false
 
 - name: Regenerating {{ mybrewbindir }}/kubectl config
   ansible.builtin.shell: "kubectl konfig merge {{myhomedir}}/iCloudDrive/Allgemein/{{ mybrewbindir }}/kubectl/* > {{myhomedir}}/.kube/config"
   args:
     executable: "{{ mybrewbindir }}/bash"
-  become: no
+  become: false

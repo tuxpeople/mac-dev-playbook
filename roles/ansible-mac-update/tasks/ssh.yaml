@@ -1,19 +1,19 @@
 - name: Regenerating ssh config
   ansible.builtin.shell: "truncate -s0 {{myhomedir}}/.ssh/config; for i in {{ ssh_config_src }}/*; do cat $i >> {{myhomedir}}/.ssh/config; echo '' >> {{myhomedir}}/.ssh/config; done; chmod 700 {{myhomedir}}/.ssh/config"
-  become: no
+  become: false
 
 - name: Update SSH Keys
   ansible.builtin.copy:
     src: "{{ssh_keys_src}}"
     dest: "{{myhomedir}}/.ssh/"
     remote_src: "true"
-  become: no
+  become: false
 
 - name: Compiling list of SSH private keys
   ansible.builtin.shell: "ls {{myhomedir}}/.ssh/id* | grep -v pub"
   register: installed_ssh_private_keys
   changed_when: "installed_ssh_private_keys.rc != 0"
-  become: no
+  become: false
 
 - name: Fix permissions of SSH private keys
   ansible.builtin.file:
@@ -27,7 +27,7 @@
   ansible.builtin.shell: "ls {{myhomedir}}/.ssh/id*pub"
   register: installed_ssh_public_keys
   changed_when: "installed_ssh_public_keys.rc != 0"
-  become: no
+  become: false
 
 - name: Fix permissions of SSH public keys
   ansible.builtin.file:

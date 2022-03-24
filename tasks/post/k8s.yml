@@ -3,5 +3,7 @@
   ansible.builtin.copy:
     src: ../files/k9s
     dest: "{{ ansible_user_dir }}/.k9s/"
+    owner: "{{ ansible_user }}"
     mode: 0640
   tags: k9s
+  become: false

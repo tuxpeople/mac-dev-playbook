@@ -3,24 +3,24 @@
         path: "{{myhomedir}}/.gnupg"
         state: directory
         mode: '0700'
-      become: no
+      become: false
 
     - name: Configure pinentry for gpg
       ansible.builtin.lineinfile:
         path: "{{myhomedir}}/.gnupg/gpg-agent.conf"
         line: pinentry-program {{ mybrewbindir }}/pinentry-mac
         create: yes
-      become: no
+      become: false
 
     - name: Configure use-agent for gpg
       ansible.builtin.lineinfile:
         path: "{{myhomedir}}/.gnupg/gpg.conf"
         line: use-agent
         create: yes
-      become: no
+      become: false
 
     - name: Kill gpg-agent
       ansible.builtin.shell: "{{ mybrewbindir }}/gpgconf --kill gpg-agent"
       register: gpg_agent_kill
       changed_when: "gpg_agent_kill.rc != 0"
-      become: no
+      become: false

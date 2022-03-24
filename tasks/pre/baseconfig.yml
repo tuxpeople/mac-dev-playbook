@@ -7,10 +7,24 @@
     name: "{{ timezone }}"
 
 - name: Configure NTP
-  shell: "{{ item }}"
-  with_items:
-    - '/usr/sbin/systemsetup -setnetworktimeserver "{{ ntpserver }}"'
-    - '/usr/sbin/systemsetup -setusingnetworktime on'
+  block:
+    - name: Read current Network Time Server from system
+      shell: /usr/sbin/systemsetup -getnetworktimeserver | awk '{ print $4 }'
+      register: getnetworktimeserver
+
+    - name: Check current NTP status
+      shell: /usr/sbin/systemsetup -getusingnetworktime | awk '{ print $3 }'
+      register: getusingnetworktime
+
+    - name: Set NTP server
+      shell: '/usr/sbin/systemsetup -setnetworktimeserver "{{ ntpserver }}"'
+      when:
+        when: not getusingnetworktime.stdout is ntpserver
+
+    - name: Set NTP status
+      shell: '/usr/sbin/systemsetup -setusingnetworktime {{ usenetworktime }}'
+      when:
+        when: not getusingnetworktime.stdout is usenetworktime
 
 # Close any open System Preferences panes, to prevent them from overriding
 # settings we’re about to change

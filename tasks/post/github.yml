@@ -38,6 +38,7 @@
       loop_control:
         label: "{{ item['name'] }}"
   tags: github_repos
+  become: false
 
 # - name: Clone reference Git repositories
 #   ansible.builtin.git:

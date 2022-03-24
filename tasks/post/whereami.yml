@@ -14,6 +14,7 @@
     src: "{{ whereami_zip_url }}"
     dest: "{{ myhomedir }}/bin"
     remote_src: yes
+  become: false
 
 - name: Configure whereami with key
   ansible.builtin.lineinfile:
@@ -21,4 +22,4 @@
     line: "{{ myhomedir }}/bin/whereami -k {{ OpenCageAPIKey }}"
     create: yes
     mode: '0750'
-  become: no
+  become: false

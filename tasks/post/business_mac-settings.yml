@@ -3,6 +3,7 @@
   shell: "{{ mybrewbindir }}/dockutil --add {{ item }}; sleep 5"
   with_items:
     - "\"/Applications/Open Umb.app\" --position 2"
+  become: false
 
 # https://www.jamf.com/jamf-nation/discussions/12302/active-directory-q-a
 - name: Set DSBindTimeout to 4
@@ -14,6 +15,7 @@
     src: "{{myhomedir}}/iCloudDrive/Multimedia/Backgounds/Teams/"
     dest: "{{ ansible_user_dir }}/.k9s/"
     mode: 0640
+  become: false
 
     # - import_tasks: tasks/business-settings.yml
     #   when: (configure_settings) and (myenv == "business")
