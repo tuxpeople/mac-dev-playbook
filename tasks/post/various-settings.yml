@@ -67,13 +67,6 @@
     - ~/Downloads --section others
   become: false
 
-- name: Set the UMB Dock items
-  shell: "{{ mybrewbindir }}/dockutil --add {{ item }}; sleep 5"
-  with_items:
-    - "\"/Applications/Open Umb.app\" --position 2"
-  when: myenv == "business"
-  become: false
-
 - name: Reduce the size of the Dock to 30 points
   shell: defaults write com.apple.dock tilesize -int 30; sleep 2
   become: false
