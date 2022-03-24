@@ -6,7 +6,7 @@ the_user: "{{ ansible_user_id }}"
 env_path: "{{ mybrewbindir }}:{{myhomedir}}/.krew/bin:{{ansible_env.PATH}}"
 
 softwareupdate_recommended_only: true
-osx_script: "~/.macos --no-restart"
+osx_script: "{{myhomedir}}/.macos --no-restart"
 
 configure_dotfiles: true
 configure_terminal: false
