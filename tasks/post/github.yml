@@ -10,7 +10,7 @@
       register: github_repos
     - name: Create Git project directories
       ansible.builtin.file:
-        path: "{{ ansible_user_dir }}/development/github/{{ item['name'] }}"
+        path: "{{ myhomedir }}/development/github/{{ github_user }}/{{ item['name'] }}"
         state: directory
         mode: 0750
       loop: "{{ github_repos['json']['items'] }}"
@@ -22,7 +22,7 @@
       ansible.builtin.git:
         repo: "{{ base_url }}/{{ github_user }}/{{ item['clone_url'] | basename }}"
         version: "{{ item['default_branch'] }}"
-        dest: "{{ ansible_user_dir }}/development/github/{{ github_user }}/{{ item['name'] }}"
+        dest: "{{ myhomedir }}/development/github/{{ github_user }}/{{ item['name'] }}"
         accept_hostkey: true
         update: false
       loop: "{{ github_repos['json']['items'] }}"
@@ -30,7 +30,7 @@
         label: "{{ item['name'] }}"
     - name: Update remote origin to SSH url
       community.general.git_config:
-        repo: "{{ ansible_user_dir }}/development/github/{{ github_user }}/{{ item['name'] }}"
+        repo: "{{ myhomedir }}/development/github/{{ github_user }}/{{ item['name'] }}"
         scope: local
         name: remote.origin.url
         value: "{{ item['ssh_url'] }}"
@@ -43,7 +43,7 @@
 # - name: Clone reference Git repositories
 #   ansible.builtin.git:
 #     repo: "{{ item['https_url'] }}"
-#     dest: "{{ ansible_user_dir }}/Development/Reference/{{ item['name'] }}"
+#     dest: "{{ myhomedir }}/Development/Reference/{{ item['name'] }}"
 #     depth: '1'
 #     version: "{{ item['version'] | default('master') }}"
 #   loop: "{{ git_reference_repos }}"

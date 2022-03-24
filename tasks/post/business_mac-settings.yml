@@ -13,8 +13,9 @@
 - name: Install Teams backgrounds
   ansible.builtin.copy:
     src: "{{myhomedir}}/iCloudDrive/Multimedia/Backgounds/Teams/"
-    dest: "{{ ansible_user_dir }}/.k9s/"
+    dest: "{{ myhomedir }}/.k9s/"
     mode: 0640
+    remote_src: "true"
   become: false
 
     # - import_tasks: tasks/business-settings.yml

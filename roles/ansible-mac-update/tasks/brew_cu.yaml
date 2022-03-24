@@ -14,5 +14,5 @@
   # Alternative: brew outdated --greedy --verbose | grep -v '(latest)' | awk '{print $1}' | xargs brew reinstall
   ansible.builtin.shell: "{{ mybrewbindir }}/brew cu -a -y"
   become: false
-  environment:
-    SUDO_ASKPASS: "{{ ansible_become_pass }}"
+  # environment:
+  #   SUDO_ASKPASS: "{{ ansible_become_pass }}"

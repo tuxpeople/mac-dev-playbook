@@ -4,5 +4,3 @@
   command: "{{ osx_script }}"
   changed_when: false
   become: false
-  environment:
-    SUDO_ASKPASS: "{{ ansible_become_pass }}"
