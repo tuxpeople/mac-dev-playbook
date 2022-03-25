@@ -3,7 +3,7 @@ post_provision_tasks:
   - ../tasks/post/user-config.yml
   - ../tasks/post/various-settings.yml
   - ../tasks/post/bbedit.yml
-  - ../tasks/post/citrix.yml
+  # - ../tasks/post/citrix.yml
   - ../tasks/post/github.yml
   - ../tasks/post/gpg.yml
   - ../tasks/post/iterm2.yml
