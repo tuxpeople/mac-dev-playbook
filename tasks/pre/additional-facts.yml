@@ -33,11 +33,18 @@
       changed_when: False
 
 - name: "Set username if needed"
-  command: "whoami"
-  register: userdetect
-  changed_when: "userdetect.rc != 0"
-  become: no
-  when: not ansible_user
+  block:
+    - name: "Detect current user"
+      command: "whoami"
+      register: userdetect
+      changed_when: "userdetect.rc != 0"
+      become: no
+
+    - name: "Else it is a private device"
+      set_fact:
+        ansible_user: "{{ userdetect.stdout }}"
+      when: (userdetect.stdout is defined) and (userdetect.stdout|length > 0)
+  when: (ansible_user is not defined) or (ansible_user|length == 0)
 
 - name: Set homedir
   block:
