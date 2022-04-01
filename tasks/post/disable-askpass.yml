@@ -1,0 +1,3 @@
+# Delete temporary sudo ask pass script
+- name: delete sudo ask pass script
+  file: path=~/.ansible/bin/sudo_askpass.tmp.sh state=absent

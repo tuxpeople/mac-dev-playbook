@@ -11,3 +11,4 @@ post_provision_tasks:
   - ../tasks/post/vscode.yml
   - ../tasks/post/whereami.yml
   - ../tasks/post/{{ myenv }}-settings.yml
+  - ../tasks/post/disable-askpass.yml

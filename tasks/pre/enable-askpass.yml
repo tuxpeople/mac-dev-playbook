@@ -1,0 +1,18 @@
+# Create Ansible bin dir in home dir
+- name: create ansible bin dir in home
+  file: path=~/.ansible/bin/ state=directory
+  become: no
+
+# Copy temporary sudo ask pass script
+- name: copy sudo ask pass script
+  template:
+    src:    files/templates/sudo_askpass.tmp.sh.j2
+    dest:   "{{myhomedir}}/.ansible/bin/sudo_askpass.tmp.sh"
+    mode:   0700
+    backup: no
+  become: no
+
+# USAGE
+  #
+  # environment:
+  #   SUDO_ASKPASS: "{{ ansible_user_dir }}/.ansible/bin/sudo_askpass.tmp.sh"
