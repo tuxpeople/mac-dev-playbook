@@ -11,8 +11,8 @@
         - "{{ playbook_dir }}/config.yml"
       tags: ['always']
 
-    - import_tasks: tasks/pre/additional_facts.yaml
-    - import_tasks: tasks/pre/install_rosetta2.yaml
+    - import_tasks: tasks/pre/additional-facts.yml
+    - import_tasks: tasks/pre/install-rosetta2.yml
 
   roles:
     - role: elliotweiser.osx-command-line-tools
