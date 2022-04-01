@@ -1,5 +1,7 @@
 ansible_become_method: sudo
 ansible_python_interpreter: "/usr/bin/env python3"
+myhomedir: "~"
+
 downloads: ~/.ansible-downloads/
 
 the_user: "{{ ansible_user_id }}"

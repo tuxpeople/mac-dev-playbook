@@ -1,5 +1,7 @@
 ---
 - hosts: all
+  environment:
+    SUDO_ASKPASS: "{{ myhomedir }}/.ansible/bin/sudo_askpass.tmp.sh"
 
   pre_tasks:
     - import_tasks: tasks/pre/additional-facts.yml
