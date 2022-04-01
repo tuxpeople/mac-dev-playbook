@@ -1,5 +1,6 @@
 #!/bin/bash
 #
+#  Use it with this in MacOS Terminal (not iTerm2 if already insalled, as iTerm will be quit ;-) ) 
 #    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
 #
 # set -e
