@@ -21,12 +21,12 @@
     - name: "Check if it is a business device"
       set_fact:
           myenv: "business_mac"
-      when: myhostname is match("ws.*")
+      when: myhostname is match("ws.*") or myhostname is match("umb.*")
 
     - name: "Else it is a private device"
       set_fact:
         myenv: "private_mac"
-      when: not myhostname is match("ws.*")
+      when: not myhostname is match("ws.*") and not myhostname is match("umb.*")
 
     - name: Group by purpose
       group_by: key=myenv
