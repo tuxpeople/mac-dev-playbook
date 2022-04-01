@@ -22,9 +22,13 @@
     state: absent
   become: false
 
+- name: Get latest dockutil version
+  shell: curl --silent "https://api.github.com/repos/kcrawford/dockutil/releases/latest" | jq -r .assets[].browser_download_url | grep pkg
+  register: dockutil-dl
+
 - name: Downloasd dokutil pkg
   get_url:
-    url: https://github.com/kcrawford/dockutil/releases/download/3.0.2/dockutil-3.0.2.pkg
+    url: "{{ dockutil-dl.stdout }}"
     dest: /tmp/dockutil.pkg
   become: false
 
