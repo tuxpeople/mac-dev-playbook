@@ -32,6 +32,13 @@
       group_by: key=myenv
       changed_when: False
 
+- name: "Set username if needed"
+  command: "whoami"
+  register: userdetect
+  changed_when: "userdetect.rc != 0"
+  become: no
+  when: not ansible_user
+
 - name: Set homedir
   block:
     - name: Getting Users Homedir
