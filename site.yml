@@ -1,15 +1,9 @@
 ---
 - hosts: all
 
-  vars_files:
-    - default.config.yml
-
   pre_tasks:
-    - name: Include playbook configuration.
-      include_vars: "{{ item }}"
-      with_fileglob:
-        - "{{ playbook_dir }}/config.yml"
-      tags: ['always']
+    - import_tasks: tasks/pre/additional-facts.yml
+    - import_tasks: tasks/pre/install-rosetta2.yml
 
   roles:
     - role: elliotweiser.osx-command-line-tools
@@ -45,10 +39,9 @@
       when: configure_sublime
       tags: ['sublime-text']
 
-    - block:
-        - name: Run configured post-provision ansible task files.
-          include_tasks: "{{ outer_item }}"
-          loop_control:
-            loop_var: outer_item
-          with_fileglob: "{{ post_provision_tasks|default(omit) }}"
+    - name: Run configured post-provision ansible task files.
+      include_tasks: "{{ outer_item }}"
+      loop_control:
+        loop_var: outer_item
+      with_fileglob: "{{ post_provision_tasks|default(omit) }}"
       tags: ['post']
