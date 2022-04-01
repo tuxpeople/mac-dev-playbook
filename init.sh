@@ -50,7 +50,7 @@ echo " - Upgrading PIP"
 pip3 install --upgrade pip || exit 1
 
 echo " - Installing Ansible"
-pip3 install --requirement /tmp/git/requirements.txt || exit 1
+pip3 install --user --requirement /tmp/git/requirements.txt || exit 1
 PATH="/usr/local/bin:$(python3 -m site --user-base)/bin:$PATH"
 export PATH
 
@@ -77,5 +77,5 @@ step "Starting Ansible run"
 echo "If something went wrong, start this step again with:"
 echo '     cd /tmp/git'
 echo '     export newhostname=<HOSTNAME>'
-echo '     ansible-playbook site.yml -i inventory -K -l ${newhostname} --extra-vars "newhostname=${newhostname}"'
-ansible-playbook site.yml -i inventory -K -l ${newhostname} --extra-vars "newhostname=${newhostname}"
+echo '     ansible-playbook site.yml -i inventory -l ${newhostname} --extra-vars "newhostname=${newhostname}"'
+ansible-playbook site.yml -i inventory -l ${newhostname} --extra-vars "newhostname=${newhostname}"
