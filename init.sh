@@ -44,7 +44,7 @@ fi
 step "Preparing system"
 echo " - Cloning Repo"
 mkdir -p /tmp/git || exit 1
-git clone https://github.com/tuxpeople/ansible-mac-bootstrap.git /tmp/git || exit 1
+git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git || exit 1
 
 echo " - Upgrading PIP"
 pip3 install --upgrade pip || exit 1
