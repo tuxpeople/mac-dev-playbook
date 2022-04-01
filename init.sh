@@ -1,5 +1,7 @@
 #!/bin/bash
-
+#
+#    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
+#
 # set -e
 
 _step_counter=0
@@ -77,5 +79,5 @@ step "Starting Ansible run"
 echo "If something went wrong, start this step again with:"
 echo '     cd /tmp/git'
 echo '     export newhostname=<HOSTNAME>'
-echo '     ansible-playbook site.yml -i inventories -l ${newhostname} --extra-vars "newhostname=${newhostname}"'
-ansible-playbook site.yml -i inventories -l ${newhostname} --extra-vars "newhostname=${newhostname}"
+echo '     ansible-playbook plays/full.yml -i inventories -l ${newhostname} --extra-vars "newhostname=${newhostname}"'
+ansible-playbook plays/full.yml -i inventories -l ${newhostname} --extra-vars "newhostname=${newhostname}"

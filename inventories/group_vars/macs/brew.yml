@@ -20,4 +20,4 @@ homebrew_brewfile_dir: "{{dotfiles_repo_local_destination}}/machine/{{ myenv }}/
 homebrew_cask_appdir: /Applications
 homebrew_installed_packages: []
 homebrew_taps: []
-
+mas_installed_apps: []
