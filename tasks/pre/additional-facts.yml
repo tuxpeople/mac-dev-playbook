@@ -12,6 +12,15 @@
         macbook: true
       when: "'MacBook' in SPHardwareDataType.stdout"
 
+- name: Set controller_host fact
+  set_fact:
+    controller_host: "{{lookup('pipe','hostname')}}"
+
+- name: Switch to local connection if this is the device
+  set_fact:
+    ansible_connection: local
+  when: ansible_hostname == controller_host
+
 - name: Check if this is a business or a private device
   block:
     - name: Set hostname
