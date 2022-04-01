@@ -75,5 +75,7 @@ sudo launchctl load -w /Library/LaunchDaemons/limit.maxproc.plist
 
 step "Starting Ansible run"
 echo "If something went wrong, start this step again with:"
-echo '     cd /tmp/git && ansible-playbook site.yml -i inventory -K -extra-vars "newhostname=<HOSTNAME>"'
-ansible-playbook site.yml -i inventory -K --extra-vars "newhostname=${newhostname}"
+echo '     cd /tmp/git'
+echo '     export newhostname=<HOSTNAME>'
+echo '     ansible-playbook site.yml -i inventory -K -l ${newhostname} --extra-vars "newhostname=${newhostname}"'
+ansible-playbook site.yml -i inventory -K -l ${newhostname} --extra-vars "newhostname=${newhostname}"
