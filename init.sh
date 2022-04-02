@@ -81,6 +81,8 @@ if [ -n "${newhostname}" ]; then
   sudo scutil --set LocalHostName ${newhostname}
   sudo scutil --set ComputerName ${newhostname}
   sudo dscacheutil -flushcache
+else
+  newhostname="$(hostname)"
 fi
 
 step "Starting Ansible run"
