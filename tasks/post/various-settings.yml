@@ -140,3 +140,8 @@
   shell: "mysides add Bilder file://$HOME/Pictures/"
   become: false
 
+- name: LaunchAgents
+  include_tasks: "_launchagents.yml"
+  loop: "{{ unload_launchagents | default(omit) }}"
+  loop_control:
+    loop_var: agent
