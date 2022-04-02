@@ -1,14 +1,5 @@
 ---
 - hosts: all
-  gather_facts: no
-  tasks:
-    - name: "Set hostname"
-      ansible.builtin.hostname:
-        name: "{{ newhostname }}"
-      when: newhostname is defined
-
----
-- hosts: all
   environment:
     PATH: "{{env_path}}"
 
