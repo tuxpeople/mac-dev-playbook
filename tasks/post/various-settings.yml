@@ -47,28 +47,11 @@
   become: false
 
 - name: Set the default Dock items
-  shell: "{{ mybrewbindir }}/dockutil --add {{ item }}; sleep 5"
-  with_items:
-    - /System/Applications/Launchpad.app
-    - /Applications/Safari.app
-    - /System/Applications/Mail.app
-    - "\"/Applications/Microsoft Outlook.app\""
-    - "\"/Applications/Microsoft Teams.app\""
-    - "\"/Applications/Visual Studio Code.app\""
-    - /System/Applications/Messages.app
-    - /System/Applications/Calendar.app
-    - /System/Applications/Notes.app
-    - /System/Applications/Photos.app
-    - /Applications/Todoist.app
-    - /Applications/iTerm.app
-    - /System/Applications/Utilities/Terminal.app
-    - /System/Applications/Utilities/Console.app
-    - "\"/Applications/Royal TSX.app\""
-    - "\"/Applications/Citrix Workspace.app\""
-    - "\"/System/Applications/App Store.app\""
-    - "\"/System/Applications/System Preferences.app\""
-    - /Applications --section others
-    - ~/Downloads --section others
+  shell: "{{ mybrewbindir }}/dockutil --add {{ item.path }} --position {{ item.pos }}; sleep 5"
+  loop: "{{ dockitems }}"
+  loop_control:
+    label: "{{ item.name }}"
+    pause: 3
   become: false
 
 - name: Reduce the size of the Dock to 30 points
