@@ -76,6 +76,13 @@ sudo launchctl load -w /Library/LaunchDaemons/limit.maxproc.plist
 #   curl -sfL https://raw.githubusercontent.com/tuxpeople/dotfiles/master/machine/private/Brewfile > files/Brewfile
 # fi
 
+if [ -n "${newhostname}" ]; then
+  sudo scutil --set HostName ${newhostname}
+  sudo scutil --set LocalHostName ${newhostname}
+  sudo scutil --set ComputerName ${newhostname}
+  sudo dscacheutil -flushcache ${newhostname}
+fi
+
 step "Starting Ansible run"
 echo "If something went wrong, start this step again with:"
 echo '     cd /tmp/git'
