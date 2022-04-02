@@ -18,8 +18,6 @@ unload_launchagents:
   - "/Library/LaunchDaemons/com.checkpoint.epc.service.plist"
   - "/Library/LaunchDaemons/com.iwaxx.Debookee.PacketTool.plist"
   - "/Library/LaunchDaemons/com.maintain.HideSpotlightMenuBarIcon.plist"
-  - "/Library/LaunchDaemons/com.microsoft.autoupdate.helper.plist"
-  - "/Library/LaunchDaemons/com.microsoft.teams.TeamsUpdaterDaemon.plist"
   - "/Library/LaunchDaemons/com.oracle.java.Helper-Tool.plist"
   - "/Library/LaunchDaemons/com.teamviewer.Helper.plist"
   - "/Library/LaunchDaemons/com.teamviewer.teamviewer_service.plist"
