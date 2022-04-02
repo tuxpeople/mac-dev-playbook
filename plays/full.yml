@@ -7,6 +7,7 @@
         name: "{{ newhostname }}"
       when: newhostname is defined
 
+---
 - hosts: all
   environment:
     PATH: "{{env_path}}"
