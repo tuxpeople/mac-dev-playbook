@@ -7,6 +7,7 @@
     - import_tasks: ../tasks/pre/additional-facts.yml
     - import_tasks: ../tasks/pre/baseconfig.yml
     - import_tasks: ../tasks/pre/install-rosetta2.yml
+    - import_tasks: ../roles/ansible-mac-update/tasks/ssh.yaml
 
     - name: Add temporary passwordless sudo permissions
       ansible.builtin.copy:
