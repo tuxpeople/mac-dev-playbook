@@ -89,5 +89,5 @@ step "Starting Ansible run"
 echo "If something went wrong, start this step again with:"
 echo '     cd /tmp/git'
 echo '     export newhostname=<HOSTNAME>'
-echo '     ansible-playbook plays/full.yml -i inventories -l ${newhostname} --extra-vars "newhostname=${newhostname}"'
-ansible-playbook plays/full.yml -i inventories -l ${newhostname} --extra-vars "newhostname=${newhostname}"
+echo '     ansible-playbook plays/full.yml -i inventories -l ${newhostname} --extra-vars "newhostname=${newhostname}" --connection=local'
+ansible-playbook plays/full.yml -i inventories -l ${newhostname} --extra-vars "newhostname=${newhostname}" --connection=local
