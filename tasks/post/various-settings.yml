@@ -24,11 +24,11 @@
 
 - name: Get latest dockutil version
   shell: curl --silent "https://api.github.com/repos/kcrawford/dockutil/releases/latest" | jq -r .assets[].browser_download_url | grep pkg
-  register: dockutil-dl
+  register: dockutil_dl
 
 - name: Downloasd dokutil pkg
   get_url:
-    url: "{{ dockutil-dl.stdout }}"
+    url: "{{ dockutil_dl.stdout }}"
     dest: /tmp/dockutil.pkg
   become: false
 
