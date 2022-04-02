@@ -4,7 +4,7 @@
 
 - name: Update SSH Keys
   ansible.builtin.copy:
-    src: "{{ssh_keys_src}}/*"
+    src: "{{ssh_keys_src}}/"
     dest: "{{myhomedir}}/.ssh/"
     remote_src: "true"
   become: false
