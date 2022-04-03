@@ -4,7 +4,7 @@
   block:
     - name: Query GitHub API for my repositories
       ansible.builtin.uri:
-        url: "https://api.github.com/search/repositories?q=user:{{ github_user }}+archived:false"
+        url: "https://api.github.com/search/repositories?q=user:{{ github_user }}+archived:false+fork:true"
         headers:
           Authorization: "token {{ github_personal_token }}"
       register: github_repos
