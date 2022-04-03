@@ -41,13 +41,16 @@
     path: /tmp/dockutil.pkg
     state: absent
 ########## TEMP Workaround #################
+########## also next two comments #################
 
 - name: Remove all items from the Dock
-  shell: "{{ mybrewbindir }}/dockutil --remove all; sleep 3"
+  # shell: "{{ mybrewbindir }}/dockutil --remove all; sleep 3"
+  shell: "/usr/local/bin/dockutil --remove all; sleep 3"
   become: false
 
 - name: Set the default Dock items
-  shell: "{{ mybrewbindir }}/dockutil --add {{ item.path }} --position {{ item.pos }}; sleep 5"
+  # shell: "{{ mybrewbindir }}/dockutil --add {{ item.path }} --position {{ item.pos }}; sleep 5"
+  shell: "/usr/local/bin/dockutil --add {{ item.path }} --position {{ item.pos }}; sleep 5"
   loop: "{{ dockitems }}"
   loop_control:
     label: "{{ item.name }}"
