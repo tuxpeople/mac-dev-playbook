@@ -28,15 +28,14 @@
       set_fact:
         myhostname: "{{ newhostname | default(ansible_hostname) }}"
 
+    - name: "Default to private device"
+      set_fact:
+        myenv: "private_mac"
+
     - name: "Check if it is a business device"
       set_fact:
           myenv: "business_mac"
       when: myhostname is match("ws.*") or myhostname is match("UMB.*")
-
-    - name: "Else it is a private device"
-      set_fact:
-        myenv: "private_mac"
-      when: not myhostname is match("ws.*") and not myhostname is match("UMB.*")
 
     - name: "Group by env {{ myenv }}"
       group_by: key=myenv
