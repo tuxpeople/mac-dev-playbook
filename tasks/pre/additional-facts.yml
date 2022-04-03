@@ -38,7 +38,7 @@
         myenv: "private_mac"
       when: not myhostname is match("ws.*") and not myhostname is match("umb.*") or myhostname is match("UMB.*")  or "'private_mac' in group_names"
 
-    - name: Group by purpose
+    - name: "Group by env {{ myenv }}"
       group_by: key=myenv
       changed_when: False
 
