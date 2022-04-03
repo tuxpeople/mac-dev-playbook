@@ -50,11 +50,11 @@ mkdir -p /tmp/git || exit 1
 git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git || exit 1
 
 echo " - Upgrading PIP"
-pip3 install --upgrade pip || exit 1
+/usr/bin/pip3 install --upgrade pip || exit 1
 
 echo " - Installing Ansible"
-pip3 install --user --requirement /tmp/git/requirements.txt || exit 1
-PATH="/usr/local/bin:$(python3 -m site --user-base)/bin:$PATH"
+/usr/bin/pip3 install --user --requirement /tmp/git/requirements.txt || exit 1
+PATH="/usr/local/bin:$(/usr/bin/python3 -m site --user-base)/bin:$PATH"
 export PATH
 
 echo " - Installing Ansible requirements"
