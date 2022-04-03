@@ -4,3 +4,4 @@ cryptography==36.0.2
 paramiko==2.10.3
 pyparsing==3.0.7
 jmespath==1.0.0
+pexpect==4.8.0
