@@ -1,0 +1,62 @@
+defaults:
+  # https://community.jamf.com/t5/jamf-pro/apple-watch-to-unlock/m-p/152272/highlight/true#M141310
+  - domain: com.apple.applicationaccess
+    key: allowAutoUnlock
+    name: Enable Apple Watch to unlock
+    type: bool
+    value: 'true'
+    become: 'true'
+  - domain: com.apple.dock
+    key: tilesize
+    name: Reduce the size of the Dock to 30 points
+    type: int
+    value: '30'
+  - domain: com.apple.dock
+    key: orientation
+    name: Change Dock's position to the bottom of the screen
+    type: string
+    value: 'bottom'
+  - domain: com.apple.dock
+    key: autohide
+    name: Always display the Dock
+    type: bool
+    value: 'false'
+  - domain: com.apple.screensaver
+    key: idleTime
+    name: Disable the Screensaver
+    value: '0'
+  - domain: com.apple.finder
+    key: ShowHardDrivesOnDesktop
+    name: Show Drives on the Desktop
+    type: bool
+    value: 'true'
+  - domain: com.apple.finder
+    key: ShowExternalHardDrivesOnDesktop
+    name: Show External Drives on the Desktop
+    type: bool
+    value: 'true'
+  - domain: com.apple.finder
+    key: ShowRemovableMediaOnDesktop
+    name: Show Removable Media on the Desktop
+    type: bool
+    value: 'true'
+  - domain: com.apple.finder
+    key: AppleShowAllFiles
+    name: Show Hidden Files
+    type: bool
+    value: 'true'
+  - domain: com.apple.finder
+    key: AppleShowAllExtensions
+    name: Show File Extensions
+    type: bool
+    value: 'true'
+  - domain: com.apple.finder
+    key: ShowStatusBar
+    name: Show the Status Bar in Finder
+    type: bool
+    value: 'true'
+  - domain: com.apple.finder
+    key: ShowPathbar
+    name: Show the Path Bar in Finder
+    type: bool
+    value: 'true'
