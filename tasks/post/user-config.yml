@@ -4,17 +4,18 @@
     line: "{{ mybrewbindir }}/bash"
   become: true
 
-- name: change user shell to homebrew-bash  
-  ansible.builtin.user:
-    name: "{{ ansible_user_id }}"
-    shell: "{{ mybrewbindir }}/bash"
-  become: true
-
 # - name: change user shell to homebrew-bash  
-#   expect:
-#     command: "chsh -s /usr/local/bin/bash"
-#     responses:
-#       (?i)password: "{{ ansible_become_pass }}"
+#   ansible.builtin.user:
+#     name: "{{ ansible_user_id }}"
+#     shell: "{{ mybrewbindir }}/bash"
+#   become: true
+
+- name: change user shell to homebrew-bash  
+  expect:
+    command: "chsh -s {{ mybrewbindir }}/bash"
+    responses:
+      (?i)password: "{{ ansible_become_pass }}"
+  become: false
 
 - name: change root shell to homebrew-bash  
   ansible.builtin.user:
