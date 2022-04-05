@@ -1,17 +1,8 @@
 # gathering additional facts
 - name: Check if this is a MacBook
-  block:
-    # https://apple.stackexchange.com/a/98089
-    - name: "Get model information"
-      # ansible.builtin.shell: "curl https://support-sp.apple.com/sp/product?cc=$(system_profiler SPHardwareDataType | awk '/Serial/ {print $4}' | cut -c 9-)"
-      ansible.builtin.shell: "sysctl hw.model"
-      register: SPHardwareDataType
-      changed_when: SPHardwareDataType.rc != 0
-
-    - name: "Set fact macbook if appropriate"
-      set_fact:
-        macbook: true
-      when: "'MacBook' in SPHardwareDataType.stdout"
+  set_fact:
+    macbook: true
+  when: "'MacBook' in ansible_model"
 
 - name: Set controller_host fact
   set_fact:
@@ -49,7 +40,7 @@
       changed_when: "userdetect.rc != 0"
       become: no
 
-    - name: "Else it is a private device"
+    - name: "set ansible_user to current user if needed"
       set_fact:
         ansible_user: "{{ userdetect.stdout }}"
       when: (userdetect.stdout is defined) and (userdetect.stdout|length > 0)

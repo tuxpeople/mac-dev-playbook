@@ -57,24 +57,8 @@
     pause: 3
   become: false
 
-- name: Reduce the size of the Dock to 30 points
-  shell: defaults write com.apple.dock tilesize -int 30; sleep 2
-  become: false
-
-- name: Change Dock's position to the bottom of the screen
-  shell: "{{ mybrewbindir }}/m dock position BOTTOM; sleep 2"
-  become: false
-
-- name: Turn magnification on
+- name: Turn magnification of the dock on
   shell: "{{ mybrewbindir }}/m dock magnification YES; sleep 2"
-  become: false
-
-- name: Disable Dock's auto hide feature
-  shell: "{{ mybrewbindir }}/m dock autohide no; sleep 2"
-  become: false
-
-- name: Disable the Screensaver
-  shell: defaults write com.apple.screensaver idleTime 0
   become: false
 
 - name: Arrange Files by Kind
@@ -95,40 +79,14 @@
     /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 64" ~/Library/Preferences/com.apple.finder.plist
   become: false
 
-- name: Show ~/Library
-  shell: chflags nohidden ~/Library
+- name: Unhide ~/Library
+  ansible.builtin.command: "chflags nohidden {{ myhomedir }}/Library"
   become: false
 
-- name: Show Drives on the Desktop
-  shell: defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
-  become: false
-
-- name: Show External Drives on the Desktop
-  shell: defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
-  become: false
-
-- name: Show Removable Media on the Desktop
-  shell: defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
-  become: false
-
-- name: Show Hidden Files
-  shell: defaults write com.apple.finder AppleShowAllFiles -bool true
-  become: false
-
-- name: Show File Extensions
-  shell: defaults write NSGlobalDomain AppleShowAllExtensions -bool true
-  become: false
-
-- name: Show the Status Bar in Finder
-  shell: defaults write com.apple.finder ShowStatusBar -bool true
-  become: false
-
-- name: Show the Path Bar in Finder
-  shell: defaults write com.apple.finder ShowPathbar -bool true
-  become: false
-
-- name: Allow unlock with apple watch
-  shell: sudo defaults write com.apple.applicationaccess allowAutoUnlock -bool true
+- name: Unhide /Volumes
+  ansible.builtin.command: chflags nohidden /Volumes
+  changed_when: false
+  become: true
 
 - name: Set wallpaper
   shell: osascript -e 'tell application "System Events" to tell every desktop to set picture to "~/iCloudDrive/Multimedia/Backgounds/Desktop/luca-micheli-422053-unsplash.jpg"'
@@ -148,3 +106,23 @@
   loop: "{{ unload_launchagents | default(omit) }}"
   loop_control:
     loop_var: agent
+
+- name: Set macOS default settings
+  community.general.osx_defaults:
+    domain: "{{ item['domain'] }}"
+    key: "{{ item['key'] }}"
+    type: "{{ item['type'] | default(omit) }}"
+    value: "{{ item['value'] }}"
+  become: "{{ item['become'] | default(omit) }}"
+  loop: "{{ defaults }}"
+  loop_control:
+    label: "{{ item['name'] }}"
+
+- name: Restart dock to apply changes
+  ansible.builtin.command: killall Dock
+  changed_when: false
+  become: true
+
+- name: Fix Homedir Permissions
+  shell: "{{myhomedir}}/iCloudDrive/Allgemein/bin/fix-perms.sh"
+  become: true

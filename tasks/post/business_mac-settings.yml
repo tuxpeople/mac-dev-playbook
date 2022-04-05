@@ -7,11 +7,11 @@
     remote_src: "true"
   become: false
 
-- name: Set the UMB Dock items
-  shell: "{{ mybrewbindir }}/dockutil --add {{ item }}; sleep 5"
-  with_items:
-    - "\"/Applications/Open Umb.app\" --position 2"
-  become: false
+# - name: Set the UMB Dock items
+#   shell: "{{ mybrewbindir }}/dockutil --add {{ item }}; sleep 5"
+#   with_items:
+#     - "\"/Applications/Open Umb.app\" --position 2"
+#   become: false
 
 # https://www.jamf.com/jamf-nation/discussions/12302/active-directory-q-a
 - name: Set DSBindTimeout to 4
