@@ -2,6 +2,7 @@
 - name: Test for installed kubectl 
   ansible.builtin.shell: "command -v kubectl"
   register: kubectl_exists
+  ignore_errors: true
   become: false
 
 - name: Relink kubectl if needed
@@ -12,20 +13,21 @@
 - name: Test for installed kubectl krew
   ansible.builtin.shell: "command -v kubectl krew -h"
   register: krew_exists
+  ignore_errors: true
   become: false
 
 - name: Update Krew plugin index
-  ansible.builtin.shell: "kubectl krew update"
+  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew update"
   become: false
   when: krew_exists is defined
 
 - name: Update Krew plugins
-  ansible.builtin.shell: "kubectl krew upgrade"
+  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew upgrade"
   become: false
   when: krew_exists is defined
 
 - name: Getting list of installed Krew plugins
-  ansible.builtin.shell: "kubectl krew list | grep -v PLUGIN | awk '{ print $1 }'"
+  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew list | grep -v PLUGIN | awk '{ print $1 }'"
   register: installed_krew_plugins
   become: false
   when: krew_exists is defined
@@ -37,7 +39,7 @@
   become: false
 
 - name: Uninstalling Krew plugins
-  ansible.builtin.shell: "kubectl krew uninstall {{ item }}"
+  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew uninstall {{ item }}"
   with_items: "{{ uninstall_krew_plugins }}"
   when: uninstall_krew_plugins is defined and krew_exists is defined
   become: false
@@ -49,13 +51,13 @@
   become: false
 
 - name: Install Krew plugins
-  ansible.builtin.shell: "kubectl krew install {{ item }}"
+  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew install {{ item }}"
   with_items: "{{ krew_plugins }}"
   when: krew_plugins is defined and krew_exists is defined
   become: false
 
 - name: Regenerating {{ mybrewbindir }}/kubectl config
-  ansible.builtin.shell: "kubectl konfig merge {{myhomedir}}/iCloudDrive/Allgemein/{{ mybrewbindir }}/kubectl/* > {{myhomedir}}/.kube/config"
+  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl konfig merge {{myhomedir}}/iCloudDrive/Allgemein/{{ mybrewbindir }}/kubectl/* > {{myhomedir}}/.kube/config"
   args:
     executable: "{{ mybrewbindir }}/bash"
   become: false
