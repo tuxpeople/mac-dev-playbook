@@ -8,57 +8,60 @@ dockitems:
   - name: "Safari"
     path: /Applications/Safari.app
     pos: 3
+  - name: "Vertec"
+    path: "\"/System/Volumes/Data/Users/tdeutsch/Applications/UMB Vertec v6.app\""
+    pos: 4
   - name: "Mail"
     path: /System/Applications/Mail.app
-    pos: 4
+    pos: 5
   - name: "Outlook"
     path: "\"/Applications/Microsoft Outlook.app\""
-    pos: 5
+    pos: 6
   - name: "Teams"
     path: "\"/Applications/Microsoft Teams.app\""
-    pos: 6
+    pos: 7
   - name: "Visual Studio Code"
     path: "\"/Applications/Visual Studio Code.app\""
-    pos: 7
+    pos: 8
   - name: "Messages"
     path: /System/Applications/Messages.app
-    pos: 8
+    pos: 9
   - name: "Calendar"
     path: /System/Applications/Calendar.app
-    pos: 9
+    pos: 10
   - name: "Notes"
     path: /System/Applications/Notes.app
-    pos: 10
+    pos: 11
   - name: "Photos"
     path: /System/Applications/Photos.app
-    pos: 11
+    pos: 12
   - name: "Todoist"
     path: /Applications/Todoist.app
-    pos: 12
+    pos: 13
   - name: "iTerm"
     path: /Applications/iTerm.app
-    pos: 13
+    pos: 14
   - name: "Terminal"
     path: /System/Applications/Utilities/Terminal.app
-    pos: 14
+    pos: 15
   - name: "Console"
     path: /System/Applications/Utilities/Console.app
-    pos: 15
+    pos: 16
   - name: "Royal TSX"
     path: "\"/Applications/Royal TSX.app\""
-    pos: 16
+    pos: 17
   - name: "Citrix Workspace"
     path: "\"/Applications/Citrix Workspace.app\""
-    pos: 17
+    pos: 18
   - name: "App Store"
     path: "\"/System/Applications/App Store.app\""
-    pos: 18
+    pos: 19
   - name: "System Preferences"
     path: "\"/System/Applications/System Preferences.app\""
-    pos: 19
+    pos: 20
   - name: "Applications Folder"
     path: /Applications --section others
-    pos: 20
+    pos: 21
   - name: "Downloads Folder"
     path: ~/Downloads --section others
-    pos: 21
+    pos: 22
