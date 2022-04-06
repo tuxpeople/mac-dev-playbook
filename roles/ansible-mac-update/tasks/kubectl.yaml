@@ -1,59 +1,59 @@
 #brew unlink kubernetes-cli && brew link kubernetes-cli
 - name: Test for installed kubectl 
-  ansible.builtin.shell: "command -v kubectl"
+  ansible.builtin.stat:
+    path: "{{ mybrewbindir }}/kubectl"
   register: kubectl_exists
-  ignore_errors: true
   become: false
 
 - name: Relink kubectl if needed
   ansible.builtin.shell: "brew unlink kubernetes-cli && brew link kubernetes-cli"
-  when: not kubectl_exists is defined
+  when: not kubectl_exists.stat.exists
   become: false
 
-- name: Test for installed kubectl krew
-  ansible.builtin.shell: "command -v kubectl krew -h"
+- name: Test for installed kubectl 
+  ansible.builtin.stat:
+    path: "{{ mybrewbindir }}/kubectl-krew"
   register: krew_exists
-  ignore_errors: true
   become: false
 
 - name: Update Krew plugin index
   ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew update"
   become: false
-  when: krew_exists is defined
+  when: krew_exists.stat.exists
 
 - name: Update Krew plugins
   ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew upgrade"
   become: false
-  when: krew_exists is defined
+  when: krew_exists.stat.exists
 
 - name: Getting list of installed Krew plugins
   ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew list | grep -v PLUGIN | awk '{ print $1 }'"
   register: installed_krew_plugins
   become: false
-  when: krew_exists is defined
+  when: krew_exists.stat.exists
 
 - name: Detecting which Krew plugins to uninstall
   set_fact:
     uninstall_krew_plugins: "{{ installed_krew_plugins.stdout_lines | difference(desired_krew_plugins) | list }}"
-  when: desired_krew_plugins is defined and krew_exists is defined
+  when: desired_krew_plugins is defined and krew_exists.stat.exists
   become: false
 
 - name: Uninstalling Krew plugins
   ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew uninstall {{ item }}"
   with_items: "{{ uninstall_krew_plugins }}"
-  when: uninstall_krew_plugins is defined and krew_exists is defined
+  when: uninstall_krew_plugins is defined and krew_exists.stat.exists
   become: false
 
 - name: Detecting which Krew plugins to install
   set_fact:
     krew_plugins: "{{ desired_krew_plugins | difference(installed_krew_plugins.stdout_lines) | list }}"
-  when: desired_krew_plugins is defined and krew_exists is defined
+  when: desired_krew_plugins is defined and krew_exists.stat.exists
   become: false
 
 - name: Install Krew plugins
   ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew install {{ item }}"
   with_items: "{{ krew_plugins }}"
-  when: krew_plugins is defined and krew_exists is defined
+  when: krew_plugins is defined and krew_exists.stat.exists
   become: false
 
 - name: Regenerating {{ mybrewbindir }}/kubectl config
