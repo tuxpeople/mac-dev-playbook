@@ -60,3 +60,8 @@ defaults:
     name: Show the Path Bar in Finder
     type: bool
     value: 'true'
+  - domain: com.apple.TextEdit
+    key: RichText
+    name: Disable rich text in textedit
+    type: bool
+    value: 'false'
