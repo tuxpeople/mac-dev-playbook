@@ -2,13 +2,14 @@
   file:
     path: "{{myhomedir}}/.ssh"
     state: directory
+    mode: '0500'
   become: false
 
 - name: Touch ssh-config, but do not change times this makes the task idempotent
   ansible.builtin.file:
     path: "{{myhomedir}}/.ssh/config"
     state: touch
-    mode: '0500'
+    mode: '0600'
     modification_time: preserve
     access_time: preserve
   become: false
