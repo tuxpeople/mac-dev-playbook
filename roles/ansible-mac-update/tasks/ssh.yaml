@@ -2,7 +2,7 @@
   file:
     path: "{{myhomedir}}/.ssh"
     state: directory
-    mode: '0500'
+    mode: '0600'
   become: false
 
 - name: Touch ssh-config, but do not change times this makes the task idempotent
