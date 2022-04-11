@@ -3,6 +3,9 @@
   environment:
     PATH: "{{env_path}}"
 
+  vars:
+    - homebrew_use_brewfile: false
+
   pre_tasks:
     - import_tasks: ../tasks/pre/additional-facts.yml
     - import_tasks: ../tasks/pre/baseconfig.yml
