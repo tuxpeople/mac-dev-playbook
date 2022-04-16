@@ -51,7 +51,9 @@ do
   while [ ! -f "${FILE}" ]
   do
     echo "Checking for ${FILE}"
-    brctl download ${FILE}
+    cd $(dirname "${FILE}")
+    brctl download $(basename ${FILE})
+    cd /tmp/git
     sleep 10
   done
 done
