@@ -45,15 +45,14 @@ mkdir -p /tmp/git || exit 1
 git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git || exit 1
 
 echo " - Downloading important files"
+cd ~
 IFS=$'\n'
 for FILE in $(cat /tmp/git/files/filelist.txt)
 do
   while [ ! -f "${FILE}" ]
   do
     echo "Checking for ${FILE}"
-    cd $(dirname "${FILE}")
-    brctl download $(basename ${FILE})
-    cd /tmp/git
+    brctl download ${FILE})
     sleep 10
   done
 done
