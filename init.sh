@@ -37,10 +37,17 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until we have finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-if [ ! -f "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password" ]; then
-  echo "Error: Login to iCloud First!"
-  exit 1
-fi
+for FILE in ${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password ${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/vault_password_file
+do
+  while [ ! -f ${FILE} ]
+  do
+    echo "Checking for ${FILE}"
+    brctl download ${FILE}
+    sleep 10
+  done
+done
+
+${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password
 
 [ ! -d "/Library/Developer/CommandLineTools" ] && installcli
 
