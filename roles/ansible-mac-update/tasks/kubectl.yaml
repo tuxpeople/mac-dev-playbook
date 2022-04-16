@@ -57,7 +57,7 @@
   become: false
 
 - name: Regenerating {{ mybrewbindir }}/kubectl config
-  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl konfig merge {{myhomedir}}/iCloudDrive/Allgemein/{{ mybrewbindir }}/kubectl/* > {{myhomedir}}/.kube/config"
+  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl konfig merge {{myhomedir}}/iCloudDrive/Allgemein/kubectl/* > {{myhomedir}}/.kube/config"
   args:
     executable: "{{ mybrewbindir }}/bash"
   become: false
