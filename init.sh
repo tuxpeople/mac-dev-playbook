@@ -49,7 +49,7 @@ for FILE in $(cat /tmp/git/files/filelist.txt)
 do
   while [ ! -f "${FILE}" ]
   do
-    echo "Checking for ${FILE}"
+    echo 'Checking for "${FILE}"'
     brctl download "${FILE}"
     sleep 10
   done
