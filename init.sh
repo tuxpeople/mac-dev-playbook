@@ -37,7 +37,15 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until we have finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-for FILE in ${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password ${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/vault_password_file
+[ ! -d "/Library/Developer/CommandLineTools" ] && installcli
+
+step "Preparing system"
+echo " - Cloning Repo"
+mkdir -p /tmp/git || exit 1
+git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git || exit 1
+
+echo " - Downloading important files"
+for FILE in $(cat /tmp/git/files/filelist.txt)
 do
   while [ ! -f ${FILE} ]
   do
@@ -46,15 +54,7 @@ do
     sleep 10
   done
 done
-
 ${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password
-
-[ ! -d "/Library/Developer/CommandLineTools" ] && installcli
-
-step "Preparing system"
-echo " - Cloning Repo"
-mkdir -p /tmp/git || exit 1
-git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git || exit 1
 
 echo " - Upgrading PIP"
 /Library/Developer/CommandLineTools/usr/bin/pip3.8 install --upgrade pip || exit 1
