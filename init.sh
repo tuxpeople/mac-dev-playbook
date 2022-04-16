@@ -52,7 +52,7 @@ do
   while [ ! -f "${FILE}" ]
   do
     echo "Checking for ${FILE}"
-    brctl download ${FILE})
+    brctl download ${FILE}
     sleep 10
   done
 done
