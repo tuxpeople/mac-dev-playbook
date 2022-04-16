@@ -47,10 +47,10 @@ git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git || exit 1
 echo " - Downloading important files"
 for FILE in $(cat /tmp/git/files/filelist.txt)
 do
-  while [ ! -f ${FILE} ]
+  while [ ! -f "${FILE}" ]
   do
     echo "Checking for ${FILE}"
-    brctl download ${FILE}
+    brctl download "${FILE}"
     sleep 10
   done
 done
