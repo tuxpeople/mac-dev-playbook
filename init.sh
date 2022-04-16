@@ -47,12 +47,30 @@ git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git || exit 1
 echo " - Downloading important files"
 cd ~
 IFS=$'\n'
-for FILE in $(cat /tmp/git/files/filelist.txt)
+for FILE in Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt
 do
   while [ ! -f "${FILE}" ]
   do
     echo Checking for "${FILE}"
     brctl download ${FILE}
+    sleep 10
+  done
+done
+for FILE in $(cat Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt)
+do
+  while [ ! -f "${FILE}" ]
+  do
+    echo Checking for "${FILE}"
+    brctl download ${FILE}
+    sleep 10
+  done
+done
+for DIR in $(cat Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt)
+do
+  while [ ! -d "${DIR}" ]
+  do
+    echo Checking for "${DIR}"
+    brctl download ${DIR}
     sleep 10
   done
 done

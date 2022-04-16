@@ -4,7 +4,7 @@
     PATH: "{{env_path}}"
 
   vars:
-    - homebrew_use_brewfile: false
+    - homebrew_use_brewfile: true
 
   pre_tasks:
     - import_tasks: ../tasks/pre/additional-facts.yml
