@@ -56,13 +56,11 @@
   when: krew_plugins is defined and krew_exists.stat.exists
   become: false
 
-- name: Touch kubeconfig, but do not change times this makes the task idempotent
+- name: ensure kubeconfig exists
   ansible.builtin.file:
     path: "{{myhomedir}}/.kube/config"
-    state: touch
+    state: absent
     mode: '0600'
-    modification_time: preserve
-    access_time: preserve
   become: false
 
 - name: Regenerating {{ mybrewbindir }}/kubectl config
