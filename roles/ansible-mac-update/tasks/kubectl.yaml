@@ -60,6 +60,7 @@
   file:
     path: "{{myhomedir}}/.kube"
     state: directory
+  become: false
 
 - name: Ensure kubeconfig exists
   ansible.builtin.file:
