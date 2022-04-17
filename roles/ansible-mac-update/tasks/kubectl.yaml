@@ -56,7 +56,12 @@
   when: krew_plugins is defined and krew_exists.stat.exists
   become: false
 
-- name: ensure kubeconfig exists
+- name: Ensure .kube directory exist
+  file:
+    path: "{{myhomedir}}/.kube"
+    state: directory
+
+- name: Ensure kubeconfig exists
   ansible.builtin.file:
     path: "{{myhomedir}}/.kube/config"
     state: absent
