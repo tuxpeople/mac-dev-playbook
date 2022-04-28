@@ -6,7 +6,7 @@ homebrew_uninstalled_packages:
 homebrew_cask_uninstalled_apps:
   - nextcloud
   - lastpass
-  - rambox
+  - rambox-ce
   - skype-for-business
   - sublime-text
 homebrew_cask_apps: []
