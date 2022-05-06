@@ -1,13 +1,10 @@
 homebrew_uninstalled_packages:
   - osxfuse
   - sshfs
-  - forticlient-vpn
   - lastpass-cli
 homebrew_cask_uninstalled_apps:
   - nextcloud
   - lastpass
-  - rambox-ce
-  - skype-for-business
   - sublime-text
 homebrew_cask_apps: []
 homebrew_use_brewfile: true
