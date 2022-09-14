@@ -82,7 +82,7 @@ echo " - Upgrading PIP"
 
 echo " - Installing Ansible"
 /Library/Developer/CommandLineTools/usr/bin/pip3.8 install --user --requirement /tmp/git/requirements.txt || exit 1
-PATH="/usr/local/bin:$(/Library/Developer/CommandLineTools/usr/bin/python3.8 -m site --user-base)/bin:$PATH"
+PATH="/usr/local/bin:$(/Library/Developer/CommandLineTools/usr/bin/python3 -m site --user-base)/bin:$PATH"
 export PATH
 
 echo " - Installing Ansible requirements"
