@@ -7,7 +7,6 @@ homebrew_cask_uninstalled_apps:
   - lastpass
   - sublime-text
   - skype-for-business
-  - onedrive
 homebrew_cask_apps: []
 homebrew_use_brewfile: true
 homebrew_clear_cache: true
