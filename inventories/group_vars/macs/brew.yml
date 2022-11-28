@@ -3,6 +3,7 @@ homebrew_uninstalled_packages:
   - sshfs
   - lastpass-cli
   - bash-completion
+  - pdftohtml
 homebrew_cask_uninstalled_apps:
   - nextcloud
   - lastpass
