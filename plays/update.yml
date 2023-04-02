@@ -14,6 +14,11 @@
 
   pre_tasks:
     - import_tasks: ../tasks/pre/additional-facts.yml
+    - name: Ensure /private/etc/sudoers.d exists
+      file:
+        path: '/private/etc/sudoers.d'
+        state: directory
+      become: true
     - name: Add temporary passwordless sudo permissions
       ansible.builtin.copy:
         content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL"

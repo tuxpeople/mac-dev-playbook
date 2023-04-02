@@ -12,6 +12,12 @@
     - import_tasks: ../tasks/pre/install-rosetta2.yml
     - import_tasks: ../roles/ansible-mac-update/tasks/ssh.yaml
 
+    - name: Ensure /private/etc/sudoers.d exists
+      file:
+        path: '/private/etc/sudoers.d'
+        state: directory
+      become: true
+
     - name: Add temporary passwordless sudo permissions
       ansible.builtin.copy:
         content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL"
