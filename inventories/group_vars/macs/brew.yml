@@ -4,12 +4,17 @@ homebrew_uninstalled_packages:
   - lastpass-cli
   - bash-completion
   - pdftohtml
+  - mytop
+  - sdl_net
+  - sdl_sound
+  - xhyve
 homebrew_cask_uninstalled_apps:
   - nextcloud
   - lastpass
   - sublime-text
   - skype-for-business
   - fedora-media-writer
+  - dosbox
 homebrew_cask_apps: []
 homebrew_use_brewfile: true
 homebrew_clear_cache: true
