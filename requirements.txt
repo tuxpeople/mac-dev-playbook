@@ -1,6 +1,6 @@
 ansible==7.7.0
 bcrypt==3.2.0
-cryptography==41.0.4
+cryptography==41.0.5
 paramiko==2.10.3
 pyparsing==3.0.7
 jmespath==1.0.1
