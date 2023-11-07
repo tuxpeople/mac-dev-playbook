@@ -1,4 +1,4 @@
-ansible==5.5.0
+ansible==7.0.0
 bcrypt==3.2.0
 cryptography==41.0.4
 paramiko==2.10.3
