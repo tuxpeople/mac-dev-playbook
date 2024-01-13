@@ -28,6 +28,6 @@
   register: rebuild_fontcache
 
 - name: Rebuild Fontcache
-  shell: "atsutil databases -removeUser; atsutil server -shutdown; atsutil server -ping"
+  shell: "atsutil databases -removeUser; atsutil server -shutdown; atsutil server -ping; rm -rf  {{ lookup('env', 'HOME') }}/Library/Containers/com.microsoft.*/Data/Library/Application\ Support/Microsoft/FontCache"
   when: rebuild_fontcache.changed
   ignore_errors: yes
