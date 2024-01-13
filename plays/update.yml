@@ -34,6 +34,9 @@
 #     - role: aadl.softwareupdate
 
   tasks:
+    - import_tasks: ../tasks/fonts.yml
+      when: configure_osx
+
     - name: Remove temporary passwordless sudo permissions
       ansible.builtin.file:
         path: "/private/etc/sudoers.d/99_tmp_ansible"

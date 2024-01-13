@@ -1,0 +1,33 @@
+---
+# https://dev.to/waylonwalker/installing-system-nerd-fonts-with-ansible-35kh
+
+- name: Basisschrift exists
+  shell: "ls {{ lookup('env', 'HOME') }}/Library/Fonts/DCH-Basisschrift.ttf"
+  register: basisschrift_exists
+  ignore_errors: true
+
+- name: Download Basisschrift
+  when: basisschrift_exists is failed
+  ansible.builtin.unarchive:
+    src: https://www.basisschrift.ch/sites/default/files/DCH-Basisschrift.ttf.zip
+    dest: "{{ lookup('env', 'HOME') }}/Library/Fonts/"
+    remote_src: yes
+  register: rebuild_fontcache
+
+- name: Hack exists
+  shell: "ls {{ lookup('env', 'HOME') }}/Library/Fonts/HackNerdFont*"
+  register: hack_exists
+  ignore_errors: yes
+
+- name: Download Hack
+  when: hack_exists is failed
+  ansible.builtin.unarchive:
+    src: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Hack.zip
+    dest: "{{ lookup('env', 'HOME') }}/Library/Fonts/"
+    remote_src: yes
+  register: rebuild_fontcache
+
+- name: Rebuild Fontcache
+  shell: "atsutil databases -removeUser; atsutil server -shutdown; atsutil server -ping"
+  when: rebuild_fontcache.changed
+  ignore_errors: yes

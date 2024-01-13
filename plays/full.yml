@@ -53,6 +53,10 @@
       when: configure_osx
       tags: ['osx']
 
+    - import_tasks: ../tasks/fonts.yml
+      when: configure_osx
+      tags: ['fonts']
+
     - import_tasks: ../tasks/extra-packages.yml
       tags: ['extra-packages']
 
