@@ -4,10 +4,11 @@
 
   vars:
     microsoft_update: true
-    brew_cu: true
+    brew_cu: false
     kubectl: true
     ssh: true
     gpg: true
+    homebrew_cask_upgrade_all_packages: true
 
   environment:
     PATH: "{{env_path}}"
@@ -29,7 +30,8 @@
 
   roles:
     - role: geerlingguy.dotfiles
-    - role: geerlingguy.mac.homebrew
+    - role: homebrew
+    # - role: geerlingguy.mac.homebrew
     - role: ansible-mac-update
 #     - role: aadl.softwareupdate
 
