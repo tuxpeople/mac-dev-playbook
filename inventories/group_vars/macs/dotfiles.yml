@@ -4,6 +4,7 @@ dotfiles_repo_version: main
 dotfiles_repo_local_destination: "{{myhomedir}}/development/github/tuxpeople/dotfiles"
 dotfiles_files:
   - .aliases
+  - .ansible.cfg
   - .bash_profile
   - .bash_prompt
   - .bashrc
