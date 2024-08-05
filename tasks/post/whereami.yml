@@ -1,0 +1,25 @@
+---
+- name: Get current whereami release
+  uri:
+    url: https://api.github.com/repos/robmathers/WhereAmI/releases/latest
+    return_content: yes
+  register: github_call
+
+- name: Set whereami zip url
+  set_fact:
+    whereami_zip_url: "{{ github_call.json | json_query('assets[0].browser_download_url') }}"
+
+- name: "Installing {{ whereami_zip_url }}"
+  ansible.builtin.unarchive:
+    src: "{{ whereami_zip_url }}"
+    dest: "{{ myhomedir }}/bin"
+    remote_src: yes
+  become: false
+
+- name: Configure whereami with key
+  ansible.builtin.lineinfile:
+    path: "{{ myhomedir }}/bin/wobinich"
+    line: "{{ myhomedir }}/bin/whereami -k {{ OpenCageAPIKey }}"
+    create: yes
+    mode: '0750'
+  become: false

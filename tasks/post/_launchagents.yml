@@ -1,0 +1,10 @@
+---
+- name: "Check if {{ agent }} exists"
+  ansible.builtin.stat:
+    path: "{{ agent }}"
+  register: launchagents_result
+
+- name:  "Unload {{ agent }}"
+  shell: "launchctl unload {{ agent }}"
+  when: not launchagents_result.stat.exists
+  become: true

@@ -1,0 +1,31 @@
+- name: Ensure homebrew-bash is in /etc/shells
+  ansible.builtin.lineinfile:
+    path: /etc/shells
+    line: "{{ mybrewbindir }}/bash"
+  become: true
+
+- name: change user shell to homebrew-bash  
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    shell: "{{ mybrewbindir }}/bash"
+  become: true
+
+# - name: change user shell to homebrew-bash  
+#   expect:
+#     command: "chsh -s {{ mybrewbindir }}/bash"
+#     responses:
+#       (?i)password: "{{ ansible_become_pass }}"
+#   become: false
+
+- name: change root shell to homebrew-bash  
+  ansible.builtin.user:
+    name: root
+    shell: "{{ mybrewbindir }}/bash"
+  become: true
+
+- name: "Ensure homedir/bin exists" 
+  ansible.builtin.file:
+    path: "{{ myhomedir }}/bin"
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: 0750

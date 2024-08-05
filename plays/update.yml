@@ -1,0 +1,46 @@
+---
+- name: Mac Update
+  hosts: macs
+
+  vars:
+    microsoft_update: true
+    brew_cu: false
+    kubectl: true
+    ssh: true
+    gpg: true
+    homebrew_cask_upgrade_all_packages: true
+
+  environment:
+    PATH: "{{env_path}}"
+
+  pre_tasks:
+    - import_tasks: ../tasks/pre/additional-facts.yml
+    - name: Ensure /private/etc/sudoers.d exists
+      file:
+        path: '/private/etc/sudoers.d'
+        state: directory
+      become: true
+    - name: Add temporary passwordless sudo permissions
+      ansible.builtin.copy:
+        content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL"
+        dest: "/private/etc/sudoers.d/99_tmp_ansible"
+        validate: /usr/sbin/visudo -csf %s
+        mode: 0644
+      become: true
+
+  roles:
+    - role: geerlingguy.dotfiles
+    - role: homebrew
+    # - role: geerlingguy.mac.homebrew
+    - role: ansible-mac-update
+#     - role: aadl.softwareupdate
+
+  tasks:
+    - import_tasks: ../tasks/fonts.yml
+      when: configure_osx
+
+    - name: Remove temporary passwordless sudo permissions
+      ansible.builtin.file:
+        path: "/private/etc/sudoers.d/99_tmp_ansible"
+        state: absent
+      become: true

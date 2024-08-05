@@ -1,0 +1,4 @@
+---
+- name: Set NetBios hostname
+  shell: "defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string {{ myhostname }}"
+  become: true

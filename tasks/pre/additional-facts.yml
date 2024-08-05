@@ -1,0 +1,63 @@
+# gathering additional facts
+- name: Check if this is a MacBook
+  set_fact:
+    macbook: true
+  when: "'MacBook' in ansible_model"
+
+- name: Set controller_host fact
+  set_fact:
+    controller_host: "{{lookup('pipe','hostname')}}"
+
+- name: Switch to local connection if this is the device
+  set_fact:
+    ansible_connection: local
+  when: ansible_hostname == controller_host
+
+- name: Check if this is a business or a private device
+  block:
+    - name: Set hostname
+      set_fact:
+        myhostname: "{{ newhostname | default(ansible_hostname) }}"
+
+    - name: "Default to private device"
+      set_fact:
+        myenv: "private_mac"
+
+    - name: "Check if it is a business device"
+      set_fact:
+          myenv: "business_mac"
+      when: myhostname is match("ws.*") or myhostname is match("UMB.*")
+
+    - name: "Group by env {{ myenv }}"
+      group_by: key=myenv
+      changed_when: False
+
+- name: "Set username if needed"
+  block:
+    - name: "Detect current user"
+      command: "whoami"
+      register: userdetect
+      changed_when: "userdetect.rc != 0"
+      become: no
+
+    - name: "set ansible_user to current user if needed"
+      set_fact:
+        ansible_user: "{{ userdetect.stdout }}"
+      when: (userdetect.stdout is defined) and (userdetect.stdout|length > 0)
+  when: (ansible_user is not defined) or (ansible_user|length == 0)
+
+- name: Set homedir
+  block:
+    - name: Getting Users Homedir
+      user:
+        name: "{{ ansible_user }}"
+        state: present
+      register: this_user_registered
+
+    - name: "Set fact myhomedir to {{ this_user_registered.home }}"
+      set_fact:
+        myhomedir: "{{ this_user_registered.home }}"
+
+- name: "Set fact mybrewbindir to {{ (ansible_machine == 'arm64') | ternary('/opt/homebrew', '/usr/local') }}/bin"
+  set_fact:
+    mybrewbindir: "{{ (ansible_machine == 'arm64') | ternary('/opt/homebrew', '/usr/local') }}/bin"

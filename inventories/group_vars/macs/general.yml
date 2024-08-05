@@ -1,0 +1,23 @@
+ansible_become_method: sudo
+ansible_python_interpreter: "/Library/Developer/CommandLineTools/usr/bin/python3"
+myhomedir: "~"
+
+downloads: ~/.ansible-downloads/
+
+the_user: "{{ ansible_user_id }}"
+env_path: "{{ mybrewbindir }}:{{myhomedir}}/.krew/bin:{{ansible_env.PATH}}"
+
+softwareupdate_recommended_only: true
+osx_script: "{{myhomedir}}/.macos --no-restart"
+
+configure_dotfiles: true
+configure_terminal: false
+configure_osx: true
+configure_sudoers: false
+configure_sublime: false
+
+timezone: "Europe/Zurich"
+ntpserver: "time.euro.apple.com"
+usenetworktime: "on"
+
+github_user: tuxpeople

@@ -1,0 +1,14 @@
+# Glob pattern to ansible task files to run after all other tasks are finished.
+post_provision_tasks:
+  - ../tasks/post/user-config.yml
+  - ../tasks/post/various-settings.yml
+  - ../tasks/post/bbedit.yml
+  # - ../tasks/post/citrix.yml
+  - ../tasks/post/github.yml
+  - ../tasks/post/gpg.yml
+  - ../tasks/post/iterm2.yml
+  - ../tasks/post/k8s.yml
+  - ../tasks/post/vscode.yml
+  - ../tasks/post/whereami.yml
+  - ../tasks/post/{{ myenv }}-settings.yml
+  - ../tasks/post/disable-askpass.yml

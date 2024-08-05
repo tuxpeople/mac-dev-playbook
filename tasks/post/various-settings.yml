@@ -1,0 +1,128 @@
+---
+# https://www.maketecheasier.com/use-touch-id-authenticate-sudo-commands-mac/
+- name: Enable Touch ID for sudo if this is a MacBook
+  lineinfile:
+    path: /etc/pam.d/sudo
+    insertafter: "^(#)? sudo: auth account password session"
+    line: "auth       sufficient     pam_tid.so"
+    firstmatch: yes
+    state: present
+  become: true
+  when: macbook is defined
+
+- name: Install base utilities
+  homebrew:
+    name: ['m-cli', 'dockutil']
+  become: false
+
+########## TEMP Workaround #################
+- name: Remove dockutil from homebrew (broken)
+  homebrew:
+    name: dockutil
+    state: absent
+  become: false
+
+- name: Get latest dockutil version
+  shell: curl --silent "https://api.github.com/repos/kcrawford/dockutil/releases/latest" | jq -r .assets[].browser_download_url | grep pkg
+  register: dockutil_dl
+
+- name: Downloasd dokutil pkg
+  get_url:
+    url: "{{ dockutil_dl.stdout }}"
+    dest: /tmp/dockutil.pkg
+  become: false
+
+- name: Run dockutil installer
+  shell: 'installer -pkg "/tmp/dockutil.pkg" -target /'
+  become: true
+
+- name: Remove dockutil pkg
+  ansible.builtin.file:
+    path: /tmp/dockutil.pkg
+    state: absent
+########## TEMP Workaround #################
+########## also next two comments #################
+
+- name: Remove all items from the Dock
+  # shell: "{{ mybrewbindir }}/dockutil --remove all; sleep 3"
+  shell: "/usr/local/bin/dockutil --remove all; sleep 3"
+  become: false
+
+- name: Set the default Dock items
+  # shell: "{{ mybrewbindir }}/dockutil --add {{ item.path }} --position {{ item.pos }}; sleep 5"
+  shell: "/usr/local/bin/dockutil --add {{ item.path }} --position {{ item.pos }}; sleep 5"
+  loop: "{{ dockitems }}"
+  loop_control:
+    label: "{{ item.name }}"
+    pause: 3
+  become: false
+
+- name: Turn magnification of the dock on
+  shell: "{{ mybrewbindir }}/m dock magnification YES; sleep 2"
+  become: false
+
+- name: Arrange Files by Kind
+  shell: |
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
+  become: false
+
+- name: Set the Grid Spacing for Files
+  shell: |
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 54" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:gridSpacing 30" ~/Library/Preferences/com.apple.finder.plist
+  become: false
+
+- name: Use Smaller Icons
+  shell: |
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 48" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 64" ~/Library/Preferences/com.apple.finder.plist
+  become: false
+
+- name: Unhide ~/Library
+  ansible.builtin.command: "chflags nohidden {{ myhomedir }}/Library"
+  become: false
+
+- name: Unhide /Volumes
+  ansible.builtin.command: chflags nohidden /Volumes
+  changed_when: false
+  become: true
+
+- name: Set wallpaper
+  shell: osascript -e 'tell application "System Events" to tell every desktop to set picture to "~/iCloudDrive/Multimedia/Backgounds/Desktop/luca-micheli-422053-unsplash.jpg"'
+  changed_when: false
+  become: false
+
+- name: Enable SSH access
+  shell: systemsetup -setremotelogin on
+  become: true
+
+- name: Add Pictures folder to sidebar
+  shell: "mysides add Bilder file://$HOME/Pictures/"
+  become: false
+
+- name: LaunchAgents
+  include_tasks: "_launchagents.yml"
+  loop: "{{ unload_launchagents | default(omit) }}"
+  loop_control:
+    loop_var: agent
+
+- name: Set macOS default settings
+  community.general.osx_defaults:
+    domain: "{{ item['domain'] }}"
+    key: "{{ item['key'] }}"
+    type: "{{ item['type'] | default(omit) }}"
+    value: "{{ item['value'] }}"
+  become: "{{ item['become'] | default(omit) }}"
+  loop: "{{ defaults }}"
+  loop_control:
+    label: "{{ item['name'] }}"
+
+- name: Restart dock to apply changes
+  ansible.builtin.command: killall Dock
+  changed_when: false
+  become: true
+
+- name: Fix Homedir Permissions
+  shell: "{{myhomedir}}/iCloudDrive/Allgemein/bin/fix-perms.sh"
+  become: true

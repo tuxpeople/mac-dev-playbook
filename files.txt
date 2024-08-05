@@ -1,0 +1,17 @@
+${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password
+${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/vault_password_file
+
+{{myhomedir}}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/Open Umb.app
+{{myhomedir}}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/fix-perms.sh
+{{myhomedir}}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Multimedia/Backgounds/Desktop/luca-micheli-422053-unsplash.jpg
+{{myhomedir}}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/kubectl/homelab.yaml
+{{myhomedir}}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Multimedia/Backgounds/Teams/Bildschirmfoto_2021-01-21 um 09.05.47.png
+{{myhomedir}}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Multimedia/Backgounds/Teams/ET0TVJBUwAA9mjH.jpeg
+{{myhomedir}}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Multimedia/Backgounds/Teams/Everything_is fine.jpg
+{{myhomedir}}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Multimedia/Backgounds/Teams/Teams_Hintergrund_klassisch.jpg
+{{myhomedir}}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Multimedia/Backgounds/Teams/Toilet_Paper.png
+{{myhomedir}}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Multimedia/Backgounds/Teams/f8osqei4hdg51.jpg
+
+
+./roles/ansible-mac-update/tasks/kubectl.yaml:  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl konfig merge {{myhomedir}}/iCloudDrive/Allgemein/{{ mybrewbindir }}/kubectl/* > {{myhomedir}}/.kube/config"
+

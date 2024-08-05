@@ -1,0 +1,39 @@
+- name: "Set hostname"
+  ansible.builtin.hostname:
+    name: "{{ myhostname }}"
+
+- name: "Set timezone"
+  community.general.timezone:
+    name: "{{ timezone }}"
+
+- name: Configure NTP
+  block:
+    - name: Read current Network Time Server from system
+      shell: /usr/sbin/systemsetup -getnetworktimeserver | awk '{ print $4 }'
+      register: getnetworktimeserver
+
+    - name: Check current NTP status
+      shell: /usr/sbin/systemsetup -getusingnetworktime | awk '{ print $3 }'
+      register: getusingnetworktime
+
+    - name: Set NTP server
+      shell: '/usr/sbin/systemsetup -setnetworktimeserver "{{ ntpserver }}"'
+      when:
+        when: not getusingnetworktime.stdout is ntpserver
+
+    - name: Set NTP status
+      shell: '/usr/sbin/systemsetup -setusingnetworktime {{ usenetworktime }}'
+      when:
+        when: not getusingnetworktime.stdout is usenetworktime
+
+- name: Ensure we have a link to iCloudDrive in homedir
+  file:
+    src: "{{ myhomedir }}/Library/Mobile Documents/com~apple~CloudDocs/Dateien"
+    dest: "{{ myhomedir }}/iCloudDrive"
+    owner: "{{ ansible_user }}"
+    state: link
+    force: yes
+
+# Close any open System Preferences panes, to prevent them from overriding
+# settings we’re about to change
+#osascript -e 'tell application "System Preferences" to quit'

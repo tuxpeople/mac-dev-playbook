@@ -1,0 +1,15 @@
+desired_krew_plugins:
+  - "minio"
+  - "konfig"
+  - "neat"
+  - "access-matrix"
+  - "mtail"
+  - "get-all"
+  - "graph"
+  - "images"
+  - "pod-lens"
+  - "prune-unused"
+  - "score"
+  - "snap"
+  - "starboard"
+  # - "kubesec-scan" # not for arm 

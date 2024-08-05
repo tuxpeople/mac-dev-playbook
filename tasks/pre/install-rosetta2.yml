@@ -1,0 +1,12 @@
+- name: On ARM based macs, install Rosetta2 if missing
+  block:
+    - name: Check if Rosetta2 is running
+      ansible.builtin.shell: "/usr/bin/pgrep oahd"
+      register: rosetta_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install Rosetta2
+      ansible.builtin.shell: "/usr/sbin/softwareupdate --install-rosetta --agree-to-license"
+      when: rosetta_check.rc != '0'
+  when: (ansible_architecture == 'arm64') and (ansible_distribution_version >= '12.3')

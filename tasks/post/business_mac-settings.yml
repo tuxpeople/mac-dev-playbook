@@ -1,0 +1,31 @@
+---
+- name: Copy Open UMB App
+  ansible.builtin.copy:
+    src: "{{myhomedir}}/iCloudDrive/Allgemein/Open Umb.app"
+    dest: "/Applications/"
+    mode: 0750
+    remote_src: "true"
+  become: false
+
+# - name: Set the UMB Dock items
+#   shell: "{{ mybrewbindir }}/dockutil --add {{ item }}; sleep 5"
+#   with_items:
+#     - "\"/Applications/Open Umb.app\" --position 2"
+#   become: false
+
+# https://www.jamf.com/jamf-nation/discussions/12302/active-directory-q-a
+- name: Set DSBindTimeout to 4
+  shell: "/usr/bin/defaults write /Library/Preferences/com.apple.loginwindow DSBindTimeout -int 4"
+  become: true
+
+- name: Install Teams backgrounds
+  ansible.builtin.copy:
+    src: "{{myhomedir}}/iCloudDrive/Multimedia/Backgounds/Teams/"
+    dest: "~/Library/Application Support/Microsoft/Teams/Backgrounds/Uploads/"
+    mode: 0640
+    remote_src: "true"
+  become: false
+
+    # - import_tasks: tasks/business-settings.yml
+    #   when: (configure_settings) and (myenv == "business")
+    #   tags: ['business']

@@ -1,0 +1,16 @@
+---
+
+- name: Install BBEdit cli tool
+  ansible.builtin.file:
+    src: /Applications/BBEdit.app/Contents/Helpers/bbedit_tool
+    dest: "{{ myhomedir }}/bin/bbedit"
+    mode: 0750
+    state: link
+  become: false
+
+- name: Install BBEdit color themes
+  ansible.builtin.copy:
+    src: ../files/bbedit/
+    dest: "{{ myhomedir }}/Library/Containers/com.barebones.bbedit/Data/Library/Application Support/BBEdit/Color Schemes/"
+    mode: 0750
+  become: false

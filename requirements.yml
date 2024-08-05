@@ -1,7 +1,12 @@
 ---
 roles:
   - name: elliotweiser.osx-command-line-tools
+    version: 2.3.0
   - name: geerlingguy.dotfiles
+    version: 1.2.1
+  - name: aadl.softwareupdate
+    version: master
 
 collections:
   - name: geerlingguy.mac
+    version: 4.0.1
