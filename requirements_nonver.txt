@@ -1,7 +1,0 @@
-ansible
-bcrypt
-cryptography
-paramiko
-pyparsing
-jmespath
-pexpect
