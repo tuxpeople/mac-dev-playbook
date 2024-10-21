@@ -5,9 +5,6 @@ homebrew_uninstalled_packages:
   - bash-completion
   - pdftohtml
   - mytop
-  - sdl_net
-  - sdl_sound
-  - xhyve
 homebrew_cask_uninstalled_apps:
   - nextcloud
   - lastpass
