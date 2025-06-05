@@ -16,15 +16,13 @@
       shell: /usr/sbin/systemsetup -getusingnetworktime | awk '{ print $3 }'
       register: getusingnetworktime
 
-    - name: Set NTP server
-      shell: '/usr/sbin/systemsetup -setnetworktimeserver "{{ ntpserver }}"'
-      when:
-        when: not getusingnetworktime.stdout is ntpserver
+      - name: Set NTP server
+        shell: '/usr/sbin/systemsetup -setnetworktimeserver "{{ ntpserver }}"'
+        when: getnetworktimeserver.stdout != ntpserver
 
-    - name: Set NTP status
-      shell: '/usr/sbin/systemsetup -setusingnetworktime {{ usenetworktime }}'
-      when:
-        when: not getusingnetworktime.stdout is usenetworktime
+      - name: Set NTP status
+        shell: '/usr/sbin/systemsetup -setusingnetworktime {{ usenetworktime }}'
+        when: getusingnetworktime.stdout != usenetworktime
 
 - name: Ensure we have a link to iCloudDrive in homedir
   file:
