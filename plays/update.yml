@@ -17,7 +17,7 @@
     - import_tasks: ../tasks/pre/additional-facts.yml
     - name: Ensure /private/etc/sudoers.d exists
       file:
-        path: '/private/etc/sudoers.d'
+        path: "/private/etc/sudoers.d"
         state: directory
       become: true
     - name: Add temporary passwordless sudo permissions
@@ -33,7 +33,11 @@
     - role: homebrew
     # - role: geerlingguy.mac.homebrew
     - role: ansible-mac-update
-#     - role: aadl.softwareupdate
+    #     - role: aadl.softwareupdate
+    - role: munki_update
+    - role: ansible-role-nvm
+      nodejs_version: "{{ nodejs_version }}"
+      when: nodejs_enabled
 
   tasks:
     - import_tasks: ../tasks/fonts.yml

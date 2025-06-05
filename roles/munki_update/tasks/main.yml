@@ -1,0 +1,35 @@
+- name: Build managedsoftwareupdate command for check
+  set_fact:
+    munki_check_cmd: >-
+      /usr/local/munki/managedsoftwareupdate --checkonly
+      {% if munki_applesuspkgsonly %} --applesuspkgsonly {% endif %}
+      {% if munki_munkipkgsonly %} --munkipkgsonly {% endif %}
+
+- name: Run Munki checkonly to see if updates are pending
+  command: "{{ munki_check_cmd }}"
+  register: munki_check
+  changed_when: false
+
+- name: Check if updates are pending (via regex)
+  set_fact:
+    munki_updates_pending: "{{ munki_check.stdout is search('^\\\\s*\\\\+\\\\s+.+', multiline=True) }}"
+
+- name: Check if any skip packages are present in output
+  set_fact:
+    munki_skip_due_to_packages: "{{ munki_skip_if_present | select('search', munki_check.stdout) | list | length > 0 }}"
+
+- name: Show debug info (optional)
+  debug:
+    msg: >
+      Updates pending: {{ munki_updates_pending }},
+      Skipped due to package match: {{ munki_skip_due_to_packages }}
+  when: munki_updates_pending or munki_skip_due_to_packages
+
+- name: Install pending updates with Munki
+  command: >-
+    /usr/local/munki/managedsoftwareupdate --installonly
+    {% if munki_applesuspkgsonly %} --applesuspkgsonly {% endif %}
+    {% if munki_munkipkgsonly %} --munkipkgsonly {% endif %}
+  when: munki_updates_pending and not munki_check_only and not munki_skip_due_to_packages
+  register: munki_install
+  changed_when: true

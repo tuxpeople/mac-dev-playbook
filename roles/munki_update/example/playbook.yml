@@ -1,0 +1,11 @@
+- name: Munki Software Updates
+  hosts: macs
+  roles:
+    - role: munki_update
+      vars:
+        munki_check_only: false
+        munki_skip_if_present:
+          - "FortiClientPKZ"
+          - "Adobe Creative Cloud"
+        munki_applesuspkgsonly: false
+        munki_munkipkgsonly: false

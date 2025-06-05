@@ -1,0 +1,9 @@
+# Soll nur geprüft werden, ohne Installation?
+munki_check_only: false
+
+# Liste von Paketnamen – wenn einer dieser Strings im Check auftaucht, KEINE Installation ausführen
+munki_skip_if_present: []
+
+# Zusätzliche Optionen für managedsoftwareupdate
+munki_applesuspkgsonly: false
+munki_munkipkgsonly: false
