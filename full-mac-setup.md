@@ -9,7 +9,7 @@ This document covers that, at least in terms of setting up a brand new Mac out o
 Before starting, I completed Apple's mandatory macOS setup wizard (creating a local user account, and optionally signing into my iCloud account). Once on the macOS desktop, I do the following (in order):
 
   - Install Ansible (following the guide in [README.md](README.md))
-  - **Sign in in App Store** (since `mas` can't sign in automatically)
+  - **Sign in to the App Store** (since `mas` can't sign in automatically)
   - Clone mac-dev-playbook to the Mac: `git clone git@github.com:geerlingguy/mac-dev-playbook.git`
   - Drop `config.yml` from `~/Dropbox/Apps/Config` to the playbook (copy over the network or using a USB flash drive).
   - Run the playbook with `--skip-tags post`.
@@ -34,7 +34,7 @@ Before starting, I completed Apple's mandatory macOS setup wizard (creating a lo
     - Go to settings, go to the setup page for macOS Mail
     - Download the profile and double click to install
     - Head to the 'Profiles' System Preference pane and click install
-  - Open Calendar and enable personal  Google CalDAV account (you have to manually sign in).
+  - Open Calendar and enable personal Google CalDAV account (you have to manually sign in).
   - Manually copy `~/Development` folder from another Mac (to save time).
   - Manual settings to automate someday:
     - System Preferences:
