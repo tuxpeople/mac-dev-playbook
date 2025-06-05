@@ -4,7 +4,7 @@
   register: citrix_url
   become: false
 
-- name: Downloasd Citrix DMG
+- name: Download Citrix DMG
   get_url:
     url: "{{ citrix_url.stdout }}"
     dest: /tmp/citrix.dmg
