@@ -23,12 +23,18 @@ jobs:
           python-version: '3.x'
 
       - name: Install test dependencies.
-        run: pip3 install yamllint ansible ansible-lint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          pip3 install yamllint ansible ansible-lint
 
       - name: Lint code.
         run: |
           yamllint .
           ansible-lint
+
+      - name: Run shellcheck.
+        run: shellcheck init.sh init_light.sh tests/uninstall-homebrew.sh
 
   integration:
     name: Integration
