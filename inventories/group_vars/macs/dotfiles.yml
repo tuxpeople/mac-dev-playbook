@@ -14,7 +14,6 @@ dotfiles_files:
   - .gitattributes
   - .git_config
   - .gitconfig
-  - .gitconfig-umb
   - .gitignore
   - .gvimrc
   - .inputrc
