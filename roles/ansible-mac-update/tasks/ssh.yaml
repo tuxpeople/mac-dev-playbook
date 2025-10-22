@@ -5,50 +5,84 @@
     mode: '0700'
   become: false
 
-- name: Touch ssh-config, but do not change times this makes the task idempotent
-  ansible.builtin.file:
+- name: Check if SSH config exists
+  ansible.builtin.stat:
     path: "{{myhomedir}}/.ssh/config"
-    state: touch
+  register: ssh_config_stat
+
+- name: Backup existing SSH config
+  ansible.builtin.copy:
+    src: "{{myhomedir}}/.ssh/config"
+    dest: "{{myhomedir}}/.ssh/config.backup.{{ ansible_date_time.epoch }}"
+    remote_src: yes
     mode: '0600'
-    modification_time: preserve
-    access_time: preserve
+  when: ssh_config_stat.stat.exists
   become: false
 
-- name: Regenerating ssh config
-  ansible.builtin.shell: "truncate -s0 {{myhomedir}}/.ssh/config; for i in {{ ssh_config_src }}/*; do cat $i >> {{myhomedir}}/.ssh/config; echo '' >> {{myhomedir}}/.ssh/config; done; chmod 700 {{myhomedir}}/.ssh/config"
+- name: Find SSH config fragments
+  ansible.builtin.find:
+    paths: "{{ ssh_config_src }}"
+    patterns: "*"
+  register: ssh_config_fragments
+  failed_when: false
+
+- name: Build SSH config from fragments
+  ansible.builtin.assemble:
+    src: "{{ ssh_config_src }}"
+    dest: "{{myhomedir}}/.ssh/config"
+    mode: '0600'  # Correct permissions for SSH config (not 700)
   become: false
+  when: ssh_config_fragments.matched > 0
+
+- name: Check if SSH keys source directory exists
+  ansible.builtin.stat:
+    path: "{{ ssh_keys_src }}"
+  register: ssh_keys_src_stat
 
 - name: Update SSH Keys
   ansible.builtin.copy:
     src: "{{ssh_keys_src}}/"
     dest: "{{myhomedir}}/.ssh/"
     remote_src: "true"
+    mode: preserve  # Preserve original permissions
   become: false
+  when: ssh_keys_src_stat.stat.exists
+  no_log: true  # SSH keys are sensitive
 
-- name: Compiling list of SSH private keys
-  ansible.builtin.shell: "ls {{myhomedir}}/.ssh/id* | grep -v pub"
-  register: installed_ssh_private_keys
-  changed_when: "installed_ssh_private_keys.rc != 0"
+- name: Find SSH private keys
+  ansible.builtin.find:
+    paths: "{{myhomedir}}/.ssh"
+    patterns: "id_*"
+    excludes: "*.pub"
+    file_type: file
+  register: ssh_private_keys_found
   become: false
 
 - name: Fix permissions of SSH private keys
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     owner: "{{ ansible_user }}"
     group: staff
     mode: '0600'
-  with_items: "{{ installed_ssh_private_keys.stdout_lines }}"
+  loop: "{{ ssh_private_keys_found.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  no_log: true  # Don't log private key paths
 
-- name: Compiling list of SSH public keys
-  ansible.builtin.shell: "ls {{myhomedir}}/.ssh/id*pub"
-  register: installed_ssh_public_keys
-  changed_when: "installed_ssh_public_keys.rc != 0"
+- name: Find SSH public keys
+  ansible.builtin.find:
+    paths: "{{myhomedir}}/.ssh"
+    patterns: "id_*.pub"
+    file_type: file
+  register: ssh_public_keys_found
   become: false
 
 - name: Fix permissions of SSH public keys
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     owner: "{{ ansible_user }}"
     group: staff
     mode: '0644'
-  with_items: "{{ installed_ssh_public_keys.stdout_lines }}"
+  loop: "{{ ssh_public_keys_found.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
