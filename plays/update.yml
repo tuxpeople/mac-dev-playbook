@@ -16,6 +16,7 @@
   pre_tasks:
     - import_tasks: ../tasks/pre/additional-facts.yml
     - import_tasks: ../tasks/pre/cleanup-deprecated-taps.yml
+    - import_tasks: ../tasks/pre/cleanup-old-python-versions.yml
     - name: Ensure /private/etc/sudoers.d exists
       file:
         path: "/private/etc/sudoers.d"

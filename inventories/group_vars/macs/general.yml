@@ -20,4 +20,11 @@ timezone: "Europe/Zurich"
 ntpserver: "time.euro.apple.com"
 usenetworktime: "on"
 
+# Python version management
+python_versions_to_keep:
+  - "3.11.8"  # Used by mac-dev-playbook (see scripts/macupdate)
+  # Add other versions you want to keep here, e.g.:
+  # - "3.12.9"
+  # - "3.10.12"
+
 github_user: tuxpeople

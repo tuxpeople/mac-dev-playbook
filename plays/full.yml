@@ -11,6 +11,7 @@
     - import_tasks: ../tasks/pre/baseconfig.yml
     - import_tasks: ../tasks/pre/install-rosetta2.yml
     - import_tasks: ../tasks/pre/cleanup-deprecated-taps.yml
+    - import_tasks: ../tasks/pre/cleanup-old-python-versions.yml
     - import_tasks: ../roles/ansible-mac-update/tasks/ssh.yaml
 
     - name: Ensure /private/etc/sudoers.d exists

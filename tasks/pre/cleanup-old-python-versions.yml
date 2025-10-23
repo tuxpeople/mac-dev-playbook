@@ -1,0 +1,69 @@
+---
+# Cleanup old/unused Python versions from pyenv to save disk space
+# Strategy: Remove Python versions that have NO virtualenvs (unused)
+#           Keep versions that have virtualenvs (still in use)
+#
+# Usage:
+#   # Manual cleanup (removes ONLY versions without virtualenvs):
+#   ansible-playbook plays/update.yml -i inventories -l $(hostname) --tags pyenv-cleanup
+#
+#   # Force cleanup (respects python_versions_to_keep list):
+#   ansible-playbook plays/update.yml -i inventories -l $(hostname) --tags pyenv-cleanup-force
+#
+# Configuration:
+#   python_versions_to_keep in inventories/group_vars/macs/general.yml (optional)
+
+- name: Pyenv Python version cleanup
+  block:
+    - name: Get list of all installed Python versions
+      ansible.builtin.shell: |
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init -)"
+        pyenv versions --bare | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$" || true
+      register: installed_python_versions
+      changed_when: false
+      become: false
+
+    - name: Get list of Python versions with virtualenvs
+      ansible.builtin.shell: |
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init -)"
+        pyenv virtualenvs --bare | grep "/" | cut -d'/' -f1 | sort -u || true
+      register: python_versions_with_envs
+      changed_when: false
+      become: false
+
+    - name: Display Python version status
+      ansible.builtin.debug:
+        msg:
+          - "Installed Python versions: {{ installed_python_versions.stdout_lines }}"
+          - "Versions with virtualenvs: {{ python_versions_with_envs.stdout_lines }}"
+          - "Versions to keep (config): {{ python_versions_to_keep | default(['3.11.8']) }}"
+
+    - name: Remove unused Python versions (no virtualenvs)
+      ansible.builtin.shell: |
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init -)"
+        pyenv uninstall -f "{{ item }}"
+      loop: "{{ installed_python_versions.stdout_lines }}"
+      when:
+        - item != ''
+        - item not in python_versions_with_envs.stdout_lines
+        - item not in (python_versions_to_keep | default(['3.11.8']))
+      become: false
+      register: python_cleanup
+      changed_when: python_cleanup.rc == 0
+
+    - name: Display cleanup summary
+      ansible.builtin.debug:
+        msg: >
+          Cleanup complete.
+          Removed {{ python_cleanup.results | selectattr('changed', 'equalto', true) | list | length }} unused version(s).
+          Kept {{ python_versions_with_envs.stdout_lines | length }} version(s) with virtualenvs.
+      when: python_cleanup.results is defined
+  tags:
+    - never  # Only run when explicitly tagged
+    - pyenv-cleanup
