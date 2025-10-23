@@ -78,7 +78,7 @@ ansible-playbook plays/full.yml -i inventories -l $(hostname) --connection=local
 ### Daily Updates
 
 ```bash
-# Run the macupdate script (located at ~/iCloudDrive/Allgemein/bin/macupdate)
+# Run the macupdate script (located in scripts/macupdate)
 # This script handles the complete update workflow:
 # - Ensures tools are installed (pyenv, mise)
 # - Sets up Python environment
@@ -86,6 +86,12 @@ ansible-playbook plays/full.yml -i inventories -l $(hostname) --connection=local
 # - Installs requirements
 # - Runs plays/update.yml
 
+# Option 1: Run from repo
+./scripts/macupdate
+
+# Option 2: Create symlink for convenience (recommended)
+ln -sf ~/development/github/tuxpeople/mac-dev-playbook/scripts/macupdate \
+       ~/iCloudDrive/Allgemein/bin/macupdate
 ~/iCloudDrive/Allgemein/bin/macupdate
 ```
 
