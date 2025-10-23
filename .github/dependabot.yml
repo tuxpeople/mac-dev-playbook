@@ -1,3 +1,4 @@
+---
 version: 2
 updates:
   # NOTE: Python and GitHub Actions dependencies are now managed by Renovate
@@ -34,6 +35,6 @@ updates:
     assignees:
       - "tuxpeople"
 
-  # Python and GitHub Actions are managed by Renovate (see renovate.json)
-  # - pip: Disabled (Renovate has better auto-merge rules)
-  # - github-actions: Disabled (Renovate handles this)
+# Python and GitHub Actions are managed by Renovate (see renovate.json)
+# - pip: Disabled (Renovate has better auto-merge rules)
+# - github-actions: Disabled (Renovate handles this)

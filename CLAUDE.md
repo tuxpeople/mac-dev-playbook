@@ -167,3 +167,35 @@ The repository includes GitHub Actions CI (see `.github/workflows/` if present).
 - Configuration changes should be made in the appropriate inventory file level (not in playbooks directly)
 - For new Macs: add hostname to `inventories/macs.list` and create corresponding host_vars file
 - The homebrew role is symlinked from an external collection, modifications should be made there
+
+## Code Quality & Pre-Commit Checks
+
+Before committing changes, always run:
+
+```bash
+# Lint YAML files
+yamllint .
+
+# Lint Ansible playbooks
+ansible-lint
+
+# Lint shell scripts
+shellcheck scripts/*.sh init*.sh tests/*.sh
+```
+
+**Required for CI to pass:**
+- yamllint: No errors (warnings are acceptable)
+- ansible-lint: No errors
+- shellcheck: No errors
+
+**Common yamllint fixes:**
+```bash
+# Add document start marker
+echo "---" | cat - file.yml > temp && mv temp file.yml
+
+# Remove trailing spaces
+sed -i '' 's/[[:space:]]*$//' file.yml
+
+# Add newline at end of file
+echo "" >> file.yml
+```
