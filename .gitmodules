@@ -1,3 +1,0 @@
-[submodule "roles/ansible-role-nvm"]
-	path = roles/ansible-role-nvm
-	url = https://github.com/morgangraphics/ansible-role-nvm.git

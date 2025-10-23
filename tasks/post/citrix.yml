@@ -19,7 +19,7 @@
   shell: 'installer -pkg "{{ citrix_volume.stdout }}/Install Citrix Workspace.pkg" -target /'
   become: true
 
-- name: Dettach volume 
+- name: Dettach volume
   shell: 'hdiutil detach "{{ citrix_volume.stdout }}"'
   become: true
 

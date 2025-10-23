@@ -6,6 +6,8 @@ roles:
     version: 1.2.1
   - name: aadl.softwareupdate
     version: master
+  - name: morgangraphics.nvm
+    version: master
 
 collections:
   - name: geerlingguy.mac

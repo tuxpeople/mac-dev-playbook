@@ -51,7 +51,7 @@
 
         - name: Update Node.js via nvm
           include_role:
-            name: ansible-role-nvm
+            name: morgangraphics.nvm
             apply:
               vars:
                 nodejs_version: "{{ nodejs_version }}"

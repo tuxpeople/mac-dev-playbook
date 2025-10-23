@@ -25,7 +25,7 @@
 
     - name: "Check if it is a business device"
       set_fact:
-          myenv: "business_mac"
+        myenv: "business_mac"
       when: myhostname is match("ws.*") or myhostname is match("UMB.*")
 
     - name: "Group by env {{ myenv }}"

@@ -1,5 +1,5 @@
 #brew unlink kubernetes-cli && brew link kubernetes-cli
-- name: Test for installed kubectl 
+- name: Test for installed kubectl
   ansible.builtin.stat:
     path: "{{ mybrewbindir }}/kubectl"
   register: kubectl_exists
@@ -10,7 +10,7 @@
   when: not kubectl_exists.stat.exists
   become: false
 
-- name: Test for installed kubectl 
+- name: Test for installed kubectl
   ansible.builtin.stat:
     path: "{{ mybrewbindir }}/kubectl-krew"
   register: krew_exists

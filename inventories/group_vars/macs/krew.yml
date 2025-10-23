@@ -12,4 +12,4 @@ desired_krew_plugins:
   - "score"
   - "snap"
   - "starboard"
-  # - "kubesec-scan" # not for arm 
+  # - "kubesec-scan" # not for arm

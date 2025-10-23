@@ -7,9 +7,11 @@
 
 ## 📊 Übersicht
 
-### Commits dieser Session: **11 Commits**
+### Commits dieser Session: **13 Commits**
 
 ```
+0d65db7 fix: ignore roles/ directory in yamllint to fix CI
+e4d2f7e refactor: improve macupdate script with robust error handling
 a5fe82b fix: resolve yamllint errors to pass CI lint job
 466aaad fix: disable Dependabot for pip/github-actions, use Renovate exclusively
 b302248 feat: add auto-merge for Renovate with CI testing
@@ -50,6 +52,8 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 2. **Paramiko TripleDES warnings**: Dependencies aktualisiert (6af2974)
 3. **Dependabot/Renovate Konflikt**: Dependabot deaktiviert für pip/actions (466aaad)
 4. **yamllint CI failures**: Critical errors behoben (a5fe82b)
+5. **macupdate virtualenv nicht aktiviert**: CRITICAL - Script erstellte venv aber aktivierte sie nie (e4d2f7e)
+6. **yamllint externe Roles**: CI-Failures wegen Drittanbieter-Code, jetzt ignoriert (0d65db7)
 
 ---
 
