@@ -1,5 +1,78 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
-  ]
+    "config:base",
+    ":enablePreCommit"
+  ],
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 3,
+  "packageRules": [
+    {
+      "description": "Auto-merge Python patch updates if CI passes",
+      "matchDatasources": ["pypi"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Auto-merge Python minor updates if CI passes (low risk)",
+      "matchDatasources": ["pypi"],
+      "matchUpdateTypes": ["minor"],
+      "matchPackageNames": [
+        "bcrypt",
+        "pyparsing",
+        "jmespath",
+        "pexpect"
+      ],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Security packages: auto-merge minor, manual major",
+      "matchDatasources": ["pypi"],
+      "matchPackageNames": [
+        "cryptography",
+        "paramiko"
+      ],
+      "matchUpdateTypes": ["minor"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Ansible: NEVER auto-merge (breaking changes likely)",
+      "matchDatasources": ["pypi"],
+      "matchPackageNames": ["ansible", "ansible-core", "ansible-cmdb"],
+      "automerge": false,
+      "labels": ["ansible-update", "needs-testing"]
+    },
+    {
+      "description": "Ansible roles/collections: manual review",
+      "matchManagers": ["ansible-galaxy"],
+      "automerge": false,
+      "labels": ["ansible-galaxy", "needs-testing"]
+    },
+    {
+      "description": "GitHub Actions: auto-merge patch/minor",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    }
+  ],
+  "pip_requirements": {
+    "fileMatch": ["requirements\\.txt$"]
+  },
+  "vulnerabilityAlerts": {
+    "labels": ["security", "priority"],
+    "automerge": false
+  },
+  "schedule": ["before 6am on Monday"],
+  "timezone": "Europe/Zurich",
+  "commitMessagePrefix": "deps:",
+  "commitMessageAction": "update",
+  "semanticCommits": "enabled"
 }

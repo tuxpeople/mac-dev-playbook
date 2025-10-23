@@ -36,6 +36,40 @@ jobs:
       - name: Run shellcheck.
         run: shellcheck init.sh init_light.sh tests/uninstall-homebrew.sh
 
+  requirements-check:
+    name: Check Python Requirements
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11.
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.8'
+
+      - name: Install requirements.txt.
+        run: |
+          pip3 install --upgrade pip
+          pip3 install -r requirements.txt
+
+      - name: Verify Ansible can be imported.
+        run: |
+          python3 -c "import ansible; print(f'Ansible version: {ansible.__version__}')"
+
+      - name: Check for dependency conflicts.
+        run: |
+          pip3 check
+
+      - name: Verify ansible-playbook works.
+        run: |
+          ansible-playbook --version
+
+      - name: Check for security vulnerabilities.
+        run: |
+          pip3 install safety
+          safety check --json || true
+
   integration:
     name: Integration
     runs-on: ${{ matrix.os }}
