@@ -20,32 +20,55 @@
         path: "/private/etc/sudoers.d"
         state: directory
       become: true
-    - name: Add temporary passwordless sudo permissions
-      ansible.builtin.copy:
-        content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL"
-        dest: "/private/etc/sudoers.d/99_tmp_ansible"
-        validate: /usr/sbin/visudo -csf %s
-        mode: 0644
-      become: true
-
-  roles:
-    - role: geerlingguy.dotfiles
-    - role: homebrew
-    # - role: geerlingguy.mac.homebrew
-    - role: ansible-mac-update
-    #     - role: aadl.softwareupdate
-    - role: munki_update
-      when: munki_update
-    - role: ansible-role-nvm
-      nodejs_version: "{{ nodejs_version }}"
-      when: nodejs_enabled
 
   tasks:
-    - import_tasks: ../tasks/fonts.yml
-      when: configure_osx
+    - name: Main update execution with guaranteed sudo cleanup
+      block:
+        - name: Add temporary passwordless sudo permissions
+          ansible.builtin.copy:
+            content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL"
+            dest: "/private/etc/sudoers.d/99_tmp_ansible"
+            validate: /usr/sbin/visudo -csf %s
+            mode: 0440
+          become: true
 
-    - name: Remove temporary passwordless sudo permissions
-      ansible.builtin.file:
-        path: "/private/etc/sudoers.d/99_tmp_ansible"
-        state: absent
-      become: true
+        - name: Update dotfiles
+          include_role:
+            name: geerlingguy.dotfiles
+
+        - name: Update Homebrew packages
+          include_role:
+            name: homebrew
+
+        - name: Run Mac updates
+          include_role:
+            name: ansible-mac-update
+
+        - name: Run Munki updates
+          include_role:
+            name: munki_update
+          when: munki_update
+
+        - name: Update Node.js via nvm
+          include_role:
+            name: ansible-role-nvm
+            apply:
+              vars:
+                nodejs_version: "{{ nodejs_version }}"
+          when: nodejs_enabled
+
+        - import_tasks: ../tasks/fonts.yml
+          when: configure_osx
+
+      rescue:
+        - name: Log update failure
+          debug:
+            msg: "⚠️  Update failed, but ensuring sudo cleanup runs"
+
+      always:
+        - name: Remove temporary passwordless sudo permissions (GUARANTEED)
+          ansible.builtin.file:
+            path: "/private/etc/sudoers.d/99_tmp_ansible"
+            state: absent
+          become: true
+          ignore_errors: true

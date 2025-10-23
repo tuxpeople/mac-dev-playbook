@@ -4,7 +4,10 @@
     path: "{{ agent }}"
   register: launchagents_result
 
-- name:  "Unload {{ agent }}"
-  shell: "launchctl unload {{ agent }}"
-  when: not launchagents_result.stat.exists
+- name: "Unload {{ agent }}"
+  ansible.builtin.command:
+    cmd: "launchctl unload {{ agent }}"
+  when: launchagents_result.stat.exists
   become: true
+  changed_when: true
+  failed_when: false
