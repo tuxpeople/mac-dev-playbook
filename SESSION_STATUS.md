@@ -287,6 +287,22 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 - Cowsay removal
 - dotfiles_repo_version
 
+**WICHTIG**: Nicht nur Upstream→Fork prüfen, sondern auch Fork→Upstream!
+- Alle lokalen Änderungen reviewen: Sind sie sinnvoll? Werden sie noch gebraucht?
+- Obsolete Features/Scripts identifizieren und entfernen
+- Upstream-Kompatibilität maximieren wo möglich
+
+### Option E: Repository-Struktur & Organisation überprüfen
+**Aufwand**: ~2 Stunden
+**Impact**: Bessere Wartbarkeit, klarere Struktur
+**Fokus**: Primär eigene/lokale Änderungen (Upstream-Kompatibilität erhalten)
+**Tasks**:
+- Scripts identifizieren die in `scripts/` gehören
+- Prüfen ob Markdown-Dateien in `docs/` sollten
+- Obsolete Dateien identifizieren
+- Repository-Organisation optimieren
+- Siehe TODO_REPO_STRUCTURE.md für Details
+
 ---
 
 ## 🎓 Lessons Learned
