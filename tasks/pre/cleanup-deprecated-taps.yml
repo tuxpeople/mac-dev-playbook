@@ -1,0 +1,34 @@
+---
+# Remove deprecated Homebrew taps that cause errors
+# See: https://github.com/Homebrew/brew/issues/13791
+
+- name: Check for deprecated Homebrew taps
+  ansible.builtin.shell: brew tap
+  register: brew_taps
+  changed_when: false
+  failed_when: false
+  become: false
+
+- name: Remove deprecated homebrew-cask-fonts tap
+  ansible.builtin.shell: brew untap homebrew/cask-fonts
+  when: "'homebrew/cask-fonts' in brew_taps.stdout"
+  become: false
+  register: untap_fonts
+  changed_when: untap_fonts.rc == 0
+  failed_when: false
+
+- name: Remove deprecated homebrew-cask-versions tap
+  ansible.builtin.shell: brew untap homebrew/cask-versions
+  when: "'homebrew/cask-versions' in brew_taps.stdout"
+  become: false
+  register: untap_versions
+  changed_when: untap_versions.rc == 0
+  failed_when: false
+
+- name: Info about removed taps
+  ansible.builtin.debug:
+    msg: >
+      Removed deprecated taps. These are now built into Homebrew core.
+      Cask fonts: Use 'brew install --cask font-*' directly.
+      Cask versions: Use 'brew install --cask *@version' directly.
+  when: untap_fonts.changed or untap_versions.changed

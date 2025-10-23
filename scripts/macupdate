@@ -97,14 +97,15 @@ setup_pyenv() {
 ensure_python() {
   log "Ensuring Python ${PYTHON_VERSION} is installed"
 
-  if ! pyenv versions | grep -q "${PYTHON_VERSION}"; then
+  # Check if Python version directory exists (more reliable than parsing pyenv output)
+  if [ -d "${PYENV_ROOT}/versions/${PYTHON_VERSION}" ]; then
+    log "  ✓ Python ${PYTHON_VERSION} already installed"
+  else
     log "  + Installing Python ${PYTHON_VERSION}"
-    pyenv install "${PYTHON_VERSION}" || {
+    pyenv install --skip-existing "${PYTHON_VERSION}" || {
       log_error "Failed to install Python ${PYTHON_VERSION}"
       exit 1
     }
-  else
-    log "  ✓ Python ${PYTHON_VERSION} already installed"
   fi
 }
 
@@ -112,14 +113,15 @@ ensure_python() {
 setup_virtualenv() {
   log "Setting up virtualenv: ${VENV_NAME}"
 
-  if ! pyenv virtualenvs | grep -q "${VENV_NAME}"; then
+  # Check if virtualenv directory exists (more reliable than parsing pyenv output)
+  if [ -d "${PYENV_ROOT}/versions/${VENV_NAME}" ]; then
+    log "  ✓ Virtualenv ${VENV_NAME} already exists"
+  else
     log "  + Creating virtualenv ${VENV_NAME}"
     pyenv virtualenv "${PYTHON_VERSION}" "${VENV_NAME}" || {
       log_error "Failed to create virtualenv"
       exit 1
     }
-  else
-    log "  ✓ Virtualenv ${VENV_NAME} already exists"
   fi
 
   # Activate virtualenv
