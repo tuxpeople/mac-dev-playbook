@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+function installcli() {
+  # https://gist.github.com/ChristopherA/a598762c3967a1f77e9ecb96b902b5db
+  echo "Update MacOS & Install Command Line Interface. If this fails, do it manually."
+  sudo /usr/sbin/softwareupdate -l
+  touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+  sudo /usr/sbin/softwareupdate -ia
+  rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+  echo "Sleep 20"
+  sleep 20
+  xcode-select --install
+}
+
+echo "Ensure needed tools are installed"
+for TOOL in pyenv pyenv-virtualenv mise; do
+  echo "  - ${TOOL}"
+  brew list ${TOOL} &>/dev/null || brew install ${TOOL}
+done
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+# Removed deprecated virtualenv-init - functionality is now in pyenv init
+
+echo "  - Apple Commandline Tools"
+[ ! -f "/Library/Developer/CommandLineTools/usr/bin/python3" ] && installcli
+
+echo "Ensure existence of Python 3.11.8"
+pyenv versions | grep 3.11.8 &>/dev/null || pyenv install 3.11.8
+
+echo "Ensure existence of virtualenv"
+pyenv virtualenvs | grep mac-dev-playbook-venv >/dev/null || pyenv virtualenv 3.11.8 mac-dev-playbook-venv
+
+echo "Update GIT repo"
+cd ~/development/github/tuxpeople/mac-dev-playbook
+git pull >/dev/null
+
+# if [ -f /usr/local/bin/python3 ]; then
+# 	MYPYTHON="/usr/local/bin/python3"
+# elif [ -f /opt/homebrew/bin/python3 ]; then
+# 	MYPYTHON="/opt/homebrew/bin/python3"
+# else
+# 	MYPYTHON="/Library/Developer/CommandLineTools/usr/bin/python3"
+# fi
+
+# ${MYPYTHON} -m pip install --upgrade pip
+# ${MYPYTHON} -m pip install --user --requirement requirements.txt
+# PATH="/usr/local/bin:$(${MYPYTHON} -m site --user-base)/bin:$PATH"
+# export PATH
+
+echo "Ensure required Python modules are installed"
+pip3 install --upgrade pip >/dev/null
+pip3 install --requirement requirements.txt >/dev/null
+
+echo "Ensure required Ansible roles and collections are installed"
+ansible-galaxy install -r requirements.yml
+
+echo "starting playbook run in 5s"
+sleep 5
+
+ansible-playbook plays/update.yml -i inventories -l $(hostname) --connection=local
+
+######## Spotify Workaround ########
+# https://github.com/Homebrew/homebrew-cask/issues/161665
+if [ -d /Applications/Spotify.app ]; then
+  xattr /Applications/Spotify.app 2>/dev/null | grep -q com.apple.quarantine && xattr -d com.apple.quarantine /Applications/Spotify.app
+fi
+####################################
+
+# Optional: Update CMDB (if script exists)
+if [ -f ~/iCloudDrive/Allgemein/bin/update_cmdb ]; then
+  ~/iCloudDrive/Allgemein/bin/update_cmdb
+fi
+
+cd
