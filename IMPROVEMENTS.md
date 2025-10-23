@@ -10,22 +10,30 @@
 
 Der Code Review hat **75 Probleme** in 4 Schweregraden identifiziert:
 
-- 🔴 **11 CRITICAL**: Sicherheitslücken, fatale Bugs
+- 🔴 **11 CRITICAL**: Sicherheitslücken, fatale Bugs → **✅ 8 BEHOBEN** (C1, C3, C5, C6, C7, C8, C10, C11)
 - 🟠 **21 HIGH**: Zuverlässigkeitsprobleme, Datenverlustrisiko
 - 🟡 **41 MEDIUM**: Best Practice Verstöße, Wartbarkeitsprobleme
 - 🔵 **2 LOW**: Kleinigkeiten, Code-Hygiene
 
-**Gute Nachricht**: Die grundlegende Architektur ist solide. Die meisten Probleme sind lokalisiert und können schrittweise behoben werden.
+**Update 2025-10-23**: 8 von 11 CRITICAL Issues wurden behoben in Commits:
+- `2f5b5d3`: Security fixes (C6, C7, C8)
+- `a80d2d8`: Critical bugs and security (C1, C3, C5, C10, C11)
+
+**Verbleibend**: 3 CRITICAL (C2, C4, C9) + 21 HIGH + 41 MEDIUM + 2 LOW = **67 Issues**
+
+**Gute Nachricht**: Die grundlegende Architektur ist solide. Die kritischsten Sicherheitslücken sind geschlossen.
 
 ---
 
 ## 🔴 CRITICAL Issues (Sofort beheben!)
 
-### C1 & C3: Unsichere Sudo File Permissions ⚠️ SICHERHEITSLÜCKE
+### ✅ C1 & C3: Unsichere Sudo File Permissions ⚠️ SICHERHEITSLÜCKE (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `a80d2d8`
 
 **Betroffene Dateien**:
-- `plays/full.yml` (Zeile 27)
-- `plays/update.yml` (Zeile 29)
+- `plays/full.yml` (Zeile 26)
+- `plays/update.yml` (Zeile 28)
 
 **Problem**:
 ```yaml
@@ -56,9 +64,11 @@ mode: 0440  # ✅ Nur root und wheel group können lesen
 
 ---
 
-### C5: Fataler Logikfehler - Inverted Conditional ⚠️ BUG
+### ✅ C5: Fataler Logikfehler - Inverted Conditional ⚠️ BUG (BEHOBEN)
 
-**Betroffene Datei**: `tasks/post/_launchagents.yml` (Zeile 9)
+**Status**: ✅ Fixed in commit `a80d2d8`
+
+**Betroffene Datei**: `tasks/post/_launchagents.yml` (Zeile 10)
 
 **Problem**:
 ```yaml
@@ -96,7 +106,9 @@ mode: 0440  # ✅ Nur root und wheel group können lesen
 
 ---
 
-### C6: GitHub Token in Git URLs ⚠️ SICHERHEITSLÜCKE
+### ✅ C6: GitHub Token in Git URLs ⚠️ SICHERHEITSLÜCKE (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `2f5b5d3`
 
 **Betroffene Datei**: `tasks/post/github.yml` (Zeile 22-23)
 
@@ -142,7 +154,9 @@ mode: 0440  # ✅ Nur root und wheel group können lesen
 
 ---
 
-### C7: API Key im Klartext in Datei ⚠️ SICHERHEITSLÜCKE
+### ✅ C7: API Key im Klartext in Datei ⚠️ SICHERHEITSLÜCKE (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `2f5b5d3`
 
 **Betroffene Datei**: `tasks/post/whereami.yml` (Zeile 21-25)
 
@@ -195,7 +209,9 @@ export OPENCAGE_API_KEY="xxx"  # In .bashrc/.zshrc
 
 ---
 
-### C8: SSH Config wird ohne Backup zerstört ⚠️ DATENVERLUST
+### ✅ C8: SSH Config wird ohne Backup zerstört ⚠️ DATENVERLUST (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `2f5b5d3`
 
 **Betroffene Datei**: `roles/ansible-mac-update/tasks/ssh.yaml` (Zeile 18)
 
@@ -244,7 +260,9 @@ export OPENCAGE_API_KEY="xxx"  # In .bashrc/.zshrc
 
 ---
 
-### C10: Rosetta2 Type Comparison Bug
+### ✅ C10: Rosetta2 Type Comparison Bug (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `a80d2d8`
 
 **Betroffene Datei**: `tasks/pre/install-rosetta2.yml` (Zeile 11)
 
@@ -270,7 +288,9 @@ when: rosetta_check.rc != 0  # ✅ Integer comparison
 
 ---
 
-### C11: Sudo Cleanup fehlt bei Fehler ⚠️ SICHERHEITSLÜCKE
+### ✅ C11: Sudo Cleanup fehlt bei Fehler ⚠️ SICHERHEITSLÜCKE (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `a80d2d8`
 
 **Betroffene Dateien**:
 - `plays/full.yml`
