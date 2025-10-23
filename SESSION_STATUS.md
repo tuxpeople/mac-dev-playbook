@@ -7,9 +7,10 @@
 
 ## 📊 Übersicht
 
-### Commits dieser Session: **13 Commits**
+### Commits dieser Session: **14 Commits**
 
 ```
+fe176cc refactor: migrate nvm to external role and fix yamllint errors
 0d65db7 fix: ignore roles/ directory in yamllint to fix CI
 e4d2f7e refactor: improve macupdate script with robust error handling
 a5fe82b fix: resolve yamllint errors to pass CI lint job
@@ -54,6 +55,27 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 4. **yamllint CI failures**: Critical errors behoben (a5fe82b)
 5. **macupdate virtualenv nicht aktiviert**: CRITICAL - Script erstellte venv aber aktivierte sie nie (e4d2f7e)
 6. **yamllint externe Roles**: CI-Failures wegen Drittanbieter-Code, jetzt ignoriert (0d65db7)
+7. **ansible-role-nvm als submodule**: Zu Ansible Galaxy migriert (fe176cc)
+8. **yamllint errors in custom roles**: Syntax/Indentation Fehler in baseconfig.yml, additional-facts.yml behoben (fe176cc)
+9. **Obsolete Travis CI config**: .travis.yml aus ansible-mac-update entfernt
+
+---
+
+### 🏗️ Repository-Struktur verbessert
+
+#### Role-Migration zu Ansible Galaxy (fe176cc)
+- **ansible-role-nvm**: Von git submodule zu `morgangraphics.nvm` via Galaxy
+- **Vorteil**: Automatische Updates via Renovate möglich
+- **Verbleibende lokale Rollen**:
+  - `ansible-mac-update`: Custom role (nicht von Upstream)
+  - `munki_update`: Custom role mit deutscher Doku
+  - `homebrew`: Symlink zu externer Collection
+
+#### Yamllint Code Quality (fe176cc)
+- **0 Fehler** (vorher: viele)
+- Nur noch Warnings (hauptsächlich `missing document start`, akzeptabel)
+- Custom Rollen werden jetzt gelintet
+- Externe/CI-Dateien ignoriert (.travis.yml, tests/)
 
 ---
 
