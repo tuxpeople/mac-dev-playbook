@@ -1,6 +1,10 @@
 version: 2
 updates:
-  # Maintain dependencies for Docker
+  # NOTE: Python and GitHub Actions dependencies are now managed by Renovate
+  # See renovate.json for configuration
+  # Dependabot is disabled for these to avoid conflicts
+
+  # Maintain dependencies for Docker (if Docker is used)
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
@@ -13,41 +17,8 @@ updates:
     open-pull-requests-limit: 10
     assignees:
       - "tuxpeople"
-    # target-branch: "develop"
 
-  # Maintain dependencies for GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    commit-message:
-      prefix: "chore(ci): "
-    labels:
-      - dependencies
-      - github-actions
-    open-pull-requests-limit: 10
-    assignees:
-      - "tuxpeople"
-    # target-branch: "develop"
-
-  # Maintain dependencies for Python
-  - package-ecosystem: pip
-    directory: "/"
-    schedule:
-      interval: "daily"
-      # time: "11:00"
-      # timezone: "Europe/Zurich"
-    commit-message:
-      prefix: "feat(deps): "
-    labels:
-      - dependencies
-      - python
-    open-pull-requests-limit: 10
-    assignees:
-      - "tuxpeople"
-    # target-branch: "develop"
-
-  # Maintain dependencies for Ruby
+  # Maintain dependencies for Ruby (if Gemfile exists)
   - package-ecosystem: bundler
     directory: /
     schedule:
@@ -62,4 +33,7 @@ updates:
     open-pull-requests-limit: 10
     assignees:
       - "tuxpeople"
-    # target-branch: "develop"
+
+  # Python and GitHub Actions are managed by Renovate (see renovate.json)
+  # - pip: Disabled (Renovate has better auto-merge rules)
+  # - github-actions: Disabled (Renovate handles this)
