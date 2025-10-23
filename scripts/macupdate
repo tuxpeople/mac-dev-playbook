@@ -1,75 +1,278 @@
 #!/usr/bin/env bash
+set -euo pipefail  # Exit on error, undefined vars, pipe failures
 
-function installcli() {
+# Configuration
+PYTHON_VERSION="${PYTHON_VERSION:-3.11.8}"
+
+# Determine repository directory
+# 1. Use environment variable if set
+# 2. Try to auto-detect from script location (resolves symlinks)
+# 3. Fall back to hardcoded path
+if [ -n "${REPO_DIR:-}" ]; then
+  # Use environment variable
+  REPO_DIR="${REPO_DIR}"
+elif [ -L "${BASH_SOURCE[0]}" ]; then
+  # Script is a symlink, resolve it
+  SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || readlink "${BASH_SOURCE[0]}")"
+  REPO_DIR="$(cd "$(dirname "${SCRIPT_PATH}")/.." && pwd)"
+else
+  # Script is not a symlink, use its directory
+  REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+fi
+
+# Fall back to hardcoded path if auto-detection failed
+REPO_DIR="${REPO_DIR:-${HOME}/development/github/tuxpeople/mac-dev-playbook}"
+
+VENV_NAME="mac-dev-playbook-venv"
+LOG_FILE="${HOME}/.macupdate.log"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Logging functions
+log() {
+  echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $*" | tee -a "${LOG_FILE}"
+}
+
+log_error() {
+  echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR:${NC} $*" | tee -a "${LOG_FILE}" >&2
+}
+
+log_warn() {
+  echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING:${NC} $*" | tee -a "${LOG_FILE}"
+}
+
+# Install Apple Command Line Tools
+installcli() {
+  log "Installing Apple Command Line Tools"
   # https://gist.github.com/ChristopherA/a598762c3967a1f77e9ecb96b902b5db
-  echo "Update MacOS & Install Command Line Interface. If this fails, do it manually."
   sudo /usr/sbin/softwareupdate -l
   touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
   sudo /usr/sbin/softwareupdate -ia
   rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-  echo "Sleep 20"
+  log "Waiting 20 seconds for installation to settle..."
   sleep 20
-  xcode-select --install
+  xcode-select --install 2>/dev/null || log_warn "xcode-select already installed"
 }
 
-echo "Ensure needed tools are installed"
-for TOOL in pyenv pyenv-virtualenv mise; do
-  echo "  - ${TOOL}"
-  brew list ${TOOL} &>/dev/null || brew install ${TOOL}
-done
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-# Removed deprecated virtualenv-init - functionality is now in pyenv init
+# Ensure Homebrew is available
+ensure_homebrew() {
+  if ! command -v brew &>/dev/null; then
+    log_error "Homebrew not found. Please install from https://brew.sh"
+    exit 1
+  fi
+}
 
-echo "  - Apple Commandline Tools"
-[ ! -f "/Library/Developer/CommandLineTools/usr/bin/python3" ] && installcli
+# Install required tools via Homebrew
+install_tools() {
+  log "Ensuring required tools are installed"
+  ensure_homebrew
 
-echo "Ensure existence of Python 3.11.8"
-pyenv versions | grep 3.11.8 &>/dev/null || pyenv install 3.11.8
+  for TOOL in pyenv pyenv-virtualenv mise; do
+    if brew list "${TOOL}" &>/dev/null; then
+      log "  ✓ ${TOOL} already installed"
+    else
+      log "  + Installing ${TOOL}"
+      brew install "${TOOL}" || log_error "Failed to install ${TOOL}"
+    fi
+  done
+}
 
-echo "Ensure existence of virtualenv"
-pyenv virtualenvs | grep mac-dev-playbook-venv >/dev/null || pyenv virtualenv 3.11.8 mac-dev-playbook-venv
+# Setup pyenv
+setup_pyenv() {
+  log "Setting up pyenv"
+  export PYENV_ROOT="$HOME/.pyenv"
 
-echo "Update GIT repo"
-cd ~/development/github/tuxpeople/mac-dev-playbook
-git pull >/dev/null
+  if ! command -v pyenv >/dev/null; then
+    export PATH="$PYENV_ROOT/bin:$PATH"
+  fi
 
-# if [ -f /usr/local/bin/python3 ]; then
-# 	MYPYTHON="/usr/local/bin/python3"
-# elif [ -f /opt/homebrew/bin/python3 ]; then
-# 	MYPYTHON="/opt/homebrew/bin/python3"
-# else
-# 	MYPYTHON="/Library/Developer/CommandLineTools/usr/bin/python3"
-# fi
+  eval "$(pyenv init -)"
+}
 
-# ${MYPYTHON} -m pip install --upgrade pip
-# ${MYPYTHON} -m pip install --user --requirement requirements.txt
-# PATH="/usr/local/bin:$(${MYPYTHON} -m site --user-base)/bin:$PATH"
-# export PATH
+# Ensure Python version is installed
+ensure_python() {
+  log "Ensuring Python ${PYTHON_VERSION} is installed"
 
-echo "Ensure required Python modules are installed"
-pip3 install --upgrade pip >/dev/null
-pip3 install --requirement requirements.txt >/dev/null
+  if ! pyenv versions | grep -q "${PYTHON_VERSION}"; then
+    log "  + Installing Python ${PYTHON_VERSION}"
+    pyenv install "${PYTHON_VERSION}" || {
+      log_error "Failed to install Python ${PYTHON_VERSION}"
+      exit 1
+    }
+  else
+    log "  ✓ Python ${PYTHON_VERSION} already installed"
+  fi
+}
 
-echo "Ensure required Ansible roles and collections are installed"
-ansible-galaxy install -r requirements.yml
+# Create and activate virtualenv
+setup_virtualenv() {
+  log "Setting up virtualenv: ${VENV_NAME}"
 
-echo "starting playbook run in 5s"
-sleep 5
+  if ! pyenv virtualenvs | grep -q "${VENV_NAME}"; then
+    log "  + Creating virtualenv ${VENV_NAME}"
+    pyenv virtualenv "${PYTHON_VERSION}" "${VENV_NAME}" || {
+      log_error "Failed to create virtualenv"
+      exit 1
+    }
+  else
+    log "  ✓ Virtualenv ${VENV_NAME} already exists"
+  fi
 
-ansible-playbook plays/update.yml -i inventories -l $(hostname) --connection=local
+  # Activate virtualenv
+  log "  ✓ Activating virtualenv"
+  pyenv activate "${VENV_NAME}" || {
+    log_error "Failed to activate virtualenv"
+    exit 1
+  }
+}
 
-######## Spotify Workaround ########
-# https://github.com/Homebrew/homebrew-cask/issues/161665
-if [ -d /Applications/Spotify.app ]; then
-  xattr /Applications/Spotify.app 2>/dev/null | grep -q com.apple.quarantine && xattr -d com.apple.quarantine /Applications/Spotify.app
-fi
-####################################
+# Check Apple Command Line Tools
+check_cli_tools() {
+  log "Checking Apple Command Line Tools"
 
-# Optional: Update CMDB (if script exists)
-if [ -f ~/iCloudDrive/Allgemein/bin/update_cmdb ]; then
-  ~/iCloudDrive/Allgemein/bin/update_cmdb
-fi
+  if [ ! -f "/Library/Developer/CommandLineTools/usr/bin/python3" ]; then
+    log_warn "Command Line Tools not found, installing..."
+    installcli
+  else
+    log "  ✓ Command Line Tools already installed"
+  fi
+}
 
-cd
+# Update git repository
+update_repo() {
+  log "Updating git repository: ${REPO_DIR}"
+
+  cd "${REPO_DIR}" || {
+    log_error "Repository directory not found: ${REPO_DIR}"
+    exit 1
+  }
+
+  # Check for uncommitted changes
+  if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+    log_warn "Uncommitted changes detected, stashing..."
+    git stash save "macupdate auto-stash $(date +'%Y-%m-%d %H:%M:%S')"
+  fi
+
+  # Pull latest changes
+  log "  + Pulling latest changes"
+  if git pull --rebase; then
+    log "  ✓ Repository updated"
+  else
+    log_error "git pull failed"
+    exit 1
+  fi
+}
+
+# Install Python dependencies
+install_python_deps() {
+  log "Installing Python dependencies"
+
+  cd "${REPO_DIR}" || exit 1
+
+  log "  + Upgrading pip"
+  pip install --upgrade pip --quiet
+
+  log "  + Installing requirements.txt"
+  pip install --requirement requirements.txt --quiet || {
+    log_error "Failed to install Python requirements"
+    exit 1
+  }
+
+  log "  ✓ Python dependencies installed"
+}
+
+# Install Ansible roles and collections
+install_ansible_deps() {
+  log "Installing Ansible roles and collections"
+
+  cd "${REPO_DIR}" || exit 1
+
+  ansible-galaxy install -r requirements.yml || {
+    log_error "Failed to install Ansible dependencies"
+    exit 1
+  }
+
+  log "  ✓ Ansible dependencies installed"
+}
+
+# Run Ansible playbook
+run_playbook() {
+  log "Starting Ansible playbook run in 5 seconds..."
+  sleep 5
+
+  cd "${REPO_DIR}" || exit 1
+
+  local hostname
+  hostname=$(hostname -s)
+
+  log "Running playbook for host: ${hostname}"
+
+  if ansible-playbook plays/update.yml \
+    -i inventories \
+    -l "${hostname}" \
+    --connection=local; then
+    log "✓ Playbook completed successfully"
+  else
+    local exit_code=$?
+    log_error "Playbook failed with exit code: ${exit_code}"
+    return ${exit_code}
+  fi
+}
+
+# Spotify quarantine workaround
+fix_spotify_quarantine() {
+  # https://github.com/Homebrew/homebrew-cask/issues/161665
+  if [ -d /Applications/Spotify.app ]; then
+    if xattr /Applications/Spotify.app 2>/dev/null | grep -q com.apple.quarantine; then
+      log "Removing quarantine attribute from Spotify.app"
+      xattr -d com.apple.quarantine /Applications/Spotify.app
+      log "  ✓ Spotify quarantine removed"
+    fi
+  fi
+}
+
+# Update CMDB (optional)
+update_cmdb() {
+  local cmdb_script="${HOME}/iCloudDrive/Allgemein/bin/update_cmdb"
+
+  if [ -f "${cmdb_script}" ]; then
+    log "Running CMDB update"
+    "${cmdb_script}" || log_warn "CMDB update failed"
+  fi
+}
+
+# Main execution
+main() {
+  log "========================================"
+  log "macupdate started"
+  log "========================================"
+  log "Python version: ${PYTHON_VERSION}"
+  log "Repository: ${REPO_DIR}"
+  log "Virtualenv: ${VENV_NAME}"
+  log "========================================"
+
+  install_tools
+  setup_pyenv
+  check_cli_tools
+  ensure_python
+  setup_virtualenv
+  update_repo
+  install_python_deps
+  install_ansible_deps
+  run_playbook
+
+  # Post-playbook tasks
+  fix_spotify_quarantine
+  update_cmdb
+
+  log "========================================"
+  log "macupdate completed successfully!"
+  log "========================================"
+}
+
+# Run main function
+main "$@"
