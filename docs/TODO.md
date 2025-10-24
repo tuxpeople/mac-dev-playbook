@@ -27,26 +27,30 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     3. Dotfiles-Repo aufräumen (Duplikate löschen)
   - **Nächster Schritt**: Entscheidung treffen & mit Phase 1 (Brewfiles) starten
 
-- [ ] **Dotfiles-Repo aufräumen**
-  - **Veraltete/Duplikat-Dateien identifiziert**:
-    - `.macos copy` - Duplikat von `.macos`?
-    - `Brewfile copy` in business_mac/ - Warum Kopie?
-    - `brew.sh` - Verwendet veraltete Homebrew-Installation (ruby -e curl)
-    - `Brewfile.lock.json` - Sollte in .gitignore?
-  - **Aktionen**:
-    - Prüfen: Welche Dateien werden tatsächlich genutzt?
-    - Aufräumen: Duplikate und veraltete Scripts entfernen
-    - Modernisieren: `brew.sh` auf aktuelle Homebrew-Installation updaten (oder ganz löschen, wenn Ansible das übernimmt)
-    - Git: Alte Dateien aus Historie entfernen (falls sensible Daten)?
-    - Dokumentieren: README.md im Dotfiles-Repo verbessern
-
 ## In Arbeit
 
 _(Items die gerade bearbeitet werden)_
 
 ## Erledigt
 
-_(Abgeschlossene Items werden hier archiviert)_
+- [x] **Dotfiles-Repo aufräumen** ✅ **ABGESCHLOSSEN (2025-10-24)**
+  - **Entfernte Dateien**:
+    - `.macos copy` - Veraltete Kopie gelöscht
+    - `Brewfile copy` in business_mac/ - Duplikat entfernt
+    - `brew.sh` - Obsolet (Homebrew via Ansible installiert)
+    - `bootstrap.sh` - Obsolet (Dotfiles via Ansible gemanaged)
+    - `all.sh` - Kombiniertes Script nicht mehr benötigt
+    - `git.sh` - Repo-Cloning jetzt via ghorg
+  - **Bonus**:
+    - `Brewfile.lock.json` war bereits in .gitignore
+    - ghorg config mit 1Password CLI Integration hinzugefügt
+    - Ansible: `.config/ghorg` wird jetzt symlinked
+    - Ansible: Sichergestellt dass `~/.config` Directory vor Symlink existiert
+  - **Commits**:
+    - dotfiles: `7493ef0` (Cleanup obsoleter Files)
+    - mac-dev-playbook: `7c6c5ad`, `1b39062` (Dotfiles-Integration fixes)
+
+_(Weitere abgeschlossene Items werden hier archiviert)_
 
 ---
 
