@@ -11,7 +11,7 @@
 
 ## 📊 Session 3 Übersicht
 
-### Commits dieser Session: **6 Commits**
+### Commits dieser Session: **9 Commits**
 
 ```
 985cb0d docs: fix CRITICAL issues count (11→8) and remove non-existent C2/C4/C9
@@ -20,6 +20,9 @@
 55e622b docs: add Documentation & Task Tracking section to CLAUDE.md
 f88ac7c fix: add validation for env_path, package managers, and shell changes (H1/H3/H5/H9/H10)
 ca50fb4 fix: add security checks and backup for sudo scripts and kubectl config (H14/H16)
+f04f6a2 docs: update with all 5 HIGH issues fixed in Session 3
+719f84a fix: add changed_when and iCloud validation to post tasks (MEDIUM issues)
+d06a72e fix: add changed_when to kubectl and brew_cu role tasks (MEDIUM)
 ```
 
 ### ✅ Erledigte Aufgaben
@@ -78,6 +81,29 @@ ca50fb4 fix: add security checks and backup for sudo scripts and kubectl config 
 - Uses atomic write (config.new → config)
 - File: `roles/ansible-mac-update/tasks/kubectl.yaml`
 
+#### 📊 MEDIUM Issues behoben (~13 Issues, Commits 8-9)
+
+**changed_when Fixes** (`719f84a`, `d06a72e`):
+- `tasks/post/various-settings.yml`: 11 tasks (Dock, PlistBuddy, chflags, SSH, mysides)
+- `tasks/post/business_mac-settings.yml`: DSBindTimeout
+- `tasks/post/private_mac-settings.yml`: NetBIOS hostname
+- `tasks/post/gpg.yml`: Fixed incorrect logic (rc != 0 → rc == 0)
+- `tasks/post/citrix.yml`: 4 tasks (URL fetch, mount, install, unmount)
+- `roles/ansible-mac-update/tasks/brew_cu.yaml`: 3 tasks
+- `roles/ansible-mac-update/tasks/kubectl.yaml`: 6 tasks (krew operations)
+
+**iCloud Validation (M7)** (`719f84a`):
+- Added stat check for iCloudDrive mount
+- Copy operations conditional on iCloud availability
+- Fixed app permissions: 0750 → 0755
+- Files: `business_mac-settings.yml`
+
+**Impact**:
+- Accurate change detection in playbook runs
+- No false "changed" reports for read-only operations
+- Graceful degradation when iCloud unavailable
+- Proper executable permissions for apps
+
 ---
 
 ## 📈 Aktueller Status
@@ -85,21 +111,25 @@ ca50fb4 fix: add security checks and backup for sudo scripts and kubectl config 
 ### Issues Übersicht
 
 **Start Session 3**: 64 Issues (0 CRITICAL + 21 HIGH + 41 MEDIUM + 2 LOW)
-**Jetzt**: 43 Issues (0 CRITICAL + 0 HIGH + 41 MEDIUM + 2 LOW)
+**Jetzt**: ~30 Issues (0 CRITICAL + 0 HIGH + ~28 MEDIUM + 2 LOW)
 
 **Session 3 Achievements**:
 - ✅ 5 HIGH Issues behoben
+- ✅ ~13 MEDIUM Issues behoben (changed_when + validations)
 - ✅ Dokumentation korrigiert
 - ✅ TODO.md System eingerichtet
 
 **Gesamt seit Session 1**:
 - 8 CRITICAL Issues behoben ✅
-- 21 HIGH Issues behoben ✅ (5 in Session 3 + 16 waren Duplikate/nicht existent)
+- 5 HIGH Issues behoben ✅ (ursprünglich 21, aber 16 waren Duplikate/nicht existent)
+- ~13 MEDIUM Issues behoben ✅
+
+**Verbleibend**: ~30 Issues (hauptsächlich MEDIUM - Code Quality)
 
 ### Token Usage
 
-**Session 3**: ~77k von 200k verwendet (38%)
-**Verbleibend**: ~123k Tokens
+**Session 3**: ~99k von 200k verwendet (50%)
+**Verbleibend**: ~101k Tokens
 
 ---
 
