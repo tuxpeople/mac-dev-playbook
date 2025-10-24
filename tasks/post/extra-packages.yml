@@ -1,13 +1,33 @@
 ---
-- name: Install global Composer packages.
+# Composer packages
+- name: Check if Composer is installed
+  ansible.builtin.command:
+    cmd: "which composer"
+  register: composer_check
+  changed_when: false
+  failed_when: false
+
+- name: Install global Composer packages
   composer:
     command: "{{ (item.state | default('present') == 'absent') | ternary('remove', 'require') }}"
     arguments: "{{ item.name | default(item) }} {{ item.version | default('@stable') }}"
     # Ansible 2.4 supports `global_command` making `working_dir` optional.
     working_dir: "{{ lookup('env', 'COMPOSER_HOME') | default('~/.composer', true) }}"
   loop: "{{ composer_packages }}"
+  when:
+    - composer_check.rc == 0
+    - composer_packages is defined
+    - composer_packages | length > 0
 
-- name: Install global NPM packages.
+# NPM packages
+- name: Check if npm is installed
+  ansible.builtin.command:
+    cmd: "which npm"
+  register: npm_check
+  changed_when: false
+  failed_when: false
+
+- name: Install global NPM packages
   npm:
     name: "{{ item.name | default(item) }}"
     state: "{{ item.state | default('present') }}"
@@ -15,16 +35,40 @@
     global: true
     executable: "{{ item.executable | default(omit) }}"
   loop: "{{ npm_packages }}"
+  when:
+    - npm_check.rc == 0
+    - npm_packages is defined
+    - npm_packages | length > 0
 
-- name: Install global Pip packages.
+# Pip packages
+- name: Check if pip3 is installed
+  ansible.builtin.command:
+    cmd: "which pip3"
+  register: pip_check
+  changed_when: false
+  failed_when: false
+
+- name: Install global Pip packages
   pip:
     name: "{{ item.name | default(item) }}"
     state: "{{ item.state | default('present') }}"
     version: "{{ item.version | default(omit) }}"
-    executable: "{{ item.executable | default(omit) }}"
+    executable: "{{ item.executable | default('pip3') }}"
   loop: "{{ pip_packages }}"
+  when:
+    - pip_check.rc == 0
+    - pip_packages is defined
+    - pip_packages | length > 0
 
-- name: Install global Ruby gems.
+# Ruby gems
+- name: Check if gem is installed
+  ansible.builtin.command:
+    cmd: "which gem"
+  register: gem_check
+  changed_when: false
+  failed_when: false
+
+- name: Install global Ruby gems
   gem:
     name: "{{ item.name | default(item) }}"
     state: "{{ item.state | default('present') }}"
@@ -32,3 +76,7 @@
     user_install: false
     executable: "{{ item.executable | default(omit) }}"
   loop: "{{ gem_packages }}"
+  when:
+    - gem_check.rc == 0
+    - gem_packages is defined
+    - gem_packages | length > 0

@@ -9,6 +9,17 @@
   pre_tasks:
     - import_tasks: ../tasks/pre/additional-facts.yml
     - import_tasks: ../tasks/pre/baseconfig.yml
+
+    - name: Validate required variables are defined
+      ansible.builtin.assert:
+        that:
+          - env_path is defined
+          - env_path | length > 0
+          - mybrewbindir is defined
+          - myhomedir is defined
+        fail_msg: "Required variables missing. Check group_vars/macs/general.yml and additional-facts.yml"
+        success_msg: "All required variables validated successfully"
+
     - import_tasks: ../tasks/pre/install-rosetta2.yml
     - import_tasks: ../tasks/pre/cleanup-deprecated-taps.yml
     - import_tasks: ../tasks/pre/cleanup-old-python-versions.yml

@@ -1,28 +1,54 @@
 ---
+# Safe shell change with validation
+- name: Check if homebrew bash exists and is executable
+  ansible.builtin.stat:
+    path: "{{ mybrewbindir }}/bash"
+  register: homebrew_bash
+
+- name: Test homebrew bash works
+  ansible.builtin.command:
+    cmd: "{{ mybrewbindir }}/bash --version"
+  when: homebrew_bash.stat.exists
+  changed_when: false
+  failed_when: false
+  register: bash_test
+
 - name: Ensure homebrew-bash is in /etc/shells
   ansible.builtin.lineinfile:
     path: /etc/shells
     line: "{{ mybrewbindir }}/bash"
   become: true
+  when:
+    - homebrew_bash.stat.exists
+    - homebrew_bash.stat.executable
+    - bash_test.rc == 0
 
-- name: change user shell to homebrew-bash
+- name: Change user shell to homebrew-bash
   ansible.builtin.user:
     name: "{{ ansible_user }}"
     shell: "{{ mybrewbindir }}/bash"
   become: true
+  when:
+    - homebrew_bash.stat.exists
+    - homebrew_bash.stat.executable
+    - bash_test.rc == 0
 
-# - name: change user shell to homebrew-bash
-#   expect:
-#     command: "chsh -s {{ mybrewbindir }}/bash"
-#     responses:
-#       (?i)password: "{{ ansible_become_pass }}"
-#   become: false
-
-- name: change root shell to homebrew-bash
+# Root shell - only if explicitly enabled (dangerous operation!)
+- name: Change root shell to homebrew-bash
   ansible.builtin.user:
     name: root
     shell: "{{ mybrewbindir }}/bash"
   become: true
+  when:
+    - change_root_shell | default(false)  # Must be explicitly enabled
+    - homebrew_bash.stat.exists
+    - homebrew_bash.stat.executable
+    - bash_test.rc == 0
+
+- name: Warning if homebrew bash not available
+  ansible.builtin.debug:
+    msg: "⚠️  Homebrew bash not found or not working at {{ mybrewbindir }}/bash - skipping shell change"
+  when: not homebrew_bash.stat.exists or bash_test.rc != 0
 
 - name: "Ensure homedir/bin exists"
   ansible.builtin.file:
