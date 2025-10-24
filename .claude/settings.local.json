@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ggrep:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\ndocs: add Documentation & Task Tracking section to CLAUDE.md\n\nInstructs Claude to read three key files at session start:\n- docs/sessions/SESSION_STATUS.md (session-specific progress)\n- docs/TODO.md (long-term tasks)\n- docs/analysis/IMPROVEMENTS.md (code quality issues)\n\nThis ensures Claude is aware of:\n- What was done in previous sessions\n- What needs to be done next\n- Outstanding technical debt\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Read(//Volumes/development/github/tuxpeople/dotfiles/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
