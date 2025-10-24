@@ -48,7 +48,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 | C10 | Rosetta2 type comparison | ✅ | a80d2d8 |
 | C11 | Sudo cleanup in always block | ✅ | a80d2d8 |
 
-**Verbleibend**: C2, C4, C9 (3 CRITICAL)
+**Verbleibend**: 0 CRITICAL → **Alle behoben!** ✅
 
 ---
 
@@ -125,10 +125,10 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 
 ### Issues Übersicht
 
-**Start**: 75 Issues (11 CRITICAL + 21 HIGH + 41 MEDIUM + 2 LOW)
-**Jetzt**: 67 Issues (3 CRITICAL + 21 HIGH + 41 MEDIUM + 2 LOW)
+**Start**: 72 Issues (8 CRITICAL + 21 HIGH + 41 MEDIUM + 2 LOW)
+**Jetzt**: 64 Issues (0 CRITICAL + 21 HIGH + 41 MEDIUM + 2 LOW)
 
-**Behoben**: 8 Issues (alle CRITICAL)
+**Behoben**: 8 CRITICAL Issues (alle!)
 
 ### Code Quality
 
@@ -241,7 +241,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 
 ### Optional (Quality Improvements)
 
-- [ ] Verbleibende 3 CRITICAL Issues (C2, C4, C9) beheben
+- [x] ~~Verbleibende CRITICAL Issues~~ → **ALLE BEHOBEN!** ✅
 - [ ] 21 HIGH Issues durchgehen (siehe IMPROVEMENTS.md)
 - [ ] Symlink für macupdate erstellen:
   ```bash
@@ -251,40 +251,27 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 
 ---
 
-## 🎯 Verbleibende CRITICAL Issues
+## 🎯 CRITICAL Issues Status
 
-### C2: [Titel nicht in IMPROVEMENTS.md gelesen]
-**Status**: ⏳ Offen
-**Priority**: HIGH
+**Alle 8 CRITICAL Issues wurden erfolgreich behoben!** ✅
 
-### C4: [Titel nicht in IMPROVEMENTS.md gelesen]
-**Status**: ⏳ Offen
-**Priority**: HIGH
-
-### C9: [Titel nicht in IMPROVEMENTS.md gelesen]
-**Status**: ⏳ Offen
-**Priority**: HIGH
+Die ursprüngliche Zählung von "11 CRITICAL" war ein Dokumentationsfehler - tatsächlich gab es nur 8 (C1, C3, C5, C6, C7, C8, C10, C11). Die Nummern C2, C4, C9 existierten nie und waren Lücken aus der Umstrukturierung während der initialen Code-Analyse
 
 ---
 
 ## 💡 Empfehlungen für nächste Steps
 
-### Option A: Verbleibende CRITICAL Issues (Empfohlen)
-**Aufwand**: ~1-2 Stunden
-**Impact**: Alle kritischen Sicherheitslücken geschlossen
-**Dateien**: Siehe IMPROVEMENTS.md Abschnitt C2, C4, C9
-
-### Option B: HIGH Issues angehen
+### Option A: HIGH Issues angehen (Empfohlen)
 **Aufwand**: ~3-4 Stunden
-**Impact**: Verbesserte Zuverlässigkeit
-**21 Issues**: env_path validation, Package manager checks, etc.
+**Impact**: Verbesserte Zuverlässigkeit & Robustheit
+**Dateien**: Siehe IMPROVEMENTS.md - 21 HIGH Priority Issues
 
-### Option C: Renovate testen & optimieren
+### Option B: Renovate testen & optimieren
 **Aufwand**: ~30 Minuten
 **Impact**: Verifizieren dass Auto-Merge funktioniert
 **Warten bis**: Nächster Montag (erste Renovate PRs)
 
-### Option D: Upstream Updates cherry-picken
+### Option C: Upstream Updates cherry-picken
 **Aufwand**: ~1 Stunde
 **Impact**: Neueste Upstream-Bugfixes integriert
 **Tasks**:
@@ -297,7 +284,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 - Obsolete Features/Scripts identifizieren und entfernen
 - Upstream-Kompatibilität maximieren wo möglich
 
-### Option E: Repository-Struktur & Organisation überprüfen
+### Option D: Repository-Struktur & Organisation überprüfen
 **Aufwand**: ~2 Stunden
 **Impact**: Bessere Wartbarkeit, klarere Struktur
 **Fokus**: Primär eigene/lokale Änderungen (Upstream-Kompatibilität erhalten)
@@ -347,8 +334,8 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 ---
 
 **Session Ende**: 2025-10-23 21:05
-**Nächste Session**: Fortsetzen mit verbleibenden CRITICAL Issues (C2, C4, C9)
-**Gesamtfortschritt**: 8 von 11 CRITICAL Issues behoben (73%)
+**Nächste Session**: HIGH Issues angehen (alle CRITICAL sind behoben!)
+**Gesamtfortschritt**: Alle 8 CRITICAL Issues behoben (100%)
 
 ---
 
@@ -390,10 +377,10 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 ### Für nächste Session:
 
 **Priorität HIGH:**
-- [ ] C2, C4, C9 - Verbleibende CRITICAL Issues (siehe docs/analysis/IMPROVEMENTS.md)
+- [x] ~~CRITICAL Issues beheben~~ → **ALLE BEHOBEN!** ✅
+- [ ] 21 HIGH Issues durchgehen (siehe docs/analysis/IMPROVEMENTS.md)
 
 **Priorität MEDIUM:**
-- [ ] 21 HIGH Issues durchgehen
 - [ ] Renovate ersten Run monitoren (Montag 6am)
 - [ ] Upstream Updates cherry-picken
 
@@ -407,6 +394,8 @@ Sage einfach:
 > "Lies docs/sessions/SESSION_STATUS.md und mach weiter"
 
 Oder spezifisch:
-> "Mach mit den CRITICAL Issues C2, C4, C9 weiter"
+> "Mach mit den HIGH Issues weiter" (21 Issues verbleibend)
+> "Cherry-picke Upstream Updates"
+> "Überprüfe Repository-Struktur"
 
 📍 **Alle Infos sind in docs/sessions/SESSION_STATUS.md dokumentiert!**
