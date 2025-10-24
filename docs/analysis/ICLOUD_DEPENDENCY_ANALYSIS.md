@@ -820,26 +820,39 @@ git clone git@github.com:tuxpeople/mac-dev-playbook.git
   # 1Password SSH Agent wird automatisch genutzt!
 ```
 
-**Bootstrap-Reihenfolge (aktuell möglich)**:
+**Bootstrap-Reihenfolge (AKTUELL - Vereinfacht!)**: ✅
 ```
 1. Fresh Mac Setup
-2. Install 1Password (via Brewfile oder manuell)
-3. Enable 1Password SSH Agent (Settings → Developer → SSH Agent)
+2. Run init.sh
+   → HTTPS Clone funktioniert (kein SSH Key nötig!)
+   → Nur noch Vault Password von iCloud nötig
+3. Ansible Playbook
+   → Dotfiles clone via HTTPS (public repo, kein Key nötig!)
+   → System komplett provisioniert
+4. Post-Bootstrap: 1Password SSH Agent für normale Git-Ops
+   → Push/Pull funktionieren mit SSH (1Password stellt Keys bereit)
+```
+
+**Alte Reihenfolge (wenn SSH verwendet würde)**:
+```
+1. Fresh Mac Setup
+2. Install 1Password (manuell)
+3. Enable 1Password SSH Agent
 4. Sign in to 1Password
 5. Run init.sh
-   → Git clone funktioniert (1Password stellt GitHub Key bereit)
-   → Nur noch Vault Password von iCloud nötig
+   → Git clone via SSH (1Password stellt Key bereit)
 6. Ansible Playbook
-   → Dotfiles clone funktioniert (1Password SSH Agent)
-   → Alle anderen Git-Operations funktionieren
+   → Dotfiles clone via SSH funktioniert
 ```
 
 **Verbleibende iCloud-Dependency**:
-- ✅ ~~SSH Keys~~ → **GELÖST via 1Password SSH Agent**
+- ✅ ~~SSH Keys für Bootstrap~~ → **GELÖST via HTTPS Clone (public repo)**
+- ✅ ~~SSH Keys für Runtime~~ → **GELÖST via 1Password SSH Agent**
 - ⚠️ Vault Password → **Noch iCloud, aber Migration zu 1Password möglich**
 - 🟢 Rest (Scripts, Configs, Backgrounds) → **Nice-to-have, nicht kritisch**
 
-**Quick Win umsetzbar**: Nur noch Vault Password muss migriert werden!
+**Status**: Bootstrap funktioniert OHNE 1Password Pre-Setup! ✅
+**Quick Win umsetzbar**: Nur noch Vault Password muss migriert werden für 100% iCloud-Unabhängigkeit!
 
 ---
 
