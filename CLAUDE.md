@@ -168,6 +168,19 @@ The repository includes GitHub Actions CI (see `.github/workflows/` if present).
 - For new Macs: add hostname to `inventories/macs.list` and create corresponding host_vars file
 - The homebrew role is symlinked from an external collection, modifications should be made there
 
+## Documentation & Task Tracking
+
+When starting a new session, Claude should read these files:
+
+- **docs/sessions/SESSION_STATUS.md**: Current session status, what was done, what's next
+- **docs/TODO.md**: Long-term tasks that span multiple sessions
+- **docs/analysis/IMPROVEMENTS.md**: All identified code quality issues (64 remaining: 21 HIGH + 41 MEDIUM + 2 LOW)
+
+**Purpose**:
+- `SESSION_STATUS.md`: Session-specific progress tracking
+- `TODO.md`: General tasks, ideas, maintenance items
+- `IMPROVEMENTS.md`: Technical debt and code quality improvements
+
 ## Code Quality & Pre-Commit Checks
 
 Before committing changes, always run:
