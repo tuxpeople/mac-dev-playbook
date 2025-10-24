@@ -15,27 +15,17 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - iCloud-Abhängigkeiten noch zeitgemäß?
   - Dokumentieren: README.md mit Bootstrap-Anleitung erweitern
 
-- [ ] **Dotfiles vs. Ansible Repo - Verantwortlichkeiten klären**
-  - **Problem**: Aktuell im Dotfiles-Repo `/Volumes/development/github/tuxpeople/dotfiles`:
-    - `.macos` (43KB) - macOS defaults Einstellungen
-    - `brew.sh` - Homebrew installation script
-    - `machine/business_mac/Brewfile` - Homebrew packages (Business)
-    - `machine/private_mac/Brewfile` - Homebrew packages (Private)
-    - Echte Dotfiles: `.bashrc`, `.bash_profile`, `.aliases`, `.functions`, etc.
-  - **Analyse**:
-    - Was gehört ins Ansible-Repo (System-Provisionierung)?
-      - Brewfiles? (werden von ansible-mac-update genutzt)
-      - `.macos` defaults? (überschneidet sich mit `tasks/osx.yml`?)
-    - Was bleibt im Dotfiles-Repo (User-Config)?
-      - Shell-Konfiguration (.bashrc, .bash_profile, etc.)
-      - Git-Config (.gitconfig)
-      - Vim/Editor-Configs
-  - **Aktionen**:
-    - Inventarisieren: Welche Dateien werden von Ansible genutzt?
-    - Vergleichen: `.macos` vs. `tasks/osx.yml` (Duplikate?)
-    - Migrieren: Ansible-spezifische Configs hierher
-    - Dokumentieren: Klare Trennung der Verantwortlichkeiten
-    - Updaten: `geerlingguy.dotfiles` Role-Konfiguration anpassen
+- [ ] **Dotfiles vs. Ansible Repo - Verantwortlichkeiten klären** ✅ **ANALYSIERT**
+  - **Status**: Vollständige Analyse erstellt in `docs/analysis/DOTFILES_ANSIBLE_ANALYSIS.md`
+  - **Findings**:
+    - `.macos` (952 Zeilen!): Wird von `tasks/osx.yml` ausgeführt, sollte zu Ansible-Tasks werden
+    - `Brewfiles`: Liegen im Dotfiles-Repo, werden aber nur von Ansible genutzt
+    - Echte Dotfiles: Sollten im Dotfiles-Repo bleiben (Shell, Git, Vim configs)
+  - **Empfehlung**: 3-Phasen-Migration
+    1. Brewfiles ins Ansible-Repo verschieben (schnell & einfach)
+    2. `.macos` zu `community.general.osx_defaults` Tasks konvertieren (aufwändig)
+    3. Dotfiles-Repo aufräumen (Duplikate löschen)
+  - **Nächster Schritt**: Entscheidung treffen & mit Phase 1 (Brewfiles) starten
 
 - [ ] **Dotfiles-Repo aufräumen**
   - **Veraltete/Duplikat-Dateien identifiziert**:
