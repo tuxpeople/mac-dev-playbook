@@ -5,6 +5,7 @@ post_provision_tasks:
   - ../tasks/post/bbedit.yml
   # - ../tasks/post/citrix.yml
   - ../tasks/post/github.yml
+  - ../tasks/post/dotfiles-remote-ssh.yml
   - ../tasks/post/gpg.yml
   - ../tasks/post/iterm2.yml
   - ../tasks/post/k8s.yml
