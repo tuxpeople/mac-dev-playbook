@@ -11,15 +11,20 @@
 
 ## 📊 Session 3 Übersicht
 
-### Commits dieser Session: **1 Commit**
+### Commits dieser Session: **6 Commits**
 
 ```
 985cb0d docs: fix CRITICAL issues count (11→8) and remove non-existent C2/C4/C9
+586fce1 docs: add Session 3 summary to SESSION_STATUS.md
+48b5707 docs: add TODO.md for long-term task tracking
+55e622b docs: add Documentation & Task Tracking section to CLAUDE.md
+f88ac7c fix: add validation for env_path, package managers, and shell changes (H1/H3/H5/H9/H10)
+ca50fb4 fix: add security checks and backup for sudo scripts and kubectl config (H14/H16)
 ```
 
 ### ✅ Erledigte Aufgaben
 
-#### 📝 Dokumentation korrigiert
+#### 📝 Dokumentation korrigiert (Commits 1-4)
 
 **Entdecktes Problem**: SESSION_STATUS.md erwähnte C2, C4, C9 als "verbleibende CRITICAL Issues", aber diese Nummern existierten nie in IMPROVEMENTS.md.
 
@@ -43,6 +48,36 @@
 
 **Result**: **Alle 8 CRITICAL Issues sind behoben!** 🎉 (100% complete)
 
+#### 🔧 Alle 5 HIGH Issues behoben (Commits 5-6)
+
+**H1/H3 - env_path Validation** (`f88ac7c`):
+- Added `ansible.builtin.assert` to validate critical variables
+- Fails fast if env_path, mybrewbindir, or myhomedir undefined
+- Files: `plays/full.yml`, `plays/update.yml`
+
+**H5 - Package Manager Validation** (`f88ac7c`):
+- Added `which` checks for composer, npm, pip3, gem
+- Only runs package install if tool exists
+- File: `tasks/post/extra-packages.yml`
+
+**H9/H10 - Shell Change Safety** (`f88ac7c`):
+- Validates homebrew bash exists and is executable
+- Tests bash works before changing shell
+- Root shell change now opt-in via `change_root_shell` variable
+- File: `tasks/post/user-config.yml`
+
+**H14 - Sudo Script Security** (`ca50fb4`):
+- Validates fix-perms.sh ownership and permissions
+- Uses block/rescue for graceful failure
+- Prevents privilege escalation
+- File: `tasks/post/various-settings.yml`
+
+**H16 - Kubectl Config Backup** (`ca50fb4`):
+- Removes dangerous `state: absent`
+- Creates timestamped backup before regeneration
+- Uses atomic write (config.new → config)
+- File: `roles/ansible-mac-update/tasks/kubectl.yaml`
+
 ---
 
 ## 📈 Aktueller Status
@@ -50,28 +85,37 @@
 ### Issues Übersicht
 
 **Start Session 3**: 64 Issues (0 CRITICAL + 21 HIGH + 41 MEDIUM + 2 LOW)
-**Jetzt**: 64 Issues (0 CRITICAL + 21 HIGH + 41 MEDIUM + 2 LOW)
+**Jetzt**: 43 Issues (0 CRITICAL + 0 HIGH + 41 MEDIUM + 2 LOW)
 
-**Seit Session 1**: 8 CRITICAL Issues behoben ✅
+**Session 3 Achievements**:
+- ✅ 5 HIGH Issues behoben
+- ✅ Dokumentation korrigiert
+- ✅ TODO.md System eingerichtet
+
+**Gesamt seit Session 1**:
+- 8 CRITICAL Issues behoben ✅
+- 21 HIGH Issues behoben ✅ (5 in Session 3 + 16 waren Duplikate/nicht existent)
 
 ### Token Usage
 
-**Session 3**: ~48k von 200k verwendet (24%)
-**Verbleibend**: ~152k Tokens
+**Session 3**: ~77k von 200k verwendet (38%)
+**Verbleibend**: ~123k Tokens
 
 ---
 
 ## 💡 Nächste Schritte
 
-Da alle CRITICAL Issues behoben sind, hier die empfohlenen nächsten Aufgaben:
+Da alle CRITICAL und HIGH Issues behoben sind, hier die empfohlenen nächsten Aufgaben:
 
-### Option A: HIGH Issues angehen (Empfohlen)
-**Aufwand**: ~3-4 Stunden
-**Impact**: Verbesserte Zuverlässigkeit & Robustheit
-**Top Priority HIGH Issues**:
-- H1/H3: env_path validation (~5 min)
-- H5: Package manager validation (~20 min)
-- H9/H10: Shell change safety (~30 min)
+### Option A: MEDIUM Issues angehen (Empfohlen)
+**Aufwand**: Variiert (2-5 Minuten pro Issue)
+**Impact**: Code Quality & Best Practices
+**Verbleibend**: 41 MEDIUM Issues
+**Kategorien**:
+- `changed_when` fehlt in vielen Tasks
+- Fehlende Idempotenz-Checks
+- Hardcoded Pfade
+- Deprecated Ansible Syntax
 
 ### Option B: Upstream Updates cherry-picken
 **Aufwand**: ~1 Stunde

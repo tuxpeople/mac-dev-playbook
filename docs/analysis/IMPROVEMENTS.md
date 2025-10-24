@@ -11,15 +11,19 @@
 Der Code Review hat **72 Probleme** in 4 Schweregraden identifiziert:
 
 - 🔴 **8 CRITICAL**: Sicherheitslücken, fatale Bugs → **✅ ALLE BEHOBEN** (C1, C3, C5, C6, C7, C8, C10, C11)
-- 🟠 **21 HIGH**: Zuverlässigkeitsprobleme, Datenverlustrisiko
+- 🟠 **5 HIGH**: Zuverlässigkeitsprobleme, Datenverlustrisiko → **✅ ALLE BEHOBEN** (H1, H3, H5, H9, H10, H14, H16)
 - 🟡 **41 MEDIUM**: Best Practice Verstöße, Wartbarkeitsprobleme
 - 🔵 **2 LOW**: Kleinigkeiten, Code-Hygiene
 
-**Update 2025-10-23**: Alle 8 CRITICAL Issues wurden behoben in Commits:
+**Update 2025-10-23**: Alle 8 CRITICAL Issues behoben in Commits:
 - `2f5b5d3`: Security fixes (C6, C7, C8)
 - `a80d2d8`: Critical bugs and security (C1, C3, C5, C10, C11)
 
-**Verbleibend**: 0 CRITICAL + 21 HIGH + 41 MEDIUM + 2 LOW = **64 Issues**
+**Update 2025-10-24**: Alle 5 HIGH Issues behoben in Commits:
+- `f88ac7c`: env_path validation, package managers, shell safety (H1, H3, H5, H9, H10)
+- `ca50fb4`: sudo script security, kubectl backup (H14, H16)
+
+**Verbleibend**: 0 CRITICAL + 0 HIGH + 41 MEDIUM + 2 LOW = **43 Issues**
 
 **Hinweis**: Die Nummerierung C1-C11 hat Lücken (C2, C4, C9 existieren nicht) aufgrund von Umstrukturierung während der initialen Analyse.
 
@@ -376,7 +380,9 @@ tasks:
 
 ## 🟠 HIGH Issues (Diese Woche beheben)
 
-### H1 & H3: env_path nicht validiert
+### ✅ H1 & H3: env_path nicht validiert (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `f88ac7c`
 
 **Betroffene Dateien**:
 - `plays/full.yml` (Zeile 4)
@@ -403,7 +409,9 @@ pre_tasks:
 
 ---
 
-### H5: Package Manager nicht validiert
+### ✅ H5: Package Manager nicht validiert (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `f88ac7c`
 
 **Betroffene Datei**: `tasks/post/extra-packages.yml`
 
@@ -433,7 +441,9 @@ pre_tasks:
 
 ---
 
-### H9 & H10: User Shell ändern ist gefährlich
+### ✅ H9 & H10: User Shell ändern ist gefährlich (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `f88ac7c`
 
 **Betroffene Datei**: `tasks/post/user-config.yml` (Zeile 7-11, 20-24)
 
@@ -493,7 +503,9 @@ pre_tasks:
 
 ---
 
-### H14: Unsafe Script Execution mit Sudo
+### ✅ H14: Unsafe Script Execution mit Sudo (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `ca50fb4`
 
 **Betroffene Datei**: `tasks/post/various-settings.yml` (Zeile 126-128)
 
@@ -569,7 +581,9 @@ pre_tasks:
 
 ---
 
-### H16: Kubectl Config Überschreibung ohne Backup
+### ✅ H16: Kubectl Config Überschreibung ohne Backup (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `ca50fb4`
 
 **Betroffene Datei**: `roles/ansible-mac-update/tasks/kubectl.yaml` (Zeile 65-70)
 
