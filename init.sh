@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-#  Use it with this in MacOS Terminal (not iTerm2 if already insalled, as iTerm will be quit ;-) ) 
+#  Use it with this in MacOS Terminal (not iTerm2 if already insalled, as iTerm will be quit ;-) )
 #    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
 #
-# set -e
+set -e
 
 _step_counter=0
 function step() {
@@ -78,11 +78,12 @@ unset IFS
 ${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password
 
 echo " - Upgrading PIP"
-/Library/Developer/CommandLineTools/usr/bin/pip3.8 install --upgrade pip || exit 1
+PYTHON_BIN="/Library/Developer/CommandLineTools/usr/bin/python3"
+${PYTHON_BIN} -m pip install --upgrade pip --user || exit 1
 
 echo " - Installing Ansible"
-/Library/Developer/CommandLineTools/usr/bin/pip3.8 install --user --requirement /tmp/git/requirements.txt || exit 1
-PATH="/usr/local/bin:$(/Library/Developer/CommandLineTools/usr/bin/python3 -m site --user-base)/bin:$PATH"
+${PYTHON_BIN} -m pip install --user --requirement /tmp/git/requirements.txt || exit 1
+PATH="/usr/local/bin:$(${PYTHON_BIN} -m site --user-base)/bin:$PATH"
 export PATH
 
 echo " - Installing Ansible requirements"
@@ -96,13 +97,6 @@ sudo chown root:wheel /Library/LaunchDaemons/limit.maxfiles.plist
 sudo chown root:wheel /Library/LaunchDaemons/limit.maxproc.plist
 sudo launchctl load -w /Library/LaunchDaemons/limit.maxfiles.plist
 sudo launchctl load -w /Library/LaunchDaemons/limit.maxproc.plist
-
-# echo "Getting Brewfile"
-# if [[ $(hostname) == ws* ]]; then
-#   curl -sfL https://raw.githubusercontent.com/tuxpeople/dotfiles/master/machine/business/Brewfile > files/Brewfile
-# else
-#   curl -sfL https://raw.githubusercontent.com/tuxpeople/dotfiles/master/machine/private/Brewfile > files/Brewfile
-# fi
 
 if [ -n "${newhostname}" ]; then
   sudo scutil --set HostName ${newhostname}
