@@ -9,6 +9,7 @@
   ansible.builtin.shell: "brew unlink kubernetes-cli && brew link kubernetes-cli"
   when: not kubectl_exists.stat.exists
   become: false
+  changed_when: true
 
 - name: Test for installed kubectl
   ansible.builtin.stat:
@@ -20,17 +21,20 @@
   ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew update"
   become: false
   when: krew_exists.stat.exists
+  changed_when: true
 
 - name: Update Krew plugins
   ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew upgrade"
   become: false
   when: krew_exists.stat.exists
+  changed_when: true
 
 - name: Getting list of installed Krew plugins
   ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew list | grep -v PLUGIN | awk '{ print $1 }'"
   register: installed_krew_plugins
   become: false
   when: krew_exists.stat.exists
+  changed_when: false
 
 - name: Detecting which Krew plugins to uninstall
   set_fact:
@@ -43,6 +47,7 @@
   with_items: "{{ uninstall_krew_plugins }}"
   when: uninstall_krew_plugins is defined and krew_exists.stat.exists
   become: false
+  changed_when: true
 
 - name: Detecting which Krew plugins to install
   set_fact:
@@ -55,6 +60,7 @@
   with_items: "{{ krew_plugins }}"
   when: krew_plugins is defined and krew_exists.stat.exists
   become: false
+  changed_when: true
 
 - name: Ensure .kube directory exist
   file:

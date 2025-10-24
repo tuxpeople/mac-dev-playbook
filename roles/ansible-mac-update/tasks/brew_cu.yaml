@@ -4,15 +4,21 @@
   ansible.builtin.shell: "command -v {{ mybrewbindir }}/brew"
   register: brew_exists
   become: false
+  changed_when: false
+  failed_when: false
 
 - name: Test for installed brew plugin cu
   ansible.builtin.shell: "{{ mybrewbindir }}/brew cu -h"
   register: brewcu_exists
   become: false
+  changed_when: false
+  failed_when: false
 
 - name: Ensure auto_upgrade casks are upgraded
   # Alternative: brew outdated --greedy --verbose | grep -v '(latest)' | awk '{print $1}' | xargs brew reinstall
   ansible.builtin.shell: "{{ mybrewbindir }}/brew cu -a -y"
   become: false
+  when: brewcu_exists.rc == 0
+  changed_when: true
   # environment:
   #   SUDO_ASKPASS: "{{ ansible_become_pass }}"
