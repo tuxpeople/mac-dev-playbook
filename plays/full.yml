@@ -51,6 +51,15 @@
             name: geerlingguy.mac.homebrew
           tags: ['homebrew']
 
+        - name: Ensure .config directory exists for dotfile symlinks
+          ansible.builtin.file:
+            path: "{{ myhomedir }}/.config"
+            state: directory
+            mode: '0755'
+          become: false
+          when: configure_dotfiles
+          tags: ['dotfiles']
+
         - name: Configure dotfiles
           include_role:
             name: geerlingguy.dotfiles
