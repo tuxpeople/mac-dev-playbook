@@ -829,9 +829,17 @@ git clone git@github.com:tuxpeople/mac-dev-playbook.git
 3. Ansible Playbook
    → Dotfiles clone via HTTPS (public repo, kein Key nötig!)
    → System komplett provisioniert
-4. Post-Bootstrap: 1Password SSH Agent für normale Git-Ops
-   → Push/Pull funktionieren mit SSH (1Password stellt Keys bereit)
+   → Post-Task: Dotfiles remote automatisch zu SSH umgestellt!
+4. Post-Bootstrap: Git operations funktionieren
+   → Push/Pull nutzen SSH (1Password SSH Agent stellt Keys bereit)
+   → Remote URL bereits auf git@github.com:... umgestellt
 ```
+
+**Automatischer Remote-Switch**:
+- Task: `tasks/post/dotfiles-remote-ssh.yml`
+- Prüft: Ist remote noch HTTPS?
+- Wechselt: Zu `git@github.com:tuxpeople/dotfiles.git`
+- Result: git push funktioniert sofort mit 1Password SSH Agent
 
 **Alte Reihenfolge (wenn SSH verwendet würde)**:
 ```
