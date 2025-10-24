@@ -1,11 +1,19 @@
 ---
+- name: Check if iCloudDrive is mounted
+  ansible.builtin.stat:
+    path: "{{myhomedir}}/iCloudDrive"
+  register: icloud_mounted
+
 - name: Copy Open UMB App
   ansible.builtin.copy:
     src: "{{myhomedir}}/iCloudDrive/Allgemein/Open Umb.app"
     dest: "/Applications/"
-    mode: 0750
+    mode: 0755  # Apps need execute permission
     remote_src: "true"
   become: false
+  when:
+    - icloud_mounted.stat.exists
+    - icloud_mounted.stat.isdir
 
 # - name: Set the UMB Dock items
 #   shell: "{{ mybrewbindir }}/dockutil --add {{ item }}; sleep 5"
@@ -17,6 +25,7 @@
 - name: Set DSBindTimeout to 4
   shell: "/usr/bin/defaults write /Library/Preferences/com.apple.loginwindow DSBindTimeout -int 4"
   become: true
+  changed_when: true
 
 - name: Install Teams backgrounds
   ansible.builtin.copy:
@@ -25,6 +34,9 @@
     mode: 0640
     remote_src: "true"
   become: false
+  when:
+    - icloud_mounted.stat.exists
+    - icloud_mounted.stat.isdir
 
 # - import_tasks: tasks/business-settings.yml
 #   when: (configure_settings) and (myenv == "business")

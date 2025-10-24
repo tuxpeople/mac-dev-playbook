@@ -23,5 +23,6 @@
 - name: Kill gpg-agent
   ansible.builtin.shell: "{{ mybrewbindir }}/gpgconf --kill gpg-agent"
   register: gpg_agent_kill
-  changed_when: "gpg_agent_kill.rc != 0"
+  changed_when: "gpg_agent_kill.rc == 0"  # Changed if successfully killed
+  failed_when: false  # OK if agent wasn't running
   become: false

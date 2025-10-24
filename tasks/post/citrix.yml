@@ -3,6 +3,7 @@
   shell: curl -sqL https://www.citrix.com/de-de/downloads/workspace-app/mac/workspace-app-for-mac-latest.html | grep CitrixWorkspaceApp.dmg | grep rel | awk '{ print $8}' | sed 's|rel="|https:|' | sed 's|"||'
   register: citrix_url
   become: false
+  changed_when: false
 
 - name: Download Citrix DMG
   get_url:
@@ -14,14 +15,17 @@
   shell: hdiutil attach /tmp/citrix.dmg | grep /Volumes | sed 's/.*\/Volumes\//\/Volumes\//'
   register: citrix_volume
   become: true
+  changed_when: true
 
 - name: Run Citrix installer
   shell: 'installer -pkg "{{ citrix_volume.stdout }}/Install Citrix Workspace.pkg" -target /'
   become: true
+  changed_when: true
 
-- name: Dettach volume
+- name: Detach volume
   shell: 'hdiutil detach "{{ citrix_volume.stdout }}"'
   become: true
+  changed_when: false
 
 - name: Remove Citrix DMG
   ansible.builtin.file:

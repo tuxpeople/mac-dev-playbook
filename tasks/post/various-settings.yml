@@ -47,6 +47,7 @@
   # shell: "{{ mybrewbindir }}/dockutil --remove all; sleep 3"
   shell: "/usr/local/bin/dockutil --remove all; sleep 3"
   become: false
+  changed_when: true
 
 - name: Set the default Dock items
   # shell: "{{ mybrewbindir }}/dockutil --add {{ item.path }} --position {{ item.pos }}; sleep 5"
@@ -56,32 +57,38 @@
     label: "{{ item.name }}"
     pause: 3
   become: false
+  changed_when: true
 
 - name: Turn magnification of the dock on
   shell: "{{ mybrewbindir }}/m dock magnification YES; sleep 2"
   become: false
+  changed_when: true
 
 - name: Arrange Files by Kind
   shell: |
     /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
     /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
   become: false
+  changed_when: true
 
 - name: Set the Grid Spacing for Files
   shell: |
     /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 54" ~/Library/Preferences/com.apple.finder.plist
     /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:gridSpacing 30" ~/Library/Preferences/com.apple.finder.plist
   become: false
+  changed_when: true
 
 - name: Use Smaller Icons
   shell: |
     /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 48" ~/Library/Preferences/com.apple.finder.plist
     /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 64" ~/Library/Preferences/com.apple.finder.plist
   become: false
+  changed_when: true
 
 - name: Unhide ~/Library
   ansible.builtin.command: "chflags nohidden {{ myhomedir }}/Library"
   become: false
+  changed_when: true
 
 - name: Unhide /Volumes
   ansible.builtin.command: chflags nohidden /Volumes
@@ -96,10 +103,13 @@
 - name: Enable SSH access
   shell: systemsetup -setremotelogin on
   become: true
+  changed_when: true
 
 - name: Add Pictures folder to sidebar
   shell: "mysides add Bilder file://$HOME/Pictures/"
   become: false
+  changed_when: true
+  failed_when: false  # OK if already exists
 
 - name: LaunchAgents
   include_tasks: "_launchagents.yml"
