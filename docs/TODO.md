@@ -4,16 +4,21 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
 
 ## Zu erledigen
 
-- [ ] **Bootstrap Scripts Review & Konsolidierung**
-  - Analysieren: `init.sh` (85+ Zeilen, komplex) und `init_light.sh` (7 Zeilen, nur pip/ansible-galaxy)
-  - `init.sh`: Klont Repo, lädt iCloud-Dateien, installiert CLI-Tools, fragt nach Hostname
-  - `init_light.sh`: Installiert nur Python-Requirements und Ansible-Galaxy-Roles
-  - Prüfen: Funktionieren beide noch? Sind Abhängigkeiten aktuell?
-  - Vergleichen: Mit `scripts/macupdate` (ähnliche Funktionalität?)
-  - Entscheiden:
-    - Beide behalten oder zu `scripts/bootstrap.sh` konsolidieren?
-    - iCloud-Abhängigkeiten noch zeitgemäß?
-  - Dokumentieren: README.md mit Bootstrap-Anleitung erweitern
+- [ ] **Bootstrap Scripts Review & Konsolidierung** 🔄 **PHASE 1 ABGESCHLOSSEN**
+  - **Status**: Vollständige Analyse + Quick Wins implementiert
+  - **Analyse**: `docs/analysis/BOOTSTRAP_SCRIPTS_ANALYSIS.md` (565 Zeilen)
+    - Vergleich: `init.sh` vs `init_light.sh` vs `scripts/macupdate`
+    - Decision Matrix für Konsolidierungsoptionen
+    - iCloud-Dependency Evaluation
+  - **Fixes angewendet** (Commit `14050dc`):
+    - ✅ `init.sh`: Python 3.8 → python3 (nicht mehr EOL-Version)
+    - ✅ `init.sh`: `set -e` aktiviert für fail-fast behavior
+    - ✅ `init.sh`: Obsoleten Brewfile-Code entfernt (Zeilen 100-105)
+    - ✅ `init_light.sh`: Als DEPRECATED markiert mit Hinweis auf `scripts/macupdate`
+  - **Nächste Schritte**:
+    - [ ] README.md: Bootstrap-Sektion erweitern (Wann welches Script?)
+    - [ ] iCloud-Dependency untersuchen: Was steht in filelists?
+    - [ ] Optional: Konsolidierung evaluieren (siehe Analyse Option 2)
 
 - [ ] **Dotfiles vs. Ansible Repo - Verantwortlichkeiten klären** ✅ **ANALYSIERT**
   - **Status**: Vollständige Analyse erstellt in `docs/analysis/DOTFILES_ANSIBLE_ANALYSIS.md`
@@ -26,6 +31,7 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     2. `.macos` zu `community.general.osx_defaults` Tasks konvertieren (aufwändig)
     3. Dotfiles-Repo aufräumen (Duplikate löschen)
   - **Nächster Schritt**: Entscheidung treffen & mit Phase 1 (Brewfiles) starten
+- [ ] Das Readme ist ja grösstenteils von Upstream. Gibt es darin Dinge, die für uns nicht gelten oder hat es allenfalls Dinge die man noch dokumentieren müsste darin?
 
 ## In Arbeit
 
