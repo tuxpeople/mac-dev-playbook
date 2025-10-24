@@ -62,15 +62,25 @@
     state: directory
   become: false
 
-- name: Ensure kubeconfig exists
-  ansible.builtin.file:
+- name: Check if kubeconfig exists
+  ansible.builtin.stat:
     path: "{{myhomedir}}/.kube/config"
-    state: absent
+  register: existing_kubeconfig
+
+- name: Backup existing kubeconfig
+  ansible.builtin.copy:
+    src: "{{myhomedir}}/.kube/config"
+    dest: "{{myhomedir}}/.kube/config.backup.{{ ansible_date_time.epoch }}"
+    remote_src: yes
     mode: '0600'
+  when: existing_kubeconfig.stat.exists
   become: false
 
-- name: Regenerating {{ mybrewbindir }}/kubectl config
-  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl konfig merge {{myhomedir}}/iCloudDrive/Allgemein/kubectl/* > {{myhomedir}}/.kube/config"
+- name: Regenerate kubectl config (atomic operation)
+  ansible.builtin.shell: |
+    {{ mybrewbindir }}/kubectl konfig merge {{myhomedir}}/iCloudDrive/Allgemein/kubectl/* > {{myhomedir}}/.kube/config.new
+    mv {{myhomedir}}/.kube/config.new {{myhomedir}}/.kube/config
   args:
     executable: "{{ mybrewbindir }}/bash"
   become: false
+  changed_when: true
