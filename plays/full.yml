@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  gather_facts: false
   environment:
     PATH: "{{env_path}}"
 
@@ -7,6 +8,18 @@
     - homebrew_use_brewfile: true
 
   pre_tasks:
+    - name: Load sudo password from 1Password
+      ansible.builtin.set_fact:
+        ansible_become_pass: "{{ lookup('community.general.onepassword', onepassword_sudo_item, errors='warn') }}"
+      when:
+        - ansible_become_pass is not defined or ansible_become_pass | length == 0
+        - onepassword_sudo_item is defined
+      become: false
+
+    - name: Gather system facts
+      ansible.builtin.setup:
+      become: true
+
     - import_tasks: ../tasks/pre/additional-facts.yml
     - import_tasks: ../tasks/pre/baseconfig.yml
 
