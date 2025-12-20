@@ -160,9 +160,46 @@ You can also run macOS itself inside a VM, for at least some of the required tes
 
 Check out [Ansible for DevOps](https://www.ansiblefordevops.com/), which teaches you how to automate almost anything with Ansible.
 
+## Documentation
+
+This repository follows a **layered documentation approach**:
+
+### Technical Documentation (This Repository)
+
+**For setup, usage, and technical details:**
+- **[README.md](README.md)** (this file) - Quick start and basic usage
+- **[CLAUDE.md](CLAUDE.md)** - Complete technical reference for AI assistants
+- **[DOCUMENTATION_STRATEGY.md](DOCUMENTATION_STRATEGY.md)** - Documentation architecture
+- **[docs/](docs/)** - Extended documentation (installation, playbooks, roles, troubleshooting)
+
+### Conceptual Documentation (Obsidian Vault)
+
+**For concepts, context, and Homelab integration:**
+
+Located in Obsidian Vault: `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Personal/📚 Wissen/🏠 Persönlich/🎨 Hobbys/Homelab/Clients/macOS/`
+
+**Key documents:**
+- **README.md** - macOS Management Overview & Homelab Integration
+- **Ansible-Playbooks.md** - What each playbook does (conceptual)
+- **Application-Management.md** - App lifecycle philosophy  
+- **Configuration-Profiles.md** - macOS Settings & Dotfiles (why)
+- **Business-vs-Private.md** - Conceptual differences between Business & Private Macs
+
+**Also see:**
+- **Homelab/Decisions/** - Decision Records (e.g., "Why Ansible for Mac Management")
+- **Homelab/README.md** - Homelab Hub (main overview)
+
+> 💡 **Layered Documentation:**  
+> This repository contains **HOW** (technical implementation).  
+> Obsidian contains **WHY & WHAT** (concepts, decisions, integration).  
+>  
+> See [DOCUMENTATION_STRATEGY.md](DOCUMENTATION_STRATEGY.md) for details.
+
 ## Author
 
 This project was created by [Jeff Geerling](https://www.jeffgeerling.com/) (originally inspired by [MWGriffin/ansible-playbooks](https://github.com/MWGriffin/ansible-playbooks)).
+
+Adapted and maintained by Thomas Deutsch for personal use.
 
 [badge-gh-actions]: https://github.com/geerlingguy/mac-dev-playbook/workflows/CI/badge.svg?event=push
 [link-gh-actions]: https://github.com/geerlingguy/mac-dev-playbook/actions?query=workflow%3ACI

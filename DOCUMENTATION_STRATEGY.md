@@ -2,6 +2,22 @@
 
 > **How documentation is organized across Repository and Obsidian**
 
+## 🔑 TL;DR - Quick Reference
+
+**Need technical implementation details?** → Look here (Git Repository)
+- How to install: `README.md`
+- Complete reference: `CLAUDE.md`
+- Detailed guides: `docs/`
+
+**Need conceptual understanding & integration?** → Look in Obsidian
+- Path: `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Personal/📚 Wissen/🏠 Persönlich/🎨 Hobbys/Homelab/Clients/macOS/`
+- Why Ansible was chosen (Decision Records)
+- How this integrates with Homelab infrastructure
+- Business vs. Private conceptual differences
+- Operational procedures & workflows
+
+**Key Principle:** Repository = HOW | Obsidian = WHY & WHAT
+
 ## 🎯 Philosophy: Layered Documentation
 
 This repository follows a **layered documentation approach** that separates operational truth (code) from conceptual integration (knowledge management).
@@ -89,6 +105,9 @@ Obsidian: ~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Personal/
 - ✅ Links to related Homelab documentation
 - ✅ High-level operational procedures
 - ✅ Context & decision history
+
+> ⚠️ **Important:** Concepts, decisions, and integration context live in Obsidian, NOT in this repository.  
+> Don't duplicate conceptual content here - use cross-references instead.
 
 ## 🔗 Cross-Referencing
 
