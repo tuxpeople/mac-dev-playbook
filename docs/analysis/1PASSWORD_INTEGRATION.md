@@ -421,6 +421,18 @@ npm:                    read-only or publish
 
 ---
 
+## ✅ Aktuelle Umsetzung für sudo/become
+
+- Pro Host (`inventories/host_vars/<hostname>.yml`) gibt es jetzt nur noch ein Feld `onepassword_sudo_item`.
+- Das Playbook lädt in `pre_tasks` genau **einmal** die sudo-Passphrase via `lookup('community.general.onepassword', onepassword_sudo_item, errors='warn')`.
+- Danach läuft `setup` erneut mit `become: true` und legt die temporäre passwordlose sudo-Regel an.
+- Vorteil: 1Password muss nur zu Playbook-Beginn autorisiert werden – keine Popups bei jedem Task mehr.
+- Voraussetzung: Vor dem Run einmal `eval "$(op signin <account>)"` im Terminal oder 1Password-App freigeben.
+
+> Falls kein `onepassword_sudo_item` gesetzt ist, erwartet Ansible wie gewohnt ein bereits definiertes `ansible_become_pass` (z. B. via Vault).
+
+---
+
 ## 🚀 Next Steps
 
 1. **Immediate**:
