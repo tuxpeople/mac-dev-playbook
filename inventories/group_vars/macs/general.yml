@@ -1,11 +1,12 @@
 ansible_become_method: sudo
 ansible_python_interpreter: "/Library/Developer/CommandLineTools/usr/bin/python3"
 myhomedir: "~"
+mybrewbindir: "{{ (ansible_architecture is defined and 'arm64' in ansible_architecture) | ternary('/opt/homebrew/bin', '/usr/local/bin') }}"
 
 downloads: ~/.ansible-downloads/
 
 the_user: "{{ ansible_user_id }}"
-env_path: "{{ mybrewbindir }}:{{myhomedir}}/.krew/bin:{{ansible_env.PATH}}"
+env_path: "{{ mybrewbindir }}:{{ (myhomedir | default('~')) }}/.krew/bin:{{ ansible_env.PATH | default(lookup('env', 'PATH')) }}"
 
 softwareupdate_recommended_only: true
 osx_script: "{{myhomedir}}/.macos --no-restart"
