@@ -20,17 +20,20 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - [ ] iCloud-Dependency untersuchen: Was steht in filelists?
     - [ ] Optional: Konsolidierung evaluieren (siehe Analyse Option 2)
 
-- [ ] **Dotfiles vs. Ansible Repo - Verantwortlichkeiten klären** ✅ **ANALYSIERT**
-  - **Status**: Vollständige Analyse erstellt in `docs/analysis/DOTFILES_ANSIBLE_ANALYSIS.md`
-  - **Findings**:
-    - `.macos` (952 Zeilen!): Wird von `tasks/osx.yml` ausgeführt, sollte zu Ansible-Tasks werden
-    - `Brewfiles`: Liegen im Dotfiles-Repo, werden aber nur von Ansible genutzt
-    - Echte Dotfiles: Sollten im Dotfiles-Repo bleiben (Shell, Git, Vim configs)
-  - **Empfehlung**: 3-Phasen-Migration
-    1. Brewfiles ins Ansible-Repo verschieben (schnell & einfach)
-    2. `.macos` zu `community.general.osx_defaults` Tasks konvertieren (aufwändig)
-    3. Dotfiles-Repo aufräumen (Duplikate löschen)
-  - **Nächster Schritt**: Entscheidung treffen & mit Phase 1 (Brewfiles) starten
+- [ ] **Dotfiles vs. Ansible Repo - Phase 2 & 3** 🔄 **PHASE 1 ABGESCHLOSSEN (2025-12-22)**
+  - **Phase 1: Brewfiles verschieben** ✅ **ERLEDIGT**
+    - Brewfiles von dotfiles nach `files/brewfile/business_mac/` und `private_mac/`
+    - Config aktualisiert in `brew.yml` (beide Groups)
+    - Wichtige Erkenntnis: Brewfiles dürfen NICHT in `group_vars/` (wird als YAML geparst)
+    - Dokumentiert in `docs/BREWFILE_MIGRATION.md`
+    - Siehe auch: `docs/analysis/REPOSITORY_REVIEW.md` Priority 2
+  - **Phase 2: .macos konvertieren** (offen)
+    - `.macos` (952 Zeilen) zu `community.general.osx_defaults` Tasks konvertieren
+    - Aufwändig, aber macht Settings transparenter
+  - **Phase 3: Dotfiles-Repo aufräumen** (offen)
+    - Duplikate entfernen
+    - Nur echte Dotfiles behalten
+
 - [ ] Das Readme ist ja grösstenteils von Upstream. Gibt es darin Dinge, die für uns nicht gelten oder hat es allenfalls Dinge die man noch dokumentieren müsste darin?
 
 ## In Arbeit

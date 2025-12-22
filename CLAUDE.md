@@ -59,23 +59,36 @@ Defined in `requirements.yml`:
 
 ## Common Commands
 
-### Initial Setup
+**See [docs/WORKFLOWS.md](docs/WORKFLOWS.md) for complete workflow documentation.**
+
+### Initial Setup (Brand New Mac)
 
 ```bash
-# Install Python 3.11.8 with pyenv and create virtualenv
-pyenv install 3.11.8
-pyenv virtualenv 3.11.8 mac-dev-playbook-venv
-pyenv activate mac-dev-playbook-venv
+# Bootstrap a completely fresh Mac (runs before anything else)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
 
-# Install dependencies
-pip3 install --requirement requirements.txt
-ansible-galaxy install -r requirements.yml
-
-# Run full provisioning
-ansible-playbook plays/full.yml -i inventories -l $(hostname) --connection=local
+# Prerequisites: Create inventories/host_vars/<hostname>.yml BEFORE running
+# See: docs/NEW_MAC_SETUP.md
 ```
 
-### Daily Updates
+### Configuration Changes (After Editing Config Files)
+
+```bash
+# Apply all configuration changes
+./scripts/macapply
+
+# Or apply only specific parts (faster)
+./scripts/macapply --tags homebrew  # Only Homebrew packages
+./scripts/macapply --tags dock      # Only Dock configuration
+./scripts/macapply --tags osx       # Only macOS settings
+
+# Dry run (see what would change)
+./scripts/macapply --check --diff
+
+# Available tags: homebrew, dotfiles, mas, dock, sudoers, terminal, osx, fonts, extra-packages, sublime-text, post
+```
+
+### Daily Updates (Maintenance)
 
 ```bash
 # Run the macupdate script (located in scripts/macupdate)
@@ -94,6 +107,11 @@ ln -sf ~/development/github/tuxpeople/mac-dev-playbook/scripts/macupdate \
        ~/iCloudDrive/Allgemein/bin/macupdate
 ~/iCloudDrive/Allgemein/bin/macupdate
 ```
+
+**Summary**:
+- `init.sh`: Once per Mac (fresh setup)
+- `macapply`: When you change configuration (brew.yml, dock.yml, etc.)
+- `macupdate`: Daily/weekly (updates packages and system)
 
 ### Manual Playbook Execution
 
@@ -175,11 +193,20 @@ When starting a new session, Claude should read these files:
 - **docs/sessions/SESSION_STATUS.md**: Current session status, what was done, what's next
 - **docs/TODO.md**: Long-term tasks that span multiple sessions
 - **docs/analysis/IMPROVEMENTS.md**: All identified code quality issues (64 remaining: 21 HIGH + 41 MEDIUM + 2 LOW)
+- **docs/analysis/REPOSITORY_REVIEW.md**: Comprehensive architecture review and recommendations (2025-12-22)
+
+**Key Documentation**:
+- **docs/WORKFLOWS.md**: Complete guide for all workflows (init, apply, update)
+- **docs/NEW_MAC_SETUP.md**: Step-by-step guide for setting up a new Mac
+- **CLAUDE.md** (this file): AI assistant context and repository overview
 
 **Purpose**:
 - `SESSION_STATUS.md`: Session-specific progress tracking
 - `TODO.md`: General tasks, ideas, maintenance items
 - `IMPROVEMENTS.md`: Technical debt and code quality improvements
+- `REPOSITORY_REVIEW.md`: Architecture analysis and prioritized improvement recommendations
+- `WORKFLOWS.md`: When to use init.sh vs macapply vs macupdate
+- `NEW_MAC_SETUP.md`: Prerequisites and steps for bootstrapping a new Mac
 
 ## Code Quality & Pre-Commit Checks
 

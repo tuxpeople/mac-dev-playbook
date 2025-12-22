@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail  # Exit on error, undefined vars, pipe failures
 
-# Configuration
-PYTHON_VERSION="${PYTHON_VERSION:-3.11.8}"
-
 # Determine repository directory
 # 1. Use environment variable if set
 # 2. Try to auto-detect from script location (resolves symlinks)
@@ -22,6 +19,15 @@ fi
 
 # Fall back to hardcoded path if auto-detection failed
 REPO_DIR="${REPO_DIR:-${HOME}/development/github/tuxpeople/mac-dev-playbook}"
+
+# Read Python version from .python-version file (centralized version management)
+PYTHON_VERSION_FILE="${REPO_DIR}/.python-version"
+if [[ -f "${PYTHON_VERSION_FILE}" ]]; then
+  PYTHON_VERSION=$(cat "${PYTHON_VERSION_FILE}" | tr -d '[:space:]')
+else
+  # Fallback to hardcoded version if file doesn't exist
+  PYTHON_VERSION="3.11.8"
+fi
 
 VENV_NAME="mac-dev-playbook-venv"
 LOG_FILE="${HOME}/.macupdate.log"

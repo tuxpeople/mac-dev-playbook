@@ -25,17 +25,17 @@ function installcli() {
 
 step "Check prerequisites"
 echo "Are you logged into Mac Appstore?"
-read -p "Press enter to continue"
+read -r -p "Press enter to continue"
 echo ""
-echo "Enter the hostname: "  
-read newhostname  
+echo "Enter the hostname: "
+read -r newhostname
 echo ""
-echo "Sudo magic, please enter sudo-password if asked"
-# Sudo Magic :)
-sudo -v
-
-# Keep-alive: update existing `sudo` time stamp until we have finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+echo ""
+echo "Do you want to sync files from iCloud Drive? (y/N)"
+echo "This will download dotfiles and vault password from iCloud."
+read -r -p "Choose: " sync_icloud
+sync_icloud=${sync_icloud:-n}
+echo ""
 
 [ ! -d "/Library/Developer/CommandLineTools" ] && installcli
 
@@ -44,38 +44,47 @@ echo " - Cloning Repo"
 mkdir -p /tmp/git || exit 1
 git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git || exit 1
 
-echo " - Downloading important files"
-cd ~
-IFS=$'\n'
-for FILE in Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt
-do
-  while [ ! -f "${FILE}" ]
+if [[ "${sync_icloud}" == "y" || "${sync_icloud}" == "Y" ]]; then
+  echo " - Downloading important files from iCloud"
+  cd ~
+  IFS=$'\n'
+  for FILE in Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt
   do
-    echo Checking for "${FILE}"
-    brctl download ${FILE}
-    sleep 10
+    while [ ! -f "${FILE}" ]
+    do
+      echo Checking for "${FILE}"
+      brctl download "${FILE}"
+      sleep 10
+    done
   done
-done
-for FILE in $(cat Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt)
-do
-  while [ ! -f "${FILE}" ]
+  for FILE in $(cat Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt)
   do
-    echo Checking for "${FILE}"
-    brctl download ${FILE}
-    sleep 10
+    while [ ! -f "${FILE}" ]
+    do
+      echo Checking for "${FILE}"
+      brctl download "${FILE}"
+      sleep 10
+    done
   done
-done
-for DIR in $(cat Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt)
-do
-  while [ ! -d "${DIR}" ]
+  for DIR in $(cat Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt)
   do
-    echo Checking for "${DIR}"
-    brctl download ${DIR}
-    sleep 10
+    while [ ! -d "${DIR}" ]
+    do
+      echo Checking for "${DIR}"
+      brctl download "${DIR}"
+      sleep 10
+    done
   done
-done
-unset IFS
-${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password
+  unset IFS
+
+  if [ -f "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password" ]; then
+    ${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password
+  else
+    echo "⚠️  WARNING: add_vault_password script not found in iCloud"
+  fi
+else
+  echo " - Skipping iCloud sync (you'll need to provide vault password manually)"
+fi
 
 echo " - Upgrading PIP"
 PYTHON_BIN="/Library/Developer/CommandLineTools/usr/bin/python3"
@@ -98,18 +107,59 @@ sudo chown root:wheel /Library/LaunchDaemons/limit.maxproc.plist
 sudo launchctl load -w /Library/LaunchDaemons/limit.maxfiles.plist
 sudo launchctl load -w /Library/LaunchDaemons/limit.maxproc.plist
 
-if [ -n "${newhostname}" ]; then
-  sudo scutil --set HostName ${newhostname}
-  sudo scutil --set LocalHostName ${newhostname}
-  sudo scutil --set ComputerName ${newhostname}
+if [[ -n "${newhostname}" ]]; then
+  sudo scutil --set HostName "${newhostname}"
+  sudo scutil --set LocalHostName "${newhostname}"
+  sudo scutil --set ComputerName "${newhostname}"
   sudo dscacheutil -flushcache
 else
   newhostname="$(hostname)"
 fi
 
+step "Preparing Ansible configuration"
+
+# Check if host_vars file exists in the repo
+HOST_VARS_FILE="/tmp/git/inventories/host_vars/${newhostname}.yml"
+VAULT_PASSWORD_FILE="${HOME}/iCloudDrive/Allgemein/bin/vault_password_file"
+ANSIBLE_EXTRA_ARGS=""
+
+if [[ ! -f "${HOST_VARS_FILE}" ]]; then
+  echo ""
+  echo "⚠️  WARNING: No host configuration found!"
+  echo "Expected file: inventories/host_vars/${newhostname}.yml"
+  echo ""
+  echo "You should create this file BEFORE running init.sh:"
+  echo "  1. Use: ./scripts/create-host-config.sh ${newhostname}"
+  echo "  2. Or: Copy inventories/host_vars/TEMPLATE.yml to inventories/host_vars/${newhostname}.yml"
+  echo "  3. Commit and push to git"
+  echo ""
+  echo "Without this file, sudo password cannot be decrypted!"
+  echo ""
+  read -r -p "Continue anyway? (y/N): " continue_setup
+  if [[ "${continue_setup}" != "y" && "${continue_setup}" != "Y" ]]; then
+    echo "Aborting setup. Please create host configuration first."
+    exit 1
+  fi
+fi
+
+# Determine vault password source
+if [[ -f "${VAULT_PASSWORD_FILE}" ]]; then
+  echo "✓ Using vault password from: ${VAULT_PASSWORD_FILE}"
+  ANSIBLE_EXTRA_ARGS="--vault-password-file=${VAULT_PASSWORD_FILE}"
+else
+  echo "ℹ️  Vault password file not found"
+  echo "You will be prompted for Ansible Vault password during playbook run"
+  ANSIBLE_EXTRA_ARGS="--ask-vault-pass"
+fi
+
 step "Starting Ansible run"
+
 echo "If something went wrong, start this step again with:"
-echo '     cd /tmp/git'
-echo '     export newhostname=<HOSTNAME>'
-echo '     ansible-playbook plays/full.yml -i inventories -l ${newhostname} --extra-vars "newhostname=${newhostname}" --connection=local'
-ansible-playbook plays/full.yml -i inventories -l ${newhostname} --extra-vars "newhostname=${newhostname}" --connection=local
+echo "     cd /tmp/git"
+echo "     export newhostname=<HOSTNAME>"
+if [[ -n "${ANSIBLE_EXTRA_ARGS}" ]]; then
+  echo "     ansible-playbook plays/full.yml -i inventories -l \${newhostname} --extra-vars \"newhostname=\${newhostname}\" --connection=local ${ANSIBLE_EXTRA_ARGS}"
+fi
+
+# shellcheck disable=SC2086
+ansible-playbook plays/full.yml -i inventories -l "${newhostname}" --extra-vars "newhostname=${newhostname}" --connection=local ${ANSIBLE_EXTRA_ARGS}

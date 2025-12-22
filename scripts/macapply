@@ -1,0 +1,196 @@
+#!/bin/bash
+#
+# macapply - Apply full configuration to current Mac
+#
+# Usage:
+#   macapply              # Full run
+#   macapply --tags dock  # Only specific tags
+#
+# This script applies the full Mac configuration (plays/full.yml)
+# Use this after making configuration changes to apply them to your Mac.
+#
+# For daily updates, use: macupdate
+# For initial setup of a NEW Mac, use: init.sh
+#
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Logging functions
+log() {
+    echo -e "${GREEN}[macapply]${NC} $*"
+}
+
+log_warn() {
+    echo -e "${YELLOW}[macapply]${NC} $*"
+}
+
+log_error() {
+    echo -e "${RED}[macapply]${NC} $*"
+}
+
+# Script directory and repo
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Configuration
+VENV_NAME="mac-dev-playbook-venv"
+HOSTNAME=$(hostname -s)
+VAULT_PASSWORD_FILE="${HOME}/iCloudDrive/Allgemein/bin/vault_password_file"
+
+# Parse command line arguments
+ANSIBLE_ARGS=()
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --tags)
+            ANSIBLE_ARGS+=("--tags" "$2")
+            shift 2
+            ;;
+        --skip-tags)
+            ANSIBLE_ARGS+=("--skip-tags" "$2")
+            shift 2
+            ;;
+        --check)
+            ANSIBLE_ARGS+=("--check")
+            shift
+            ;;
+        --diff)
+            ANSIBLE_ARGS+=("--diff")
+            shift
+            ;;
+        -v|-vv|-vvv)
+            ANSIBLE_ARGS+=("$1")
+            shift
+            ;;
+        --help)
+            cat << EOF
+Usage: macapply [OPTIONS]
+
+Apply full Mac configuration (plays/full.yml) to the current Mac.
+Use this after making configuration changes.
+
+Options:
+  --tags TAGS        Only run plays and tasks tagged with these values
+  --skip-tags TAGS   Skip plays and tasks tagged with these values
+  --check            Don't make changes, just show what would change
+  --diff             Show differences for changed files
+  -v, -vv, -vvv      Increase verbosity
+  --help             Show this help message
+
+Examples:
+  macapply                    # Apply full configuration
+  macapply --tags homebrew    # Only update Homebrew packages
+  macapply --tags dock,osx    # Only update Dock and macOS settings
+  macapply --check --diff     # Dry run showing what would change
+
+Available tags:
+  homebrew, dotfiles, mas, dock, sudoers, terminal, osx, fonts,
+  extra-packages, sublime-text, post
+
+For daily updates (brew, system, etc.), use: macupdate
+For initial setup of a NEW Mac, use: init.sh
+EOF
+            exit 0
+            ;;
+        *)
+            log_error "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
+# Header
+log "========================================"
+log "macapply - Apply Mac Configuration"
+log "========================================"
+log "Repository: ${REPO_DIR}"
+log "Hostname: ${HOSTNAME}"
+if [[ ${#ANSIBLE_ARGS[@]} -gt 0 ]]; then
+    log "Options: ${ANSIBLE_ARGS[*]}"
+fi
+log "========================================"
+echo ""
+
+# Check if we're in a pyenv virtualenv
+if [[ -z "${PYENV_VERSION}" ]]; then
+    log_warn "Not in a pyenv virtualenv"
+    log "Activating ${VENV_NAME}..."
+
+    if ! command -v pyenv &> /dev/null; then
+        log_error "pyenv not found. Please run 'macupdate' first to set up the environment."
+        exit 1
+    fi
+
+    # Activate virtualenv
+    eval "$(pyenv init -)"
+    if pyenv versions | grep -q "${VENV_NAME}"; then
+        pyenv activate "${VENV_NAME}"
+    else
+        log_error "Virtualenv '${VENV_NAME}' not found."
+        log "Please run 'macupdate' first to create the environment."
+        exit 1
+    fi
+fi
+
+# Check if Ansible is available
+if ! command -v ansible-playbook &> /dev/null; then
+    log_error "ansible-playbook not found in current environment"
+    log "Please run 'macupdate' first to install Ansible"
+    exit 1
+fi
+
+log "Using Ansible: $(ansible-playbook --version | head -n1)"
+echo ""
+
+# Change to repo directory
+cd "${REPO_DIR}" || exit 1
+
+# Determine vault password options
+VAULT_ARGS=()
+if [[ -f "${VAULT_PASSWORD_FILE}" ]]; then
+    log "Using vault password from: ${VAULT_PASSWORD_FILE}"
+    VAULT_ARGS+=("--vault-password-file=${VAULT_PASSWORD_FILE}")
+else
+    log_warn "Vault password file not found"
+    log "You will be prompted for vault password"
+    VAULT_ARGS+=("--ask-vault-pass")
+fi
+
+# Check if host_vars exists
+HOST_VARS_FILE="${REPO_DIR}/inventories/host_vars/${HOSTNAME}.yml"
+if [[ ! -f "${HOST_VARS_FILE}" ]]; then
+    log_error "No host configuration found: ${HOST_VARS_FILE}"
+    log "Please create this file first (see docs/NEW_MAC_SETUP.md)"
+    exit 1
+fi
+
+log "Starting playbook run..."
+echo ""
+
+# Run the playbook
+if ansible-playbook plays/full.yml \
+    -i inventories \
+    -l "${HOSTNAME}" \
+    --connection=local \
+    "${VAULT_ARGS[@]}" \
+    "${ANSIBLE_ARGS[@]}"; then
+
+    echo ""
+    log "========================================"
+    log "✓ Configuration applied successfully!"
+    log "========================================"
+else
+    exit_code=$?
+    echo ""
+    log_error "========================================"
+    log_error "Configuration failed (exit code: ${exit_code})"
+    log_error "========================================"
+    exit ${exit_code}
+fi

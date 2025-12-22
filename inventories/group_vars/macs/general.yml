@@ -22,8 +22,10 @@ ntpserver: "time.euro.apple.com"
 usenetworktime: "on"
 
 # Python version management
+# Primary version is defined in .python-version file at repository root
+# scripts/macupdate reads from .python-version automatically
 python_versions_to_keep:
-  - "3.11.8"  # Used by mac-dev-playbook (see scripts/macupdate)
+  - "3.11.8"  # Primary version (keep in sync with .python-version)
   # Add other versions you want to keep here, e.g.:
   # - "3.12.9"
   # - "3.10.12"

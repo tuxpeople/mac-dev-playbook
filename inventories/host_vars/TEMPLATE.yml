@@ -1,0 +1,35 @@
+---
+# Template for new Mac host configuration
+# Copy this file to <hostname>.yml and customize
+
+# Username for ansible connection
+ansible_user: tdeutsch
+
+# Sudo password (encrypted with ansible-vault)
+# Generate with:
+#   ansible-vault encrypt_string \
+#     --vault-password-file=~/iCloudDrive/Allgemein/bin/vault_password_file \
+#     'your-sudo-password' \
+#     --name 'ansible_become_pass'
+#
+# Or if vault_password_file is not available:
+#   ansible-vault encrypt_string --ask-vault-pass 'your-sudo-password' --name 'ansible_become_pass'
+#
+ansible_become_pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          PASTE_YOUR_ENCRYPTED_PASSWORD_HERE
+
+# Optional: Use 1Password for sudo password instead of vault
+# Uncomment if you prefer 1Password (requires 1Password CLI installed)
+# onepassword_sudo_item: "op://Private/Mac Admin/password"
+
+# Host-specific overrides (optional)
+# Uncomment and customize as needed:
+
+# configure_dock: true
+# configure_dotfiles: true
+# configure_osx: true
+# configure_terminal: false
+# configure_sublime: false
+
+# Add any other host-specific variables here
