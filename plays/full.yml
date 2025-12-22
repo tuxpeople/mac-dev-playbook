@@ -5,7 +5,7 @@
     PATH: "{{env_path}}"
 
   vars:
-    - homebrew_use_brewfile: true
+    homebrew_use_brewfile: true
 
   pre_tasks:
     - name: Load sudo password from 1Password
