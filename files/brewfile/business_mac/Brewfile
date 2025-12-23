@@ -216,6 +216,8 @@ brew "netcat"
 brew "ngrep"
 # Port scanning utility for large networks
 brew "nmap"
+# Node.js JavaScript runtime and npm package manager
+brew "node"
 # Prometheus exporter for machine metrics
 brew "node_exporter", restart_service: :changed
 # Network performance measurement tool
