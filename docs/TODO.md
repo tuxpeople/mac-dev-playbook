@@ -65,6 +65,20 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
   - Prüfen: Gibt es neue Settings in neueren macOS-Versionen?
   - Optional: Konvertierung von `.macos` zu `community.general.osx_defaults` Tasks
 
+- [ ] **Desktop-Hintergrund automatisiert setzen**
+  - Unterschiedliche Bilder für private_mac vs. business_mac
+  - Externe Monitore berücksichtigen (auch für künftig angesteckte Monitore)
+  - Hintergrundbild evtl. zuerst herunterladen (wo speichern?)
+  - Tool: `defaults write com.apple.desktop` oder AppleScript?
+
+- [ ] **Zusätzliche Fonts für Private Macs**
+  - Problem: Fonts dürfen nicht öffentlich im Internet stehen (Lizenz?)
+  - Lösungsoptionen:
+    - iCloud Drive als Quelle (analog zu "Open Umb.app" in business_mac-settings.yml)?
+    - Private Git Repo (z.B. GitHub private)?
+    - Lokal vorhandene Fonts prüfen und nur kopieren wenn vorhanden?
+  - Welche Fonts werden benötigt?
+
 ## In Arbeit
 
 _(Items die gerade bearbeitet werden)_
