@@ -48,6 +48,8 @@ brew "cilium-cli"
 brew "cloudflared"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
+# AI-powered CLI assistant
+brew "codex"
 # Container Signing
 brew "cosign"
 # Apjanke's fork of the classic cowsay project
@@ -62,6 +64,8 @@ brew "rtmpdump"
 brew "curl"
 # Display user-friendly message boxes from shell scripts
 brew "dialog"
+# Passphrases to remember
+brew "diceware"
 # Load/unload environment variables based on $PWD
 brew "direnv"
 # Platform keystore credential helper for Docker
@@ -88,6 +92,8 @@ brew "git"
 brew "git-flow"
 # Audit git repos for secrets
 brew "gitleaks"
+# GitLab CLI tool
+brew "glab"
 # Convert text strings to printed bars
 brew "gnu-barcode"
 # Command-line option parsing utility
@@ -108,6 +114,8 @@ brew "go"
 brew "gpgme"
 # GNU grep, egrep and fgrep
 brew "grep"
+# Vulnerability scanner for container images and filesystems
+brew "grype"
 # Popular GNU data compression program
 brew "gzip"
 # Smarter Dockerfile linter to validate best practices
@@ -154,8 +162,12 @@ brew "kompose"
 brew "kubernetes-cli"
 # Package manager for kubectl plugins
 brew "krew"
+# Kubernetes prompt helper
+brew "kube-ps1"
 # FAST Kubernetes manifests validator, with support for Custom Resources!
 brew "kubeconform"
+# Colorize your kubectl output
+brew "kubecolor"
 # Template-free customization of Kubernetes YAML manifests
 brew "kustomize"
 # Simple terminal UI for git commands
@@ -226,6 +238,8 @@ brew "oci-cli"
 brew "openshift-cli"
 # 7-Zip (high compression file archiver) implementation
 brew "p7zip"
+# Swiss-army knife of markup format conversion
+brew "pandoc"
 # Display the PID number for a given process name
 brew "pidof"
 # Pinentry for GPG on Mac
@@ -262,6 +276,8 @@ brew "qpdf"
 brew "qprint"
 # QR Code generation
 brew "qrencode"
+# Rancher CLI
+brew "rancher-cli"
 # Rsync for cloud storage
 brew "rclone"
 # Reverse differential backup tool, over a network or locally
