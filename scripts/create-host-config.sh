@@ -76,8 +76,6 @@ ansible_become_pass: ${ENCRYPTED_PASSWORD}
 # configure_dock: true
 # configure_dotfiles: true
 # configure_osx: true
-# configure_terminal: false
-# configure_sublime: false
 EOF
 
 echo ""

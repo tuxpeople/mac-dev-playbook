@@ -50,9 +50,6 @@ dockitems:
   - name: "Royal TSX"
     path: "\"/Applications/Royal TSX.app\""
     pos: 17
-  - name: "Citrix Workspace"
-    path: "\"/Applications/Citrix Workspace.app\""
-    pos: 18
   - name: "App Store"
     path: "\"/System/Applications/App Store.app\""
     pos: 19

@@ -29,7 +29,5 @@ ansible_become_pass: !vault |
 # configure_dock: true
 # configure_dotfiles: true
 # configure_osx: true
-# configure_terminal: false
-# configure_sublime: false
 
 # Add any other host-specific variables here
