@@ -36,6 +36,35 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
 
 - [ ] Das Readme ist ja grösstenteils von Upstream. Gibt es darin Dinge, die für uns nicht gelten oder hat es allenfalls Dinge die man noch dokumentieren müsste darin?
 
+- [ ] **Drucker konfigurieren**
+  - Drucker-Setup automatisieren (falls möglich)
+  - Welche Drucker werden genutzt? (Business vs. Private)
+  - Gibt es spezifische Drucker-Einstellungen die persistiert werden müssen?
+
+- [ ] **Extra Packages Audit**
+  - Feststellen, ob manuell npm, pip, gem, composer Pakete installiert wurden
+  - Check: `npm list -g --depth=0`, `pip list`, `gem list`, `composer global show`
+  - Gefundene Pakete in `inventories/group_vars/macs/additional-packages.yml` eintragen
+  - Ziel: Reproduzierbare Package-Installation über Ansible
+
+- [ ] **macOS Settings Audit - Funktionalität**
+  - Durchgehen, welche der Mac Settings (`defaults write...` etc.) auf aktuellen macOS noch funktionieren
+  - File: `~/.macos` (952 Zeilen) bzw. die entsprechenden `tasks/osx.yml` Tasks
+  - Deprecated Settings identifizieren und entfernen
+  - Neue macOS-Versionen können Settings ändern/entfernen
+
+- [ ] **macOS Settings Audit - Manuelle Änderungen**
+  - Durchgehen, welche Mac Settings manuell geändert wurden (nicht in Ansible)
+  - Vergleich: Aktuelle System-Settings vs. Ansible-Config
+  - Manuelle Änderungen dokumentieren und in Ansible übernehmen
+  - Tool: `defaults read` für aktuelle Werte
+
+- [ ] **macOS Settings - Automatisierung erweitern**
+  - Herausfinden, welche weiteren Settings automatisiert werden könnten
+  - Kandidaten: System Preferences die regelmäßig manuell gesetzt werden
+  - Prüfen: Gibt es neue Settings in neueren macOS-Versionen?
+  - Optional: Konvertierung von `.macos` zu `community.general.osx_defaults` Tasks
+
 ## In Arbeit
 
 _(Items die gerade bearbeitet werden)_
