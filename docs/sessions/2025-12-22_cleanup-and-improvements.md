@@ -2,9 +2,9 @@
 # Session: Cleanup & Improvements
 
 **Date**: 2025-12-22 (Fortsetzung: 2025-12-23)
-**Status**: ✅ ABGESCHLOSSEN
-**Focus**: Repository cleanup after defork decision
-**Completed**: All cleanup tasks finished - Terminal, Sudoers, Citrix, Fonts verified, Extra-Packages verified
+**Status**: ✅ VOLLSTÄNDIG ABGESCHLOSSEN
+**Focus**: Repository cleanup, Munki enhancement, myenv refactoring, Extra Packages Audit
+**Completed**: Cleanup + Homebrew Fix + Munki Enhancement + Variable Optimization + NPM Packages
 
 ---
 
@@ -535,6 +535,153 @@ templates/Package_Control.sublime-settings.j2
 
 ---
 
-**Session Status**: ✅ ABGESCHLOSSEN (Fortsetzung am 2025-12-23)
-**Letzte Aktualisierung**: 2025-12-23 08:45 UTC
-**Bereit für Commit**: ✅ JA
+**Session Status**: ✅ VOLLSTÄNDIG ABGESCHLOSSEN
+**Letzte Aktualisierung**: 2025-12-23 ~11:30 UTC
+**Total Commits**: 8 (2025-12-22: 1, 2025-12-23: 7)
+
+---
+
+## 📦 Session Continuation - 2025-12-23
+
+### 12. Homebrew Symlink Fix
+
+**Problem**: Symlink `roles/homebrew` verwies auf archivierten Fork
+
+**Gelöscht**:
+- `roles/homebrew` (broken symlink)
+
+**Geändert**:
+- `plays/update.yml:67` - `name: homebrew` → `name: geerlingguy.mac.homebrew`
+- `.yamllint` - Ignore-Regel für `roles/homebrew/` entfernt
+- Dokumentation aktualisiert (4 Dateien)
+
+**Commit**: `fda2246`
+**Status**: ✅ Abgeschlossen
+
+---
+
+### 13. TODO-Liste erweitert
+
+**Hinzugefügt**:
+- Drucker konfigurieren
+- Extra Packages Audit (npm, pip, gem, composer)
+- macOS Settings Audit - Funktionalität
+- macOS Settings Audit - Manuelle Änderungen
+- macOS Settings - Automatisierung erweitern
+
+**Commit**: `f151588`
+**Status**: ✅ Abgeschlossen
+
+---
+
+### 14. Munki Enhancement
+
+**Problem**: `munki_check_only: true` (nur checken, nicht installieren)
+
+**Lösung**:
+```yaml
+# inventories/group_vars/macs/munki.yml
+munki_check_only: false  # Von true geändert
+```
+
+**Verhalten jetzt**:
+- Business Mac: Prüft UND installiert Munki Updates
+- Private Mac: Munki wird komplett übersprungen (via `myenv == "business_mac"`)
+
+**Commit**: `a464630`
+**Status**: ✅ Abgeschlossen
+
+---
+
+### 15. Variable Optimization: munki_update → myenv
+
+**Problem**: Redundante `munki_update` Variable
+
+**Gelöscht**:
+- `inventories/group_vars/business_mac/main.yml` (munki_update: true)
+- `inventories/group_vars/private_mac/main.yml` (munki_update: false)
+
+**Geändert**:
+- `plays/update.yml:76` - `when: munki_update` → `when: myenv == "business_mac"`
+
+**Vorteil**: Single Source of Truth mit `myenv` Fact aus `additional-facts.yml`
+
+**Commit**: `fba7b3b`
+**Status**: ✅ Abgeschlossen
+
+---
+
+### 16. Code Cleanup
+
+**Entfernt**: Auskommentierter redundanter Code in `tasks/post/business_mac-settings.yml`
+
+**Commit**: `725499e`
+**Status**: ✅ Abgeschlossen
+
+---
+
+### 17. Extra Packages Audit
+
+**Durchgeführt**:
+```bash
+npm list -g --depth=0  # 5 packages gefunden
+pip list              # 471 packages (projektspezifisch)
+gem list              # System Ruby broken, nicht genutzt
+composer global show  # Nicht installiert
+```
+
+**Entscheidung**:
+- ✅ `@anthropic-ai/claude-code` → In Ansible (alle Macs)
+- ❌ Andere npm Packages → Projektspezifisch
+- ❌ PIP Packages → Projektspezifisch (requirements.txt)
+
+**Hinzugefügt**:
+```yaml
+# inventories/group_vars/macs/additional-packages.yml
+npm_packages:
+  - name: "@anthropic-ai/claude-code"
+    state: latest
+```
+
+**Update-Integration**:
+- `plays/update.yml` - `import_tasks: ../tasks/extra-packages.yml` hinzugefügt
+- NPM Packages werden nun bei `macupdate` aktualisiert
+
+**Commit**: `0f6c34b`
+**Status**: ✅ Abgeschlossen
+
+---
+
+## 📊 Gesamtübersicht: 2025-12-22 + 2025-12-23
+
+### Commits (8 total):
+1. `7c420f0` - Major cleanup (Terminal, Sudoers, Citrix, Sublime)
+2. `fda2246` - Homebrew Symlink Fix
+3. `f151588` - TODO-Liste erweitert
+4. `a464630` - Munki auto-install
+5. `fba7b3b` - munki_update → myenv refactoring
+6. `725499e` - Redundanten Code entfernt
+7. `0f6c34b` - Extra Packages Audit + claude-code
+
+### Statistiken:
+- **Dateien geändert**: ~35
+- **Deletions**: ~1,650 Zeilen
+- **Insertions**: ~580 Zeilen
+- **Vereinfachungen**: 3 Variablen entfernt, myenv als Single Source of Truth
+
+### Verbesserungen:
+- ✅ Repository deutlich schlanker (1650 Zeilen entfernt)
+- ✅ Homebrew Collection-Integration funktional
+- ✅ Munki installiert Updates automatisch (business_mac)
+- ✅ Variable Redundanz eliminiert
+- ✅ claude-code global managed
+- ✅ NPM Packages werden aktualisiert
+- ✅ Bessere Dokumentation (TODO.md erweitert)
+
+---
+
+**Next Steps** (aus TODO.md):
+- README Review
+- macOS Settings Audits
+- Drucker konfigurieren
+- .macos zu osx_defaults konvertieren (großes Projekt)
