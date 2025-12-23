@@ -652,22 +652,132 @@ npm_packages:
 
 ---
 
+---
+
+## 📦 Session Continuation - 2025-12-23 (Afternoon)
+
+### 18. TODO Items: Desktop & Fonts
+
+**Hinzugefügt zu TODO.md**:
+- Desktop-Hintergrund automatisiert setzen (business vs private, externe Monitore)
+- Zusätzliche Fonts für Private Macs (Lösung für nicht-öffentliche Fonts)
+
+**Commit**: `e99634f`
+**Status**: ✅ Abgeschlossen
+
+---
+
+### 19. Node.js Audit & Brewfile Addition
+
+**Problem**: Node.js war via Homebrew installiert (v25.2.1), aber nicht im Brewfile getracked
+
+**Analyse**:
+- `nodejs_enabled: false` - nvm Role wird übersprungen
+- Node.js bereits via Homebrew installiert (nicht nvm)
+- `extra-packages.yml` läuft unabhängig → claude-code wird trotzdem installiert/upgegraded
+
+**Entscheidung**: Homebrew bevorzugen (nicht nvm)
+- Konsistenz: Ein Package Manager
+- Einfachheit: Kein zusätzlicher Version Manager
+- Passt zum bestehenden Setup
+
+**Lösung**:
+```ruby
+# files/brewfile/business_mac/Brewfile (Zeile 220)
+brew "node"  # Node.js JavaScript runtime and npm package manager
+```
+
+**Status**: private_mac hatte bereits `brew "node"`, jetzt auch business_mac
+
+**Commit**: `3455b1e`
+**Status**: ✅ Abgeschlossen
+
+---
+
+### 20. Homebrew Audit - Fehlende Packages
+
+**Durchgeführt**: Vollständiger Audit aller installierten Homebrew Packages
+
+**Ergebnisse**:
+- **Total installiert**: 441 Packages
+- **In Brewfile**: 183 Packages
+- **Fehlend**: 258 Packages (davon 234 Dependencies, 24 explizit installiert)
+
+**Explizit installierte Packages** (`brew leaves`):
+```
+asciidoctor, boost, codex, d2, diceware, duckdb, falcosecurity-libs,
+glab, grype, k8sgpt, kube-ps1, kubecolor, marp-cli, mbedtls, mise,
+oven-sh/bun/bun, pandoc, popeye, poppler, pup, qt, rancher-cli,
+talosctl, weasyprint
+```
+
+**Wichtige Entdeckung**: Homebrew/mise Duplikate (17 Tools)
+```
+age, cilium-cli, cloudflared, cue, flux, go-task, helm, helmfile,
+jq, kubeconform, kustomize, m-cli, pre-commit, sops, talhelper, yq
+```
+→ Diese sind via Homebrew UND mise (k8s-homelab/.mise.toml) installiert
+
+**Entscheidung User**:
+- ✅ Zu Brewfile hinzufügen: mise, kube-ps1, glab, pandoc, grype, rancher-cli, diceware, kubecolor, codex
+- ⏸️ Ignorieren vorerst: d2, popeye, k8sgpt, duckdb, pup, bun, marp-cli, weasyprint
+- ⏸️ Duplikate: Bis auf weiteres ignorieren (beide parallel OK, mise hat PATH-Vorrang)
+
+---
+
+### 21. Brewfile Packages hinzugefügt
+
+**Packages hinzugefügt** (9 total):
+
+| Package | Business | Private | Beschreibung |
+|---------|----------|---------|--------------|
+| codex | ✅ (Zeile 44) | ✅ (Zeile 52) | AI-powered CLI assistant |
+| diceware | ✅ (Zeile 58) | ✅ (Zeile 68) | Passphrases to remember |
+| glab | ✅ (Zeile 90) | ✅ (Zeile 94) | GitLab CLI tool |
+| grype | ✅ (Zeile 118) | ✅ (Zeile 114) | Vulnerability scanner |
+| kube-ps1 | ✅ (Zeile 168) | ✅ (Zeile 160) | Kubernetes prompt helper (dotfiles) |
+| kubecolor | ✅ (Zeile 172) | ✅ (Zeile 164) | Colorize kubectl output |
+| mise | ✅ (Zeile 206) | ✅ (existed) | Polyglot runtime manager (dotfiles) |
+| pandoc | ✅ (Zeile 246) | ✅ (Zeile 232) | Swiss-army knife of markup conversion |
+| rancher-cli | ✅ (Zeile 278) | ✅ (Zeile 268) | Rancher CLI |
+
+**Dateien geändert**:
+- `files/brewfile/business_mac/Brewfile` (+18 Zeilen)
+- `files/brewfile/private_mac/Brewfile` (+16 Zeilen)
+
+**Commit**: `6894795`
+**Status**: ✅ Abgeschlossen
+
+---
+
 ## 📊 Gesamtübersicht: 2025-12-22 + 2025-12-23
 
-### Commits (8 total):
+### Commits (11 total):
+
+**2025-12-22:**
 1. `7c420f0` - Major cleanup (Terminal, Sudoers, Citrix, Sublime)
+
+**2025-12-23 (Morning):**
 2. `fda2246` - Homebrew Symlink Fix
 3. `f151588` - TODO-Liste erweitert
 4. `a464630` - Munki auto-install
 5. `fba7b3b` - munki_update → myenv refactoring
 6. `725499e` - Redundanten Code entfernt
 7. `0f6c34b` - Extra Packages Audit + claude-code
+8. `d2b118f` - Session documentation for 2025-12-23
+
+**2025-12-23 (Afternoon):**
+9. `e99634f` - TODO: Desktop backgrounds & private fonts
+10. `3455b1e` - Node.js to business_mac Brewfile
+11. `6894795` - Add 9 explicitly installed tools to Brewfiles
 
 ### Statistiken:
-- **Dateien geändert**: ~35
+- **Dateien geändert**: ~40
 - **Deletions**: ~1,650 Zeilen
-- **Insertions**: ~580 Zeilen
+- **Insertions**: ~650 Zeilen
 - **Vereinfachungen**: 3 Variablen entfernt, myenv als Single Source of Truth
+- **Brewfile**: 183 → 192 Packages (+9)
+- **Reproduzierbarkeit**: Node.js + 9 Tools jetzt explizit getracked
 
 ### Verbesserungen:
 - ✅ Repository deutlich schlanker (1650 Zeilen entfernt)
@@ -676,12 +786,22 @@ npm_packages:
 - ✅ Variable Redundanz eliminiert
 - ✅ claude-code global managed
 - ✅ NPM Packages werden aktualisiert
+- ✅ Node.js explizit in Brewfile (Homebrew statt nvm)
+- ✅ 9 wichtige Tools in Brewfile (reproduzierbares Setup)
+- ✅ Homebrew-Audit durchgeführt (441 Packages analysiert)
 - ✅ Bessere Dokumentation (TODO.md erweitert)
+
+### Identifizierte Issues (nicht behoben):
+- ⚠️ 17 Homebrew/mise Duplikate (ignoriert bis auf weiteres)
+- ⚠️ 8 experimentelle Packages nicht getracked (d2, popeye, k8sgpt, etc.)
 
 ---
 
 **Next Steps** (aus TODO.md):
 - README Review
-- macOS Settings Audits
+- macOS Settings Audits (Funktionalität, Manuelle Änderungen, Automatisierung)
 - Drucker konfigurieren
+- Desktop-Hintergrund automatisieren
+- Private Fonts Lösung
 - .macos zu osx_defaults konvertieren (großes Projekt)
+- Optional: Homebrew/mise Duplikate aufräumen
