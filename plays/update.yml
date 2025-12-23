@@ -86,6 +86,9 @@
         - import_tasks: ../tasks/fonts.yml
           when: configure_osx
 
+        - import_tasks: ../tasks/extra-packages.yml
+          tags: ['extra-packages']
+
       rescue:
         - name: Log update failure
           debug:
