@@ -73,7 +73,7 @@
         - name: Run Munki updates
           include_role:
             name: munki_update
-          when: munki_update
+          when: myenv == "business_mac"
 
         - name: Update Node.js via nvm
           include_role:
