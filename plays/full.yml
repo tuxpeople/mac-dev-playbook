@@ -36,7 +36,7 @@
     - import_tasks: ../tasks/pre/install-rosetta2.yml
     - import_tasks: ../tasks/pre/cleanup-deprecated-taps.yml
     - import_tasks: ../tasks/pre/cleanup-old-python-versions.yml
-    - import_tasks: ../roles/ansible-mac-update/tasks/ssh.yaml
+    - import_tasks: ../tasks/pre/ssh.yml
 
     - name: Ensure /private/etc/sudoers.d exists
       file:
@@ -79,6 +79,18 @@
           when: configure_dotfiles
           tags: ['dotfiles']
 
+        # Mac App Store (MAS) integration - DISABLED
+        # Why: All Mac App Store apps are managed via Homebrew casks in Brewfiles instead
+        # Brewfiles location: files/brewfile/business_mac/Brewfile and private_mac/Brewfile
+        # Benefits: Single package manager (Homebrew), no mas CLI authentication issues
+        # Alternative: If you need mas, configure mas_installed_apps in group_vars and uncomment block below
+        # To re-enable:
+        #   1. Install mas CLI: brew install mas
+        #   2. Login to App Store: mas signin email@example.com (may have auth issues)
+        #   3. Uncomment block below
+        #   4. Test on non-production Mac first
+        # See: https://github.com/mas-cli/mas#known-issues
+        #
         # - name: Install Mac App Store apps
         #   include_role:
         #     name: geerlingguy.mac.mas
@@ -114,11 +126,9 @@
           when: configure_sublime
           tags: ['sublime-text']
 
-        - name: Run configured post-provision ansible task files.
-          include_tasks: "{{ outer_item }}"
-          loop_control:
-            loop_var: outer_item
-          with_fileglob: "{{ post_provision_tasks|default(omit) }}"
+        - name: Run configured post-provision ansible task files
+          include_tasks: "{{ item }}"
+          loop: "{{ post_provision_tasks | default([]) }}"
           tags: ['post']
 
       rescue:

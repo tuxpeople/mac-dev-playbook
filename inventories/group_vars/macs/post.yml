@@ -1,4 +1,5 @@
-# Glob pattern to ansible task files to run after all other tasks are finished.
+# List of ansible task files to run after all other tasks are finished.
+# Note: Tasks are executed in the order listed below
 post_provision_tasks:
   - ../tasks/post/user-config.yml
   - ../tasks/post/various-settings.yml

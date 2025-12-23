@@ -4,7 +4,11 @@
 
 [![CI][badge-gh-actions]][link-gh-actions]
 
-This playbook installs and configures most of the software I use on my Mac for web and software development. Some things in macOS are slightly difficult to automate, so I still have a few manual installation steps, but at least it's all documented here.
+> **Note**: This repository was originally forked from [geerlingguy/mac-dev-playbook](https://github.com/geerlingguy/mac-dev-playbook) (last sync: June 26, 2024, commit [358f663](https://github.com/geerlingguy/mac-dev-playbook/commit/358f663)).
+>
+> **This fork has significantly diverged** (~289 commits ahead) with custom features for managing multiple Macs (business/private). It is maintained independently and does not merge upstream changes. See [Key Differences](#key-differences-from-upstream) below.
+
+This playbook installs and configures software on multiple Macs for development and daily use. It supports managing both business and private Macs with different configurations through a hierarchical inventory system.
 
 ## Installation
 
@@ -189,11 +193,61 @@ Located in Obsidian Vault: `~/Library/Mobile Documents/iCloud~md~obsidian/Docume
 - **Homelab/Decisions/** - Decision Records (e.g., "Why Ansible for Mac Management")
 - **Homelab/README.md** - Homelab Hub (main overview)
 
-> 💡 **Layered Documentation:**  
-> This repository contains **HOW** (technical implementation).  
-> Obsidian contains **WHY & WHAT** (concepts, decisions, integration).  
->  
+> 💡 **Layered Documentation:**
+> This repository contains **HOW** (technical implementation).
+> Obsidian contains **WHY & WHAT** (concepts, decisions, integration).
+>
 > See [DOCUMENTATION_STRATEGY.md](DOCUMENTATION_STRATEGY.md) for details.
+
+## Key Differences from Upstream
+
+This fork has significantly diverged from the original geerlingguy/mac-dev-playbook with the following major changes:
+
+### Multi-Mac Management
+- **Hierarchical Inventory System**: Manage multiple Macs (business/private) with shared and specific configurations
+- **Group Variables**: `inventories/group_vars/macs/`, `business_mac/`, `private_mac/`
+- **Host Variables**: Per-host configuration in `inventories/host_vars/`
+
+### Custom Workflows
+- **`macupdate`** (`scripts/macupdate`): Daily maintenance script (updates packages, system, dotfiles)
+- **`macapply`** (`scripts/macapply`): Apply configuration changes (runs `plays/full.yml` with tags)
+- **`init.sh`**: Bootstrap script for fresh Mac setup
+
+### Enhanced Playbooks
+- **`plays/full.yml`**: Complete provisioning with temporary passwordless sudo, validation, pre-tasks
+- **`plays/update.yml`**: Focused update playbook for daily maintenance
+- **Pre-Tasks**: Rosetta2 installation, cleanup tasks, SSH setup, validation
+- **Post-Tasks**: 15+ post-provision tasks (K8s, GPG, VSCode, iTerm2, etc.)
+
+### Custom Roles
+- **`ansible-mac-update`**: macOS software updates, Homebrew updates, Microsoft updates, kubectl
+- **`munki_update`**: Munki package management
+- **`morgangraphics.nvm`**: Node.js version management
+
+### Package Management
+- **Brewfiles in Ansible Repo**: Moved from dotfiles to `files/brewfile/business_mac/` and `private_mac/`
+- **No MAS Integration**: Mac App Store apps managed via Homebrew casks instead
+- **Centralized Python Version**: `.python-version` file for consistent Python versioning
+
+### Improved Documentation
+- **Comprehensive Docs**: `docs/WORKFLOWS.md`, `docs/NEW_MAC_SETUP.md`, `docs/PYTHON_VERSION_MANAGEMENT.md`
+- **Analysis Documents**: `docs/analysis/REPOSITORY_REVIEW.md` and others
+- **Session Tracking**: `docs/sessions/` for development history
+- **CLAUDE.md**: AI assistant context with complete technical reference
+
+### Key Benefits
+- **Manage multiple Macs from single repository**
+- **Separate business/private configurations**
+- **Daily update workflow** (`macupdate`)
+- **Configuration change workflow** (`macapply`)
+- **Extensive documentation and decision records**
+
+**Divergence Stats** (as of 2025-12-22):
+- **289 commits ahead** of upstream
+- **137 files changed**, 17,000+ lines added
+- **Last sync**: June 26, 2024 ([358f663](https://github.com/geerlingguy/mac-dev-playbook/commit/358f663))
+
+For detailed technical documentation, see [CLAUDE.md](CLAUDE.md).
 
 ## Author
 
