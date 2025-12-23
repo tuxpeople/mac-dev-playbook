@@ -336,33 +336,26 @@ rm -rf files/terminal/  # Falls existiert
 
 ### E. Munki Update - Enhancement gewünscht
 
-**Aktueller Zustand**: `roles/munki_update/` - Checkt nur ob Updates verfügbar sind.
+**Status**: ✅ ERLEDIGT (2025-12-23)
 
-**User-Wunsch**: "Munki wird auf dem geschäfts Mac genutzt, den könnte man umstellen dass er nicht nur schaut ob es Updates gibt, sondern diese auch installiert."
+**Problem**: `munki_check_only: true` (nur checken, nicht installieren)
 
-**Analyse benötigt**:
-```bash
-# Check munki_update Role
-ls -la roles/munki_update/
-cat roles/munki_update/tasks/main.yml
-
-# Schauen was aktuell läuft
-grep -r "munki" inventories/group_vars/
-```
-
-**Nächste Schritte**:
-1. Role analysieren
-2. Von "check only" auf "install updates" umstellen
-3. Nur auf business_mac aktivieren (nicht private_mac)
-
-**Mögliche Änderung**:
+**Lösung**:
 ```yaml
-# Aktuell vermutlich:
-munki check  # oder managedsoftwareupdate --check
-
-# Sollte werden:
-managedsoftwareupdate --installonly  # Oder --auto
+# inventories/group_vars/macs/munki.yml
+munki_check_only: false  # Von true geändert
 ```
+
+**Verifiziert**:
+- ✅ `business_mac/main.yml`: `munki_update: true` (aktiviert)
+- ✅ `private_mac/main.yml`: `munki_update: false` (deaktiviert)
+- ✅ Role war bereits korrekt konfiguriert, nur check-only musste deaktiviert werden
+
+**Was passiert jetzt**:
+- Business Mac: Prüft UND installiert Munki Updates
+- Private Mac: Munki wird komplett übersprungen
+
+**Datei**: `inventories/group_vars/macs/munki.yml:1`
 
 ---
 
