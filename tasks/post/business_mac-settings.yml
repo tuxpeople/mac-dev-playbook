@@ -37,7 +37,3 @@
   when:
     - icloud_mounted.stat.exists
     - icloud_mounted.stat.isdir
-
-# - import_tasks: tasks/business-settings.yml
-#   when: (configure_settings) and (myenv == "business")
-#   tags: ['business']
