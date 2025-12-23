@@ -41,7 +41,6 @@ Custom Roles für erweiterte Funktionalität:
 - **ansible-mac-update/**: Microsoft Updates, kubectl, SSH/GPG key management
 - **munki_update/**: Munki package management
 - **ansible-role-nvm/**: Node.js version management
-- **homebrew/**: Symlink zu externer Collection
 - **Status**: ✅ **Kein Konflikt** - Upstream hat kein `roles/` Verzeichnis
 
 ### 1.2 Unterschiede in gemeinsamen Dateien

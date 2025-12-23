@@ -8,9 +8,6 @@ rules:
 
 ignore: |
   .github/stale.yml
-  # Only ignore symlinked external roles (homebrew -> ansible-collection-mac)
-  # ansible-mac-update and munki_update are custom roles and should be linted
-  roles/homebrew/
   # Ignore CI files in roles
   roles/**/.travis.yml
   roles/**/tests/

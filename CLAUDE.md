@@ -47,7 +47,6 @@ Located in `roles/`:
 - **ansible-mac-update**: Handles macOS software updates, Homebrew updates, Microsoft updates, kubectl updates, SSH/GPG key management
 - **munki_update**: Manages Munki package updates (when `munki_update` is enabled)
 - **ansible-role-nvm**: Node.js version management via nvm
-- **homebrew**: Symlinked from external ansible-collection-mac repository
 
 ### External Dependencies
 
@@ -184,7 +183,7 @@ The repository includes GitHub Actions CI (see `.github/workflows/` if present).
 - Temporary passwordless sudo is automatically configured during playbook runs and removed afterward
 - Configuration changes should be made in the appropriate inventory file level (not in playbooks directly)
 - For new Macs: add hostname to `inventories/macs.list` and create corresponding host_vars file
-- The homebrew role is symlinked from an external collection, modifications should be made there
+- The homebrew role comes from the `geerlingguy.mac` collection (v4.0.1)
 
 ## Documentation & Task Tracking
 

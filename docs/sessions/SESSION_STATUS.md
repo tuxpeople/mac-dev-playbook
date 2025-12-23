@@ -235,7 +235,6 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 - **Verbleibende lokale Rollen**:
   - `ansible-mac-update`: Custom role (nicht von Upstream)
   - `munki_update`: Custom role mit deutscher Doku
-  - `homebrew`: Symlink zu externer Collection
 
 #### Yamllint Code Quality (fe176cc)
 - **0 Fehler** (vorher: viele)

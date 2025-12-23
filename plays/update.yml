@@ -64,7 +64,7 @@
 
         - name: Update Homebrew packages
           include_role:
-            name: homebrew
+            name: geerlingguy.mac.homebrew
 
         - name: Run Mac updates
           include_role:

@@ -89,7 +89,6 @@ docs/
 ### Custom Roles (bereits analysiert):
 - ✅ `roles/ansible-mac-update` - Custom, wird verwendet
 - ✅ `roles/munki_update` - Custom, wird verwendet
-- ✅ `roles/homebrew` - Symlink zu externer Collection
 
 ### Zu prüfen:
 
