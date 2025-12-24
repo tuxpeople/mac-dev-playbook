@@ -20,18 +20,22 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - [ ] iCloud-Dependency untersuchen: Was steht in filelists?
     - [ ] Optional: Konsolidierung evaluieren (siehe Analyse Option 2)
 
-- [ ] **Dotfiles vs. Ansible Repo - Phase 2 & 3** 🔄 **PHASE 1 ABGESCHLOSSEN (2025-12-22)**
-  - **Phase 1: Brewfiles verschieben** ✅ **ERLEDIGT**
+- [ ] **Dotfiles vs. Ansible Repo - Phase 3** 🔄 **PHASE 1 & 2 ABGESCHLOSSEN (2025-12-24)**
+  - **Phase 1: Brewfiles verschieben** ✅ **ERLEDIGT (2025-12-22)**
     - Brewfiles von dotfiles nach `files/brewfile/business_mac/` und `private_mac/`
     - Config aktualisiert in `brew.yml` (beide Groups)
     - Wichtige Erkenntnis: Brewfiles dürfen NICHT in `group_vars/` (wird als YAML geparst)
     - Dokumentiert in `docs/BREWFILE_MIGRATION.md`
     - Siehe auch: `docs/analysis/REPOSITORY_REVIEW.md` Priority 2
-  - **Phase 2: .macos konvertieren** (offen)
-    - `.macos` (952 Zeilen) zu `community.general.osx_defaults` Tasks konvertieren
-    - Aufwändig, aber macht Settings transparenter
+  - **Phase 2: .macos konvertieren** ✅ **ERLEDIGT (2025-12-24)**
+    - 89 Settings nach Ansible migriert (defaults.yml: 12 → 90)
+    - .macos von 952 → 365 Zeilen reduziert (-62%)
+    - Orphaned Comments entfernt (264 Zeilen)
+    - Broken Settings dokumentiert (Safari/Mail auf macOS 26.2)
+    - Manuelle Checkliste erstellt für nicht automatisierbare Settings
+    - Siehe: `docs/sessions/FINAL_MIGRATION_STATS_2025-12-24.md`
   - **Phase 3: Dotfiles-Repo aufräumen** (offen)
-    - Duplikate entfernen
+    - .macos.backup* Dateien entfernen
     - Nur echte Dotfiles behalten
 
 - [ ] **myenv Variable Refactoring**
@@ -47,29 +51,21 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
   - **Vorteil**: Eine Variable weniger, nutzt Ansible-Standard
   - **Priorität**: Low (funktioniert aktuell, ist aber redundant)
 
-- [ ] **macOS Settings Audit - Funktionalität**
-  - Durchgehen, welche der Mac Settings (`defaults write...` etc.) auf aktuellen macOS noch funktionieren
-  - File: `~/.macos` (952 Zeilen) bzw. die entsprechenden `tasks/osx.yml` Tasks
-  - Deprecated Settings identifizieren und entfernen
-  - Neue macOS-Versionen können Settings ändern/entfernen
-
-- [ ] **macOS Settings Audit - Manuelle Änderungen**
-  - Durchgehen, welche Mac Settings manuell geändert wurden (nicht in Ansible)
-  - Vergleich: Aktuelle System-Settings vs. Ansible-Config
-  - Manuelle Änderungen dokumentieren und in Ansible übernehmen
-  - Tool: `defaults read` für aktuelle Werte
-
-- [ ] **macOS Settings - Automatisierung erweitern**
-  - Herausfinden, welche weiteren Settings automatisiert werden könnten
-  - Kandidaten: System Preferences die regelmäßig manuell gesetzt werden
-  - Prüfen: Gibt es neue Settings in neueren macOS-Versionen?
-  - Optional: Konvertierung von `.macos` zu `community.general.osx_defaults` Tasks
-
 - [ ] **Desktop-Hintergrund automatisiert setzen**
   - Unterschiedliche Bilder für private_mac vs. business_mac
   - Externe Monitore berücksichtigen (auch für künftig angesteckte Monitore)
   - Hintergrundbild evtl. zuerst herunterladen (wo speichern?)
   - Tool: `defaults write com.apple.desktop` oder AppleScript?
+
+- [ ] **CMDB Update Funktion Review**
+  - **Script**: `scripts/macupdate` (Zeilen 243-253)
+  - **Funktion**: `update_cmdb()` ruft `~/iCloudDrive/Allgemein/bin/update_cmdb` auf
+  - **Fragen**:
+    - Was macht das CMDB-Script genau?
+    - Ist es noch relevant/notwendig?
+    - Sollte es in Ansible integriert werden?
+    - Oder kann es entfernt werden?
+  - **Kontext**: Optional aufgerufen am Ende von macupdate
 
 
 ## In Arbeit
@@ -77,6 +73,45 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
 _(Items die gerade bearbeitet werden)_
 
 ## Erledigt
+
+- [x] **macOS Settings Migration zu Ansible** ✅ **ABGESCHLOSSEN (2025-12-24)**
+  - **89 Settings migriert** von .macos zu Ansible defaults.yml (12 → 90 Settings, +658%)
+  - **Phase 1 (71 Settings)**: System-Level (NSGlobalDomain, Dock, Finder, Screensaver, Screencapture)
+  - **Phase 2 (18 Settings)**: App-Specific Stable (ActivityMonitor, TextEdit, Terminal, DiskUtility, SoftwareUpdate, TimeMachine)
+  - **Cleanup durchgeführt**:
+    - 264 orphaned comments entfernt
+    - 33 broken settings dokumentiert (Safari/Mail domains existieren nicht mehr in macOS 26.2)
+    - 51 obsolete/commented settings dokumentiert
+    - .macos von 952 → 365 Zeilen reduziert (-62%)
+  - **Tools erstellt** (8 Python/Bash Scripts):
+    - `check-macos-settings.sh` - Validierung und Testing
+    - `convert-macos-to-ansible.py` - Phase 1 Konvertierung
+    - `convert-phase2-to-ansible.py` - Phase 2 Konvertierung
+    - `merge-settings.py` - Duplikate-Erkennung
+    - `remove-migrated-from-macos.py` - Cleanup Tool
+    - `cleanup-macos.py` - Broken/Commented Settings Entfernung
+    - `remove-orphaned-comments.py` - Comment Cleanup
+    - `analyze-macos-script.sh` - Analyse Tool
+  - **Dokumentation erstellt**:
+    - `FINAL_MIGRATION_STATS_2025-12-24.md` - Komplette Statistiken
+    - `BROKEN_DOMAIN_SETTINGS.md` - 33 broken Safari/Mail Settings
+    - `COMMENTED_MACOS_SETTINGS.md` - 51 obsolete Settings
+    - `macOS-26-manual-app-config.md` - Manuelle Checkliste (20 Settings)
+    - `MACOS_MIGRATION_COMPLETED_2025-12-24.md` - Phase 1 Report
+    - `MACOS_SETTINGS_AUDIT_2025-12-24.md` - Initial Audit
+    - `MACOS_TO_ANSIBLE_MIGRATION.md` - Migration Plan
+  - **Fixes durchgeführt**:
+    - FXInfoPanesExpanded (complex dict) zurück zu .macos verschoben
+    - lsregister -kill auskommentiert (deprecated)
+    - universalaccess auskommentiert (Berechtigungsprobleme)
+    - Spotlight config auskommentiert (System Protection)
+    - addressbook auskommentiert (Berechtigungsprobleme)
+    - Sleep timings korrigiert (displaysleep 5 < system sleep 15)
+  - **Ergebnis**:
+    - Ansible: 90 Settings (idempotent, versioniert)
+    - .macos: 38 Settings (third-party apps, hardware-specific)
+    - Manual: 20 Settings (Safari/Mail nicht automatisierbar)
+    - Zero Duplicates, Clean Separation
 
 - [x] **Drucker-Management implementiert** ✅ **ABGESCHLOSSEN (2025-12-24)**
   - **Konfigurationsdateien**:
