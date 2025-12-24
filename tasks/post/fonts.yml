@@ -1,0 +1,114 @@
+---
+# Font Installation Tasks
+# Installs fonts from three sources:
+# 1. Common fonts (all Macs) - from files/fonts/common/
+# 2. Private fonts (private Macs only) - from files/fonts/private/
+# 3. Licensed fonts (private Macs only) - from iCloud or other source
+
+- name: Ensure Fonts directory exists
+  ansible.builtin.file:
+    path: "{{ fonts_target_dir }}"
+    state: directory
+    mode: '0755'
+  become: false
+
+- name: Find common fonts in repository
+  ansible.builtin.find:
+    paths: "{{ fonts_common_dir }}"
+    patterns: "{{ fonts_extensions }}"
+    recurse: false
+  register: common_fonts_found
+  when: configure_fonts | default(false)
+  become: false
+
+- name: Install common fonts (all Macs)
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ fonts_target_dir }}/{{ item.path | basename }}"
+    mode: '0644'
+  loop: "{{ common_fonts_found.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  when:
+    - configure_fonts | default(false)
+    - common_fonts_found.matched > 0
+  become: false
+
+- name: Find private fonts in repository
+  ansible.builtin.find:
+    paths: "{{ fonts_private_dir }}"
+    patterns: "{{ fonts_extensions }}"
+    recurse: false
+  register: private_fonts_found
+  when:
+    - configure_fonts | default(false)
+    - "'private_mac' in group_names"
+  become: false
+
+- name: Install private fonts (private Macs only)
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ fonts_target_dir }}/{{ item.path | basename }}"
+    mode: '0644'
+  loop: "{{ private_fonts_found.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  when:
+    - configure_fonts | default(false)
+    - "'private_mac' in group_names"
+    - private_fonts_found.matched > 0
+  become: false
+
+- name: Check if licensed fonts source exists
+  ansible.builtin.stat:
+    path: "{{ fonts_licensed_source }}"
+  register: licensed_fonts_dir
+  when:
+    - configure_fonts | default(false)
+    - fonts_licensed_enabled | default(false)
+    - "'private_mac' in group_names"
+  become: false
+
+- name: Find licensed fonts
+  ansible.builtin.find:
+    paths: "{{ fonts_licensed_source }}"
+    patterns: "{{ fonts_extensions }}"
+    recurse: true
+  register: licensed_fonts_found
+  when:
+    - configure_fonts | default(false)
+    - fonts_licensed_enabled | default(false)
+    - "'private_mac' in group_names"
+    - licensed_fonts_dir.stat.exists | default(false)
+    - licensed_fonts_dir.stat.isdir | default(false)
+  become: false
+
+- name: Install licensed fonts from external source (private Macs only)
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ fonts_target_dir }}/{{ item.path | basename }}"
+    mode: '0644'
+    remote_src: true
+  loop: "{{ licensed_fonts_found.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  when:
+    - configure_fonts | default(false)
+    - fonts_licensed_enabled | default(false)
+    - "'private_mac' in group_names"
+    - licensed_fonts_dir.stat.exists | default(false)
+    - licensed_fonts_found.matched > 0
+  become: false
+
+- name: Clear font cache (macOS)
+  ansible.builtin.command:
+    cmd: "atsutil databases -removeUser"
+  when:
+    - configure_fonts | default(false)
+    - >
+      (common_fonts_found is defined and (common_fonts_found.matched | default(0)) > 0) or
+      (private_fonts_found is defined and (private_fonts_found.matched | default(0)) > 0) or
+      (licensed_fonts_found is defined and (licensed_fonts_found.matched | default(0)) > 0)
+  changed_when: true
+  failed_when: false
+  become: false

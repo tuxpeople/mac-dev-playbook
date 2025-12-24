@@ -1,0 +1,37 @@
+---
+# Font Configuration
+# Manages fonts across all Mac devices
+
+# Enable font installation
+configure_fonts: true
+
+# Common fonts directory (installed on ALL Macs)
+# These are committed to git - only use free/open-source fonts
+fonts_common_dir: "{{ playbook_dir }}/../files/fonts/common"
+
+# Private fonts directory (installed on private Macs only)
+# These are committed to git - only use free/open-source fonts
+fonts_private_dir: "{{ playbook_dir }}/../files/fonts/private"
+
+# Licensed fonts source (NOT committed to git)
+# For fonts that cannot be redistributed
+# Default: iCloud Drive location
+# Set to false to disable licensed fonts
+fonts_licensed_enabled: true
+fonts_licensed_source: "{{ myhomedir }}/iCloudDrive/Allgemein/fonts/licensed"
+
+# Alternative licensed fonts locations (if needed):
+# fonts_licensed_source: "{{ myhomedir }}/Dropbox/Fonts/Licensed"
+# fonts_licensed_source: "/Volumes/ExternalDrive/Fonts"
+
+# Font installation target
+# User fonts (recommended): ~/Library/Fonts
+# System fonts (requires sudo): /Library/Fonts
+fonts_target_dir: "{{ myhomedir }}/Library/Fonts"
+
+# Supported font formats
+fonts_extensions:
+  - "*.ttf"
+  - "*.otf"
+  - "*.TTF"
+  - "*.OTF"

@@ -63,19 +63,35 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
   - Hintergrundbild evtl. zuerst herunterladen (wo speichern?)
   - Tool: `defaults write com.apple.desktop` oder AppleScript?
 
-- [ ] **Zusätzliche Fonts für Private Macs**
-  - Problem: Fonts dürfen nicht öffentlich im Internet stehen (Lizenz?)
-  - Lösungsoptionen:
-    - iCloud Drive als Quelle (analog zu "Open Umb.app" in business_mac-settings.yml)?
-    - Private Git Repo (z.B. GitHub private)?
-    - Lokal vorhandene Fonts prüfen und nur kopieren wenn vorhanden?
-  - Welche Fonts werden benötigt?
 
 ## In Arbeit
 
 _(Items die gerade bearbeitet werden)_
 
 ## Erledigt
+
+- [x] **init.sh robuster gemacht** ✅ **ABGESCHLOSSEN (2025-12-24)**
+  - **Shellcheck Warnings behoben**: Alle 3 Warnings (SC2013, SC2086) behoben
+  - **Pre-Flight Checks hinzugefügt**:
+    - Admin-Rechte prüfen
+    - Internet-Verbindung testen (ping github.com)
+    - Disk Space prüfen (min. 10GB)
+  - **Error Messages verbessert**: Jeder Fehler hat jetzt klare Beschreibung + Troubleshooting-Hinweis
+  - **Code Quality**: Korrekte `while read` loops, konsistentes Quoting
+  - **Ergebnis**: 0 shellcheck Warnings, robustere Bootstrap-Erfahrung
+
+- [x] **Font-Management-System** ✅ **ABGESCHLOSSEN (2025-12-24)**
+  - **Drei-Ebenen-System implementiert**:
+    - `files/fonts/common/` - Fonts für alle Macs (committed)
+    - `files/fonts/private/` - Fonts nur für private Macs (committed)
+    - `~/iCloudDrive/Allgemein/fonts/licensed/` - Lizenzierte Fonts (nicht committed)
+  - **Features**:
+    - Automatische Installation via `./scripts/macapply --tags fonts`
+    - Integration mit bestehendem Font-Download System (Basisschrift, Hack)
+    - Font Cache Rebuild nach Installation
+    - Flexible Konfiguration via `inventories/group_vars/macs/fonts.yml`
+  - **Dokumentiert**: README in `files/fonts/README.md`
+  - **Sicherheit**: Lizenzierte Fonts in `.gitignore`
 
 - [x] **README Review** ✅ **ABGESCHLOSSEN (2025-12-24)**
   - **Problem**: README war grösstenteils von Upstream und nicht mehr aktuell

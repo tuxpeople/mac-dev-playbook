@@ -143,6 +143,7 @@ ansible-playbook main.yml -i inventories -l $(hostname) --connection=local --tag
 - **inventories/group_vars/macs/brew.yml**: Homebrew packages and casks for all Macs
 - **inventories/group_vars/macs/dock.yml**: Dock configuration
 - **inventories/group_vars/macs/dotfiles.yml**: Dotfiles repository settings
+- **inventories/group_vars/macs/fonts.yml**: Font management configuration (common, private, licensed)
 - **inventories/group_vars/macs/general.yml**: Core settings (timezone, Python interpreter, paths)
 - **inventories/group_vars/macs/LaunchAgents.yml**: macOS LaunchAgent definitions
 - **inventories/group_vars/macs/post.yml**: Post-provision task file globs
@@ -161,6 +162,7 @@ ansible-playbook main.yml -i inventories -l $(hostname) --connection=local --tag
 
 Located in `tasks/post/`, these run during the 'post' tag phase:
 
+- **fonts.yml**: Font installation (common, private, licensed fonts)
 - **k8s.yml**: Kubernetes tool setup (kubectl, krew plugins)
 - **gpg.yml**: GPG key configuration
 - **github.yml**: GitHub CLI setup
@@ -177,6 +179,32 @@ The repository includes GitHub Actions CI (see `.github/workflows/` if present).
 2. Use `--check` mode for dry runs: `ansible-playbook plays/update.yml --check`
 3. Use `--diff` to see what would change
 4. Run with increased verbosity if needed: `-v`, `-vv`, or `-vvv`
+
+## Font Management
+
+This repository includes a three-tier font management system:
+
+**1. Common Fonts** (`files/fonts/common/`)
+- Installed on ALL Macs (business + private)
+- Committed to git (free/open-source fonts only)
+- Applied with: `./scripts/macapply --tags fonts`
+
+**2. Private Fonts** (`files/fonts/private/`)
+- Installed on private Macs only (odin, thor)
+- Committed to git (free/open-source fonts only)
+- Applied with: `./scripts/macapply --tags fonts`
+
+**3. Licensed Fonts** (`~/iCloudDrive/Allgemein/fonts/licensed/`)
+- Installed on private Macs only
+- NOT committed to git (in `.gitignore`)
+- Stored in iCloud Drive for syncing
+- For fonts that cannot be redistributed
+
+**Configuration**: `inventories/group_vars/macs/fonts.yml`
+
+**Documentation**: See `files/fonts/README.md` for complete details
+
+**Supported formats**: `.ttf`, `.otf` (both cases)
 
 ## Workflow Notes
 

@@ -24,6 +24,41 @@ function installcli() {
 }
 
 step "Check prerequisites"
+
+# Pre-flight checks
+echo "Running pre-flight checks..."
+
+# Check if user is admin
+if ! groups | grep -q admin; then
+  echo "❌ ERROR: Current user is not an administrator"
+  echo "   This script requires admin privileges"
+  exit 1
+fi
+echo "✓ User has admin privileges"
+
+# Check internet connectivity
+if ! ping -c 1 -W 2 github.com > /dev/null 2>&1; then
+  echo "❌ ERROR: No internet connection detected"
+  echo "   This script requires internet to download dependencies"
+  exit 1
+fi
+echo "✓ Internet connection available"
+
+# Check disk space (require at least 10GB free)
+AVAILABLE_SPACE=$(df -g / | tail -1 | awk '{print $4}')
+if [[ "${AVAILABLE_SPACE}" -lt 10 ]]; then
+  echo "⚠️  WARNING: Low disk space (${AVAILABLE_SPACE}GB available)"
+  echo "   Recommended: At least 10GB free space"
+  read -r -p "Continue anyway? (y/N): " continue_low_space
+  if [[ "${continue_low_space}" != "y" && "${continue_low_space}" != "Y" ]]; then
+    echo "Aborting. Please free up disk space first."
+    exit 1
+  fi
+else
+  echo "✓ Sufficient disk space (${AVAILABLE_SPACE}GB available)"
+fi
+
+echo ""
 echo "Are you logged into Mac Appstore?"
 read -r -p "Press enter to continue"
 echo ""
@@ -41,14 +76,23 @@ echo ""
 
 step "Preparing system"
 echo " - Cloning Repo"
-mkdir -p /tmp/git || exit 1
-git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git || exit 1
+if ! mkdir -p /tmp/git; then
+  echo "❌ ERROR: Failed to create /tmp/git directory"
+  echo "   Check permissions and disk space"
+  exit 1
+fi
+
+if ! git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git; then
+  echo "❌ ERROR: Failed to clone repository"
+  echo "   Check internet connection and GitHub access"
+  exit 1
+fi
 
 if [[ "${sync_icloud}" == "y" || "${sync_icloud}" == "Y" ]]; then
   echo " - Downloading important files from iCloud"
   cd ~
   IFS=$'\n'
-  for FILE in Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt
+  for FILE in "Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt" "Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt"
   do
     while [ ! -f "${FILE}" ]
     do
@@ -57,7 +101,7 @@ if [[ "${sync_icloud}" == "y" || "${sync_icloud}" == "Y" ]]; then
       sleep 10
     done
   done
-  for FILE in $(cat Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt)
+  while IFS= read -r FILE
   do
     while [ ! -f "${FILE}" ]
     do
@@ -65,8 +109,8 @@ if [[ "${sync_icloud}" == "y" || "${sync_icloud}" == "Y" ]]; then
       brctl download "${FILE}"
       sleep 10
     done
-  done
-  for DIR in $(cat Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt)
+  done < "Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt"
+  while IFS= read -r DIR
   do
     while [ ! -d "${DIR}" ]
     do
@@ -74,11 +118,11 @@ if [[ "${sync_icloud}" == "y" || "${sync_icloud}" == "Y" ]]; then
       brctl download "${DIR}"
       sleep 10
     done
-  done
+  done < "Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt"
   unset IFS
 
   if [ -f "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password" ]; then
-    ${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password
+    "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password"
   else
     echo "⚠️  WARNING: add_vault_password script not found in iCloud"
   fi
@@ -88,15 +132,27 @@ fi
 
 echo " - Upgrading PIP"
 PYTHON_BIN="/Library/Developer/CommandLineTools/usr/bin/python3"
-${PYTHON_BIN} -m pip install --upgrade pip --user || exit 1
+if ! ${PYTHON_BIN} -m pip install --upgrade pip --user; then
+  echo "❌ ERROR: Failed to upgrade pip"
+  echo "   Check Python installation: ${PYTHON_BIN}"
+  exit 1
+fi
 
 echo " - Installing Ansible"
-${PYTHON_BIN} -m pip install --user --requirement /tmp/git/requirements.txt || exit 1
+if ! ${PYTHON_BIN} -m pip install --user --requirement /tmp/git/requirements.txt; then
+  echo "❌ ERROR: Failed to install Ansible dependencies"
+  echo "   Check /tmp/git/requirements.txt and internet connection"
+  exit 1
+fi
 PATH="/usr/local/bin:$(${PYTHON_BIN} -m site --user-base)/bin:$PATH"
 export PATH
 
 echo " - Installing Ansible requirements"
-ansible-galaxy install -r /tmp/git/requirements.yml || exit 1
+if ! ansible-galaxy install -r /tmp/git/requirements.yml; then
+  echo "❌ ERROR: Failed to install Ansible Galaxy requirements"
+  echo "   Check /tmp/git/requirements.yml and internet connection"
+  exit 1
+fi
 
 echo " - Setting max open files"
 cd /tmp/git

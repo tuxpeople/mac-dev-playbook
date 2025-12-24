@@ -1,29 +1,35 @@
-tap "aquasecurity/trivy"
-tap "benwebber/tunnelblickctl"
+tap "1password/tap"
 tap "buo/cask-upgrade"
+tap "carvel-dev/carvel"
 tap "devopyio/yamlfmt"
-tap "dopplerhq/cli"
+tap "emqx/mqttx"
 tap "fluxcd/tap"
+tap "gabrie30/utils"
 tap "go-task/tap"
 tap "hashicorp/tap"
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/core"
 tap "johanhaleby/kubetail"
 tap "mfuentesg/tap"
 tap "norwoodj/tap"
 tap "nrlquaker/createzap"
+tap "oven-sh/bun"
 tap "siderolabs/tap"
 tap "tuxpeople/personal"
 tap "utkuozdemir/pv-migrate"
+tap "vmware-tanzu/tanzu"
 tap "weaveworks/tap"
 # Simple, modern, secure file encryption
 brew "age"
 # Utility to check whether MAC addresses are already taken on a LAN
 brew "arping"
-# Protocol definitions and daemon for D-Bus at-spi
-brew "at-spi2-core"
+# Powerful, clean, object-oriented scripting language
+brew "ruby"
+# Text processor and publishing toolchain for AsciiDoc
+brew "asciidoctor"
 # MPEG-4 command-line tool
 brew "atomicparsley"
-# Official Amazon AWS command-line interface
-brew "awscli"
 # Microsoft Azure CLI 2.0
 brew "azure-cli"
 # Encode and decode base64 files
@@ -36,44 +42,46 @@ brew "bash-completion@2"
 brew "bat"
 # Cross platform file encryption utility using blowfish
 brew "bcrypt"
-# Install RubyGems as Homebrew formulae
-brew "brew-gem"
-# Translates human-readable Butane Configs into machine-readable Ignition Configs
-brew "butane"
-# CD/DVD/Blu-ray premastering and recording software
-brew "cdrtools"
 # CLI to install, manage & troubleshoot Kubernetes clusters running Cilium
 brew "cilium-cli"
 # Cloudflare Tunnel client (formerly Argo Tunnel)
 brew "cloudflared"
+# Home for the Cluster Management API work, a subproject of sig-cluster-lifecycle
+brew "clusterctl"
+# OpenAI's coding agent that runs in your terminal
+brew "codex"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
-# AI-powered CLI assistant
-brew "codex"
 # Container Signing
 brew "cosign"
-# Apjanke's fork of the classic cowsay project
-brew "cowsay"
-# Cryptographic recipes and primitives for Python
-brew "cryptography"
+# Tool for interacting with remote images and registries
+brew "crane"
 # Cluster ssh tool for Terminal.app
 brew "csshx"
+# Validate and define text-based and dynamic configuration
+brew "cue"
 # Tool for downloading RTMP streaming media
 brew "rtmpdump"
 # Get a file from an HTTP, HTTPS or FTP server
 brew "curl"
-# Display user-friendly message boxes from shell scripts
-brew "dialog"
+# Modern diagram scripting language that turns text to diagrams
+brew "d2"
 # Passphrases to remember
 brew "diceware"
 # Load/unload environment variables based on $PWD
 brew "direnv"
-# Platform keystore credential helper for Docker
-brew "docker-credential-helper"
-# Read, write, modify, and display EXIF data on the command-line
-brew "exif"
+# Pack, ship and run any application as a lightweight container
+brew "docker"
+# Isolated development environments using Docker
+brew "docker-compose"
+# Embeddable SQL OLAP Database Management System
+brew "duckdb"
+# Utilities for the ext2, ext3, and ext4 file systems
+brew "e2fsprogs"
 # Perl lib for reading and writing EXIF metadata
 brew "exiftool"
+# Multi-format archive and compression library
+brew "libarchive"
 # Play, record, convert, and stream audio and video
 brew "ffmpeg"
 # Collection of GNU find, xargs, and locate
@@ -84,15 +92,15 @@ brew "fping"
 brew "gawk"
 # GitHub command-line tool
 brew "gh"
-# Quickly clone an entire org's or user's repositories into one directory
-brew "ghorg"
 # Distributed revision control system
 brew "git"
+# Highly caffeinated git GUI
+brew "git-cola"
 # Extensions to follow Vincent Driessen's branching model
 brew "git-flow"
 # Audit git repos for secrets
 brew "gitleaks"
-# GitLab CLI tool
+# Open-source GitLab command-line tool
 brew "glab"
 # Convert text strings to printed bars
 brew "gnu-barcode"
@@ -104,22 +112,30 @@ brew "gnu-sed"
 brew "gnu-tar"
 # Library for USB device access
 brew "libusb"
-# Passphrase entry dialog utilizing the Assuan protocol
-brew "pinentry"
 # GNU Privacy Guard (OpenPGP)
-brew "gnupg", link: false
+brew "gnupg"
+# Command-driven, interactive function plotting
+brew "gnuplot"
 # Open source programming language to build simple/reliable/efficient software
 brew "go"
-# Library access to GnuPG
-brew "gpgme"
+# Task is a task runner/build tool that aims to be simpler and easier to use
+brew "go-task"
+# Library to render SVG files using Cairo
+brew "librsvg"
+# Graph visualization software from AT&T and Bell Labs
+brew "graphviz"
 # GNU grep, egrep and fgrep
 brew "grep"
+# GUI for rsync
+brew "grsync"
 # Vulnerability scanner for container images and filesystems
 brew "grype"
 # Popular GNU data compression program
 brew "gzip"
 # Smarter Dockerfile linter to validate best practices
 brew "hadolint"
+# CLI client for haste-server
+brew "haste-client"
 # Kubernetes package manager
 brew "helm"
 # Deploy Kubernetes Helm Charts
@@ -132,8 +148,8 @@ brew "httperf"
 brew "httpie"
 # Website copier/offline browser
 brew "httrack"
-# Network, Service & Security Observability for Kubernetes using eBPF
-brew "hubble"
+# Tools and libraries to manipulate images in many formats
+brew "imagemagick"
 # Migrate or backup IMAP mail accounts
 brew "imapsync"
 # Calculate various network masks, etc. from a given IP address
@@ -148,8 +164,8 @@ brew "jq"
 brew "jsonpp"
 # Little helper to run CNCF's k3s in Docker
 brew "k3d"
-# Utility to create k3s clusters on any local or remote VM
-brew "k3sup"
+# Scanning your k8s clusters, diagnosing, and triaging issues in simple English
+brew "k8sgpt"
 # Kubernetes CLI To Manage Your Clusters In Style!
 brew "k9s"
 # User-friendly front-end to ssh-agent(1)
@@ -162,12 +178,16 @@ brew "kompose"
 brew "kubernetes-cli"
 # Package manager for kubectl plugins
 brew "krew"
-# Kubernetes prompt helper
+# Static analysis tool for Kubernetes YAML files and Helm charts
+brew "kube-linter"
+# Kubernetes prompt info for bash and zsh
 brew "kube-ps1"
-# FAST Kubernetes manifests validator, with support for Custom Resources!
-brew "kubeconform"
 # Colorize your kubectl output
 brew "kubecolor"
+# FAST Kubernetes manifests validator, with support for Custom Resources!
+brew "kubeconform"
+# Easily check your clusters for use of deprecated APIs
+brew "kubent"
 # Template-free customization of Kubernetes YAML manifests
 brew "kustomize"
 # Simple terminal UI for git commands
@@ -178,8 +198,6 @@ brew "lcdf-typetools"
 brew "lft"
 # Sophisticated file transfer program
 brew "lftp"
-# Provides library functionality for FIDO U2F & FIDO 2.0, including USB
-brew "libfido2"
 # Linux virtual machines
 brew "lima"
 # Lynx-like WWW browser that supports tables, menus, etc.
@@ -192,10 +210,10 @@ brew "lsof"
 brew "lynx"
 # Swiss Army Knife for macOS
 brew "m-cli"
-# Open-source, cross-platform JavaScript runtime environment
-brew "node"
 # CLI for Node.js style checker and lint tool for Markdown files
 brew "markdownlint-cli"
+# Easily convert Marp Markdown files into static HTML/CSS, PDF, PPT and images
+brew "marp-cli"
 # Mac App Store command-line interface
 brew "mas"
 # Utility for testing the memory subsystem
@@ -230,6 +248,8 @@ brew "netcat"
 brew "ngrep"
 # Port scanning utility for large networks
 brew "nmap"
+# Prometheus exporter for machine metrics
+brew "node_exporter", restart_service: :changed
 # Network performance measurement tool
 brew "nuttcp"
 # Oracle Cloud Infrastructure CLI
@@ -240,22 +260,30 @@ brew "openshift-cli"
 brew "p7zip"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
+# Efficient rsh-like utility, for using hosts in parallel
+brew "pdsh"
 # Display the PID number for a given process name
 brew "pidof"
+# Parallel gzip
+brew "pigz"
 # Pinentry for GPG on Mac
 brew "pinentry-mac"
-# Python dependency management tool
-brew "pipenv"
 # Package compiler and linker metadata toolkit
 brew "pkgconf"
 # Tool for managing OCI containers and pods
 brew "podman"
+# Kubernetes cluster resource sanitizer
+brew "popeye"
+# PDF rendering library (based on the xpdf-3.0 code base)
+brew "poppler"
 # Framework for managing multi-language pre-commit hooks
 brew "pre-commit"
 # Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
 brew "prettier"
 # Show ps output as a tree
 brew "pstree"
+# Parse HTML at the command-line
+brew "pup"
 # Monitor data's progress through a pipe
 brew "pv"
 # Password generator
@@ -264,28 +292,26 @@ brew "pwgen"
 brew "pyenv"
 # Pyenv plugin to manage virtualenv
 brew "pyenv-virtualenv"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.10"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.9"
-# Generic machine emulator and virtualizer
-brew "qemu"
 # Tools for and transforming and inspecting PDF files
 brew "qpdf"
 # Encoder and decoder for quoted-printable encoding
 brew "qprint"
 # QR Code generation
 brew "qrencode"
-# Rancher CLI
+# Unified tool to manage your Rancher server
 brew "rancher-cli"
 # Rsync for cloud storage
 brew "rclone"
 # Reverse differential backup tool, over a network or locally
 brew "rdiff-backup"
+# Docker and OCI Registry Client in Go and tooling using those libraries
+brew "regclient"
 # Rename multiple files in a directory
 brew "ren"
 # Perl-powered file rename script with many helpful built-ins
 brew "rename"
+# Fast, efficient and secure backup program
+brew "restic"
 # File system snapshot utility (based on rsync)
 brew "rsnapshot"
 # Utility that provides fast incremental file transfer
@@ -301,21 +327,19 @@ brew "sops"
 # Command-line interface for https://speedtest.net bandwidth tests
 brew "speedtest-cli"
 # Add a public key to a remote machine's authorized_keys file
-brew "ssh-copy-id"
+brew "ssh-copy-id", link: true
 # SSLv3/TLS network protocol analyzer
 brew "ssldump"
 # Test SSL/TLS enabled services to discover supported cipher suites
 brew "sslscan"
-# Crypto and x509 Swiss-Army-Knife
-brew "step"
 # Tail multiple Kubernetes pods & their containers
 brew "stern"
-# Subdomain discovery tool
-brew "subfinder"
 # System-level exploration and troubleshooting tool
 brew "sysdig"
 # Configuration helper for talos clusters
 brew "talhelper"
+# CLI for out-of-band management of Kubernetes nodes created by Talos
+brew "talosctl"
 # Command-line packet analyzer
 brew "tcpdump"
 # TCP/IP packet demultiplexer
@@ -332,36 +356,34 @@ brew "tcptraceroute"
 brew "telnet"
 # Tool to generate documentation from Terraform modules
 brew "terraform-docs"
-# Terraform Language Server
-brew "terraform-ls"
 # Terraform version manager inspired by rbenv
 brew "tfenv"
 # Linter for Terraform files
 brew "tflint"
 # Static analysis security scanner for your terraform code
 brew "tfsec"
-# Virtual Private Network (VPN) tool
-brew "tinc"
 # Terminal multiplexer
 brew "tmux"
 # CLI tool that moves files or folder to the trash
 brew "trash"
 # Display directories as trees (with optional color/HTML output)
 brew "tree"
+# Vulnerability scanner for container images, file systems, and Git repos
+brew "trivy"
 # RTF to other formats converter
 brew "unrtf"
 # Extraction utility for .zip compressed archives
 brew "unzip"
-# Bash completion for Vagrant
-brew "vagrant-completion"
+# Creates fully functional virtual k8s cluster inside host k8s cluster's namespace
+brew "vcluster"
 # Disaster recovery for Kubernetes resources and persistent volumes
 brew "velero"
 # Vi 'workalike' with many additional features
 brew "vim"
 # Executes a program periodically, showing output fullscreen
 brew "watch"
-# Create screenshots of webpages from the terminal
-brew "webkit2png"
+# Convert HTML to PDF
+brew "weasyprint"
 # Internet file retriever
 brew "wget"
 # Lookup tool for domain names and other internet resources
@@ -376,70 +398,68 @@ brew "yamllint"
 brew "yq"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
-# Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues
-brew "aquasecurity/trivy/trivy"
-# Command-line interface for Tunnelblick
-brew "benwebber/tunnelblickctl/tunnelblickctl"
+# New zlib (gzip, deflate) compatible compressor
+brew "zopfli"
+# Imgpkg
+brew "carvel-dev/carvel/imgpkg"
 # Formats yaml files.
 brew "devopyio/yamlfmt/yamlfmt"
-# The official Doppler CLI for managing your secrets
-brew "dopplerhq/cli/doppler"
 # Flux CLI
 brew "fluxcd/tap/flux"
-# Task runner / simpler Make alternative written in Go
-brew "go-task/tap/go-task"
+# Quickly clone an entire org/users repositories into one directory
+brew "gabrie30/utils/ghorg"
 # Packer
 brew "hashicorp/tap/packer"
+# Vault
+brew "hashicorp/tap/vault"
 # Tail logs from multiple Kubernetes pods at the same time
 brew "johanhaleby/kubetail/kubetail"
 # ksd` is a tool, whose aim is help you to visualize in text plain your kubernetes secrets, either `yaml` or `json` outputs.
 brew "mfuentesg/tap/ksd"
 # Automatically generate markdown documentation for helm charts
 brew "norwoodj/tap/helm-docs"
-# CLI for out-of-band management of Kubernetes nodes created by Talos
-brew "siderolabs/tap/talosctl"
+# Incredibly fast JavaScript runtime, bundler, transpiler and package manager - all in one.
+brew "oven-sh/bun/bun"
 # Persistent volume migration plugin for Kubernetes
 brew "utkuozdemir/pv-migrate/pv-migrate"
-# GitOps support for Kubernetes
-brew "weaveworks/tap/gitops"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
 # Command-line interface for 1Password
 cask "1password-cli"
 # Apple TV Aerial screensaver
 cask "aerial"
-# Electronics prototyping platform
-cask "arduino"
 # Tool to flash OS images to SD cards & USB drives
 cask "balenaetcher"
 # 3D model slicing software for 3D printers, maintained by Bambu Lab
 cask "bambu-studio"
+# Compact TeX distribution as alternative to the full TeX Live / MacTeX
+cask "basictex"
 # Text, code, and markup editor
 cask "bbedit"
-# 3D creation suite
-cask "blender"
-# E-books management software
-cask "calibre"
-# Web debugging Proxy application
-cask "charles"
+# Open source, extensible AI agent that goes beyond code suggestions
+cask "block-goose"
+# Build, render, and create LEGO instructions
+cask "bricklink-studio"
+# Prints location information from CoreLocation
+cask "corelocationcli"
 # Universal database tool and SQL client
 cask "dbeaver-community"
 # Drivers for DisplayLink docks, adapters and monitors
 cask "displaylink"
 # Enables DisplayLink screens prior to login
 cask "displaylink-login-extension"
-# App to build and share containerised applications and microservices
-cask "docker-desktop"
 # Online diagram software
 cask "drawio"
 # Client for the Dropbox cloud storage service
 cask "dropbox"
+# Finds duplicate files in a computer system
+cask "dupeguru"
 # Web browser
 cask "firefox"
 cask "font-roboto"
 cask "font-roboto-mono"
-# 3D parametric modeller
-cask "freecad"
+# Free VPN client for FortiClient
+cask "forticlient-vpn"
 # Web browser
 cask "google-chrome"
 # Tools to protect your emails and files
@@ -448,35 +468,49 @@ cask "gpg-suite"
 cask "handbrake-app"
 # Automated organisation
 cask "hazel"
+# IDE for Java development - community edition
+cask "intellij-idea-ce"
 # Terminal emulator as alternative to Apple's Terminal app
 cask "iterm2"
-# Download manager
-cask "jdownloader"
+# Note taking and to-do application with synchronisation capabilities
+cask "joplin"
 # Personal data manager focusing on security
 cask "keepassx"
 # Host-based application firewall
 cask "little-snitch"
+# Software for Logitech devices
+cask "logi-options+"
 # Privacy-first, open-source platform for knowledge sharing and management
 cask "logseq"
 # Open-source, KeePass-client and password manager
 cask "macpass"
+# Provides updates to various Microsoft products
+cask "microsoft-auto-update"
+# Meet, chat, call, and collaborate in just one place
+cask "microsoft-teams"
 # Orchestrates virtual Ubuntu instances
 cask "multipass"
-cask "mysides", args: { appdir: "/Applications" }
+cask "mysides"
 # Rename a list of files quickly
 cask "namechanger"
 # WiFi site survey software and WiFi scanner
 cask "netspot"
 # Knowledge base that works on top of a local folder of plain text Markdown files
 cask "obsidian"
+# Get up and running with large language models locally
+cask "ollama-app"
+# Virtual machine client
+cask "omnissa-horizon-client"
 # Programmable solid 3D CAD modeller
 cask "openscad"
 # Tool to create native applications from command-line scripts
 cask "platypus"
 # Podcast platform
 cask "pocket-casts"
-# G-code generator for 3D printers (RepRap, Makerbot, Ultimaker etc.)
-cask "prusaslicer"
+# Browse, manage, inspect containers and images
+cask "podman-desktop"
+# IDE for Python programming - Community Edition
+cask "pycharm-ce"
 # Workspace simplifier - to organize your workspace and boost your productivity
 cask "rambox"
 # Archive manager for data compression and backups
@@ -485,18 +519,22 @@ cask "rar"
 cask "raspberry-pi-imager"
 # Remote management solution
 cask "royal-tsx"
-# MySQL/MariaDB database management platform
-cask "sequel-pro"
+# Tool for sending personal documents to Kindles from Macs
+cask "send-to-kindle"
+# Team communication and collaboration software
+cask "slack"
 # Music streaming service
 cask "spotify"
+# Native GUI tool for relational databases
+cask "tableplus"
 # Mesh VPN based on WireGuard
 cask "tailscale-app"
 # Remote access and connectivity software focused on security
 cask "teamviewer"
-# Manage the data on children's Ravensburger tip toi audio pen
-cask "tiptoi-manager"
-# 3D printer and slicing GUI
-cask "ultimaker-cura"
+# Free and open-source OpenVPN client
+cask "tunnelblick"
+# Die Deutschschweizer Basisschrift ist eine didaktische Schrift, die für den Handschrifterwerb konzipiert worden ist. Sie ist bewusst keine Satzschrift, die gestalterische Möglichkeiten bei der Erstellung von Arbeitsblättern und Materialien zulässt. Es gibt daher auch keine fette oder kursive Version der Schrift. Das Konzept der Deutschschweizer Basisschrift setzt bewusst auf handschrifltiche Vorlagen von Lehrpersonen.
+cask "tuxpeople-font-dch-basisschrift"
 # Tool to install Linux/BSD distributions to a partition or USB drive
 cask "unetbootin"
 # Development environment
@@ -505,6 +543,8 @@ cask "vagrant"
 cask "visual-studio-code"
 # Multimedia player
 cask "vlc"
+# Video communication and virtual meeting platform
+cask "webex-meetings"
 # Network protocol analyzer
 cask "wireshark-app"
 # Application for configuring any YubiKey
@@ -516,32 +556,36 @@ mas "Affinity Publisher", id: 881418622
 mas "Agenda", id: 1287445660
 mas "Apple Configurator", id: 1037126344
 mas "Bear", id: 1091189122
-mas "Calendars", id: 608834326
 mas "DaisyDisk", id: 411643860
+mas "Dipper", id: 6450242673
+mas "Exporter", id: 1099120373
 mas "ForkLift", id: 412448059
 mas "FruitJuice", id: 671736912
-mas "Goodnotes", id: 1444383602
 mas "iMovie", id: 408981434
 mas "Irvue", id: 1039633667
 mas "Keynote", id: 409183694
-mas "Kindle", id: 302584613
+mas "Kubeterm", id: 6450548861
 mas "LanScan", id: 472226235
 mas "Lightweight PDF", id: 1450640351
 mas "Magnet", id: 441258766
 mas "Matter", id: 1548677272
 mas "Microsoft Excel", id: 462058435
 mas "Microsoft OneNote", id: 784801555
-mas "Microsoft Word", id: 462054704
+mas "Microsoft Outlook", id: 985367838
+mas "Microsoft PowerPoint", id: 462062816
+mas "Microsoft To Do", id: 1274495053
+mas "MindNode Classic", id: 1289197285
 mas "Numbers", id: 409203825
-mas "OneDrive", id: 823766827
 mas "Pages", id: 409201541
+mas "PDFCombo", id: 1030461463
 mas "PDFScanner", id: 410968114
 mas "Reeder", id: 1529448980
 mas "Sid Meier's Railroads!", id: 536502825
 mas "SQLPro for SQLite", id: 586001240
 mas "Swift Playground", id: 1496833156
-mas "Termius", id: 1176074088
+mas "TextSniper", id: 1528890965
 mas "Todoist", id: 585829637
+mas "Toggl Track", id: 1291898086
 mas "Unibox", id: 702816521
 mas "VMware Remote Console", id: 1230249825
 mas "WireGuard", id: 1451685025
@@ -636,4 +680,5 @@ vscode "yzane.markdown-pdf"
 vscode "yzdann.k8s-snippets"
 vscode "yzhang.markdown-all-in-one"
 go "golang.org/x/tools/gopls"
+go "github.com/IzakMarais/reporter/cmd/grafana-reporter"
 go "honnef.co/go/tools/cmd/staticcheck"
