@@ -1,0 +1,58 @@
+---
+# plays/run-single-task.yml
+# Run a single task file with proper sudo setup
+# Usage: ansible-playbook plays/run-single-task.yml -i inventories -l $(hostname) --connection=local -e task_file=tasks/post/printers.yml
+
+- hosts: all
+  gather_facts: false
+  connection: local
+
+  vars:
+    task_file: ""  # Required: Pass via -e task_file=...
+
+  pre_tasks:
+    - name: Validate task_file parameter
+      ansible.builtin.assert:
+        that:
+          - task_file is defined
+          - task_file | length > 0
+        fail_msg: "task_file parameter is required. Usage: -e task_file=tasks/post/printers.yml"
+
+    - name: Load sudo password from 1Password
+      ansible.builtin.set_fact:
+        ansible_become_pass: "{{ lookup('community.general.onepassword', onepassword_sudo_item, errors='warn') }}"
+      when:
+        - ansible_become_pass is not defined or ansible_become_pass | length == 0
+        - onepassword_sudo_item is defined
+      become: false
+
+    - name: Gather facts
+      ansible.builtin.setup:
+      become: true
+
+  tasks:
+    - name: Main execution with guaranteed sudo cleanup
+      block:
+        - name: Add temporary passwordless sudo permissions
+          ansible.builtin.copy:
+            content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL"
+            dest: "/private/etc/sudoers.d/99_tmp_ansible"
+            validate: /usr/sbin/visudo -csf %s
+            mode: 0440
+          become: true
+
+        - name: Run specified task file
+          include_tasks: "{{ '../' + task_file if not task_file.startswith('/') else task_file }}"
+
+      rescue:
+        - name: Log failure
+          debug:
+            msg: "⚠️  Task failed, but ensuring sudo cleanup runs"
+
+      always:
+        - name: Remove temporary passwordless sudo permissions (GUARANTEED)
+          ansible.builtin.file:
+            path: "/private/etc/sudoers.d/99_tmp_ansible"
+            state: absent
+          become: true
+          ignore_errors: true

@@ -34,10 +34,18 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - Duplikate entfernen
     - Nur echte Dotfiles behalten
 
-- [ ] **Drucker konfigurieren**
-  - Drucker-Setup automatisieren (falls möglich)
-  - Welche Drucker werden genutzt? (Business vs. Private)
-  - Gibt es spezifische Drucker-Einstellungen die persistiert werden müssen?
+- [ ] **myenv Variable Refactoring**
+  - **Aktuell**: Variable `myenv` wird doppelt definiert (group_vars + runtime fact)
+  - **Ziel**: Ersetzen durch Ansible's eingebaute `group_names` Variable
+  - **Änderungen**:
+    - `when: myenv == "business_mac"` → `when: "'business_mac' in group_names"`
+    - `post.yml`: `{{ myenv }}-settings.yml` → Bedingte Include basierend auf group_names
+    - `tasks/pre/additional-facts.yml`: myenv-Fact entfernen
+    - `inventories/group_vars/business_mac/general.yml`: myenv entfernen
+    - `inventories/group_vars/private_mac/general.yml`: myenv entfernen
+  - **Betroffen**: ~5-10 Dateien (grep nach "myenv" zeigt alle)
+  - **Vorteil**: Eine Variable weniger, nutzt Ansible-Standard
+  - **Priorität**: Low (funktioniert aktuell, ist aber redundant)
 
 - [ ] **macOS Settings Audit - Funktionalität**
   - Durchgehen, welche der Mac Settings (`defaults write...` etc.) auf aktuellen macOS noch funktionieren
@@ -69,6 +77,20 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
 _(Items die gerade bearbeitet werden)_
 
 ## Erledigt
+
+- [x] **Drucker-Management implementiert** ✅ **ABGESCHLOSSEN (2025-12-24)**
+  - **Konfigurationsdateien**:
+    - `inventories/group_vars/macs/printers.yml` - Canon-Drucker für alle Macs
+    - `inventories/group_vars/business_mac/printers.yml` - Follow2Print für Business-Macs
+  - **Task-Datei**: `tasks/post/printers.yml` - CUPS/lpadmin Integration
+  - **Features**:
+    - Automatische Drucker-Installation via `./scripts/macapply --tags post`
+    - Support für AirPrint/DNS-SD (Canon) und LPD-Drucker (Follow2Print)
+    - Pull-Printing System mit User-Zuordnung (Follow2Print)
+    - Konfigurierbare Drucker-Optionen (Duplex, Papierformat, etc.)
+    - Standard-Drucker Festlegung
+  - **Dokumentiert**: CLAUDE.md Abschnitt "Printer Management"
+  - **Quick Fix**: `myenv` Variable in group_vars definiert (siehe TODO für Refactoring)
 
 - [x] **init.sh robuster gemacht** ✅ **ABGESCHLOSSEN (2025-12-24)**
   - **Shellcheck Warnings behoben**: Alle 3 Warnings (SC2013, SC2086) behoben

@@ -1,0 +1,5 @@
+---
+# General configuration for private Macs
+
+# Environment identifier (used for conditional tasks and settings)
+myenv: "private_mac"

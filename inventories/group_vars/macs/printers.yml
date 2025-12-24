@@ -1,0 +1,30 @@
+---
+# Printer configuration for all Macs
+
+# Enable/disable printer configuration
+configure_printers: true
+
+# List of printers to configure
+# Each printer can have the following attributes:
+#   - name: Printer name in CUPS (required)
+#   - uri: Device URI (required)
+#   - description: Human-readable description (optional)
+#   - location: Physical location (optional)
+#   - ppd: Path to PPD file (optional, for non-AirPrint printers)
+#   - state: present or absent (default: present)
+#   - default: Set as default printer (default: false)
+#   - options: Dictionary of printer options (optional)
+#   - enabled: Enable the printer after adding (default: true)
+
+printers:
+  - name: canon_drucker
+    uri: "dnssd://canon-drucker._ipps._tcp.local./?uuid=6d4ff0ce-6b11-11d8-8020-349f7ba542a6"
+    description: "Canon MF642C/643C/644C"
+    location: "Arbeitszimmer"
+    state: present
+    default: true
+    enabled: true
+    options:
+      CNDuplex: DuplexFront
+      PageSize: A4
+      CNColorMode: color

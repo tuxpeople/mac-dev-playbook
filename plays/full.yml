@@ -115,7 +115,10 @@
           tags: ['extra-packages']
 
         - name: Run configured post-provision ansible task files
-          include_tasks: "{{ item }}"
+          include_tasks:
+            file: "{{ item }}"
+            apply:
+              tags: ['post']
           loop: "{{ post_provision_tasks | default([]) }}"
           tags: ['post']
 

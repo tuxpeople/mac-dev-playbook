@@ -31,6 +31,14 @@ This document explains the different workflows and when to use which script/play
 │ Purpose: Keep Mac up-to-date (brew, system, etc.)              │
 │ Prerequisites: Ansible already installed (via init or previous) │
 └─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ SCENARIO 4: Run Individual Task (As needed)                     │
+│ ────────────────────────────────────────────────────────────────│
+│ Use: macrun <task_name>                                          │
+│ Purpose: Run a specific post-provision task                     │
+│ Prerequisites: Ansible already installed (via macupdate/init)   │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -220,6 +228,96 @@ macupdate
 
 ---
 
+## Scenario 4: Running Individual Tasks
+
+**When**: You need to run a specific post-provision task without running the entire playbook
+
+**Script**: `macrun`
+
+**Why it exists**:
+- Avoids sudo permission issues when running `macapply --tags post`
+- Faster than running full playbook
+- Cleaner output for debugging specific tasks
+- Automatically handles sudo setup/cleanup
+
+**What it does**:
+1. Sets up temporary passwordless sudo
+2. Runs the specified post-provision task from `tasks/post/`
+3. Cleans up sudo permissions automatically (even on failure)
+
+**How to run**:
+
+```bash
+# List all available tasks
+macrun
+
+# Run specific tasks
+macrun printers    # Configure printers
+macrun fonts       # Install fonts
+macrun k8s         # Setup Kubernetes tools
+macrun gpg         # Configure GPG
+macrun vscode      # Setup VS Code
+
+# With options
+macrun printers --check       # Dry run
+macrun printers -vv           # Verbose output
+macrun printers --check -vv   # Dry run + verbose
+```
+
+**Available tasks**:
+Run `macrun` without arguments to see the complete list of available tasks from `tasks/post/`.
+
+**Duration**: 1-5 minutes (depends on task)
+
+**Frequency**: As needed (e.g., after changing printer configuration)
+
+### Common Use Cases
+
+#### Configure printers after config change
+
+```bash
+# 1. Edit printer configuration
+vim inventories/group_vars/macs/printers.yml
+# Add or modify printer
+
+# 2. Run only printer task
+macrun printers
+
+# 3. Verify
+lpstat -p -d
+```
+
+#### Install fonts after adding new fonts
+
+```bash
+# 1. Add font files to files/fonts/common/ or files/fonts/private/
+cp ~/Downloads/MyFont.ttf files/fonts/common/
+
+# 2. Run only font task
+macrun fonts
+
+# 3. Fonts are installed and cache is rebuilt
+```
+
+#### Setup Kubernetes tools on new environment
+
+```bash
+# Configure kubectl and install krew plugins
+macrun k8s
+```
+
+**When to use macrun vs macapply**:
+
+| Use Case | Use | Why |
+|----------|-----|-----|
+| Single task after config change | `macrun <task>` | Faster, cleaner output |
+| Multiple tasks | `macapply --tags post` | More efficient |
+| Full configuration apply | `macapply` | Updates everything |
+| Debugging a specific task | `macrun <task> -vv` | Easier to see what's happening |
+| Sudo permission issues | `macrun <task>` | Handles sudo automatically |
+
+---
+
 ## Decision Tree: Which Script Should I Use?
 
 ```
@@ -230,7 +328,12 @@ Start
   │  └─ NO  → Continue ↓
   │
   ├─ Did I change configuration files (brew.yml, dock.yml, etc.)?
-  │  └─ YES → Use macapply (apply changes)
+  │  └─ YES → Continue ↓
+  │     │
+  │     ├─ Is it a single post-provision task (printers, fonts, etc.)?
+  │     │  └─ YES → Use macrun <task> (faster)
+  │     │  └─ NO  → Use macapply (full config)
+  │     │
   │  └─ NO  → Continue ↓
   │
   └─ Do I want to update packages/system?
@@ -249,6 +352,9 @@ Start
 | Change Dock layout | `macapply --tags dock` | After editing `dock.yml` |
 | Update macOS settings | `macapply --tags osx` | After editing `tasks/osx.yml` |
 | Apply all config changes | `macapply` | After editing multiple files |
+| Configure printers | `macrun printers` | After editing `printers.yml` |
+| Install fonts | `macrun fonts` | After adding font files |
+| Run any single post-task | `macrun <task>` | See `macrun` for list |
 | Update Homebrew packages | `macupdate` | Daily/weekly maintenance |
 | Update macOS system | `macupdate` | Daily/weekly maintenance |
 | See what would change | `macapply --check --diff` | Before applying |

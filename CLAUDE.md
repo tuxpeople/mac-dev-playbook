@@ -112,6 +112,28 @@ ln -sf ~/development/github/tuxpeople/mac-dev-playbook/scripts/macupdate \
 - `init.sh`: Once per Mac (fresh setup)
 - `macapply`: When you change configuration (brew.yml, dock.yml, etc.)
 - `macupdate`: Daily/weekly (updates packages and system)
+- `macrun`: Run individual post-provision tasks
+
+### Running Individual Tasks
+
+```bash
+# Run individual post-provision tasks without sudo issues
+./scripts/macrun printers   # Configure printers
+./scripts/macrun fonts      # Install fonts
+./scripts/macrun k8s        # Setup Kubernetes tools
+./scripts/macrun gpg        # Configure GPG
+
+# List all available tasks
+./scripts/macrun
+
+# With additional options (dry-run, verbose, etc.)
+./scripts/macrun printers --check
+./scripts/macrun printers -vv
+```
+
+**When to use**: When you need to run a specific post-provision task (like printer configuration) without running the entire playbook. This is especially useful when `./scripts/macapply --tags post` causes sudo issues with other tasks.
+
+**Available tasks**: Run `./scripts/macrun` without arguments to see the full list.
 
 ### Manual Playbook Execution
 
@@ -164,6 +186,7 @@ Located in `tasks/post/`, these run during the 'post' tag phase:
 
 - **fonts.yml**: Font installation (common, private, licensed fonts)
 - **k8s.yml**: Kubernetes tool setup (kubectl, krew plugins)
+- **printers.yml**: Printer installation and configuration using CUPS/lpadmin
 - **gpg.yml**: GPG key configuration
 - **github.yml**: GitHub CLI setup
 - **vscode.yml**: VS Code configuration
@@ -205,6 +228,79 @@ This repository includes a three-tier font management system:
 **Documentation**: See `files/fonts/README.md` for complete details
 
 **Supported formats**: `.ttf`, `.otf` (both cases)
+
+## Printer Management
+
+This repository includes automated printer installation and configuration using CUPS/lpadmin.
+
+**Configuration Files**:
+- **inventories/group_vars/macs/printers.yml**: Base printer configuration for all Macs
+- **inventories/group_vars/business_mac/printers.yml**: Business-specific printers (extends base config)
+- **inventories/group_vars/private_mac/printers.yml**: Private-specific printers (if needed)
+
+**Task Implementation**: `tasks/post/printers.yml`
+
+**How It Works**:
+1. Printers are defined in the `printers` list in inventory group_vars
+2. Each printer configuration includes:
+   - `name`: Printer name in CUPS
+   - `uri`: Device URI (e.g., `dnssd://...` for AirPrint, `lpd://...` for LPD)
+   - `description`: Human-readable description (optional)
+   - `location`: Physical location (optional)
+   - `ppd`: Path to PPD file (required for non-AirPrint printers)
+   - `state`: `present` or `absent` (default: `present`)
+   - `default`: Set as default printer (default: `false`)
+   - `enabled`: Enable printer after adding (default: `true`)
+   - `options`: Dictionary of printer options (e.g., `CNDuplex: DuplexFront`)
+
+**Example Configuration**:
+```yaml
+configure_printers: true
+
+printers:
+  - name: canon_drucker
+    uri: "dnssd://canon-drucker._ipps._tcp.local./?uuid=..."
+    description: "Canon MF642C/643C/644C"
+    location: "Arbeitszimmer"
+    state: present
+    default: true
+    options:
+      CNDuplex: DuplexFront
+      PageSize: A4
+
+  - name: Follow2Print
+    uri: "lpd://{{ follow2print_username }}@10.129.217.220/Follow2Print"
+    ppd: "/Library/Printers/PPDs/Contents/Resources/TA4008ci.PPD"
+    state: present
+    default: false
+    options:
+      printer-is-shared: "false"
+```
+
+**Application**:
+```bash
+# Recommended: Run individual printer task
+./scripts/macrun printers
+
+# Or apply via full playbook
+./scripts/macapply
+
+# Or run all post-provision tasks
+./scripts/macapply --tags post
+```
+
+**Idempotency**:
+- Tasks are idempotent and only report changes when actual modifications occur
+- New printers are marked as "changed"
+- Existing printer updates, option changes, and enable/accept operations run without reporting changes (since CUPS commands don't indicate if changes were made)
+- Default printer is only changed if different from current default
+
+**Notes**:
+- Printers run during the 'post' tag phase via `tasks/post/printers.yml`
+- The task uses `lpadmin` for printer management and requires sudo
+- Use `./scripts/macrun printers` to avoid sudo issues when running tasks individually
+- For pull-printing systems (like Follow2Print), the username in the URI is for job assignment, not authentication
+- AirPrint/DNS-SD printers are auto-discovered and don't require PPD files
 
 ## Workflow Notes
 

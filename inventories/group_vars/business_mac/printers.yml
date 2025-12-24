@@ -1,0 +1,30 @@
+---
+# Additional printers for business Macs
+
+# Follow2Print username for job assignment (not authentication)
+follow2print_username: "thomas.deutsch"
+
+# Extend the base printers list with business-specific printers
+printers:
+  - name: canon_drucker
+    uri: "dnssd://canon-drucker._ipps._tcp.local./?uuid=6d4ff0ce-6b11-11d8-8020-349f7ba542a6"
+    description: "Canon MF642C/643C/644C"
+    location: "Arbeitszimmer"
+    state: present
+    default: true
+    enabled: true
+    options:
+      CNDuplex: DuplexFront
+      PageSize: A4
+      CNColorMode: color
+
+  - name: Follow2Print
+    uri: "lpd://{{ follow2print_username }}@10.129.217.220/Follow2Print"
+    description: "Follow2Print"
+    location: "Office"
+    ppd: "/Library/Printers/PPDs/Contents/Resources/TA4008ci.PPD"
+    state: present
+    default: false
+    enabled: true
+    options:
+      printer-is-shared: "false"

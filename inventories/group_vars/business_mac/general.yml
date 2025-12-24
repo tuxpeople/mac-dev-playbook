@@ -1,0 +1,5 @@
+---
+# General configuration for business Macs
+
+# Environment identifier (used for conditional tasks and settings)
+myenv: "business_mac"

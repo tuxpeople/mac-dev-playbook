@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+# macrun - Run a single post-provision task file
+# Usage: ./scripts/macrun printers
+#        ./scripts/macrun fonts
+#        ./scripts/macrun k8s
+
+set -euo pipefail
+
+# Color output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Change to repo directory
+cd "${REPO_DIR}"
+
+# Get hostname
+HOSTNAME=$(hostname)
+
+# Parse arguments
+TASK_NAME="${1:-}"
+
+if [[ -z "${TASK_NAME}" ]]; then
+    echo -e "${RED}[macrun] Error: Task name required${NC}"
+    echo ""
+    echo "Usage: ./scripts/macrun <task_name>"
+    echo ""
+    echo "Available tasks:"
+    for task in tasks/post/*.yml; do
+        task_base=$(basename "$task" .yml)
+        echo "  - ${task_base}"
+    done
+    exit 1
+fi
+
+# Construct task file path
+TASK_FILE="tasks/post/${TASK_NAME}.yml"
+
+# Check if task file exists
+if [[ ! -f "${TASK_FILE}" ]]; then
+    echo -e "${RED}[macrun] Error: Task file not found: ${TASK_FILE}${NC}"
+    echo ""
+    echo "Available tasks:"
+    for task in tasks/post/*.yml; do
+        task_base=$(basename "$task" .yml)
+        echo "  - ${task_base}"
+    done
+    exit 1
+fi
+
+# Find vault password file
+VAULT_PASSWORD_FILE=""
+for vault_file in \
+    "${HOME}/iCloudDrive/Allgemein/bin/vault_password_file" \
+    "${HOME}/.vault_password" \
+    ".vault_password"; do
+    if [[ -f "${vault_file}" ]]; then
+        VAULT_PASSWORD_FILE="${vault_file}"
+        break
+    fi
+done
+
+# Build ansible-playbook command
+ANSIBLE_CMD=(
+    ansible-playbook
+    plays/run-single-task.yml
+    -i inventories
+    -l "${HOSTNAME}"
+    --connection=local
+    -e "task_file=${TASK_FILE}"
+)
+
+# Add vault password file if found
+if [[ -n "${VAULT_PASSWORD_FILE}" ]]; then
+    ANSIBLE_CMD+=(--vault-password-file "${VAULT_PASSWORD_FILE}")
+fi
+
+# Add any additional arguments
+ANSIBLE_CMD+=("${@:2}")
+
+echo -e "${GREEN}[macrun]${NC} ========================================"
+echo -e "${GREEN}[macrun]${NC} macrun - Run Single Task"
+echo -e "${GREEN}[macrun]${NC} ========================================"
+echo -e "${GREEN}[macrun]${NC} Repository: ${REPO_DIR}"
+echo -e "${GREEN}[macrun]${NC} Hostname: ${HOSTNAME}"
+echo -e "${GREEN}[macrun]${NC} Task: ${TASK_NAME}"
+echo -e "${GREEN}[macrun]${NC} Task file: ${TASK_FILE}"
+if [[ -n "${VAULT_PASSWORD_FILE}" ]]; then
+    echo -e "${GREEN}[macrun]${NC} Vault password: ${VAULT_PASSWORD_FILE}"
+fi
+echo -e "${GREEN}[macrun]${NC} ========================================"
+echo ""
+
+# Run ansible-playbook
+if "${ANSIBLE_CMD[@]}"; then
+    echo ""
+    echo -e "${GREEN}[macrun]${NC} ========================================"
+    echo -e "${GREEN}[macrun]${NC} ✓ Task completed successfully!"
+    echo -e "${GREEN}[macrun]${NC} ========================================"
+    exit 0
+else
+    exit_code=$?
+    echo ""
+    echo -e "${RED}[macrun]${NC} ========================================"
+    echo -e "${RED}[macrun]${NC} Task failed (exit code: ${exit_code})"
+    echo -e "${RED}[macrun]${NC} ========================================"
+    exit ${exit_code}
+fi
