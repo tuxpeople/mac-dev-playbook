@@ -16,7 +16,7 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - ✅ `init.sh`: Obsoleten Brewfile-Code entfernt (Zeilen 100-105)
     - ✅ `init_light.sh`: Als DEPRECATED markiert mit Hinweis auf `scripts/macupdate`
   - **Nächste Schritte**:
-    - [ ] README.md: Bootstrap-Sektion erweitern (Wann welches Script?)
+    - [x] README.md: Bootstrap-Sektion erweitern (Wann welches Script?) ✅ **ERLEDIGT (2025-12-24)**
     - [ ] iCloud-Dependency untersuchen: Was steht in filelists?
     - [ ] Optional: Konsolidierung evaluieren (siehe Analyse Option 2)
 
@@ -34,18 +34,10 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - Duplikate entfernen
     - Nur echte Dotfiles behalten
 
-- [ ] Das Readme ist ja grösstenteils von Upstream. Gibt es darin Dinge, die für uns nicht gelten oder hat es allenfalls Dinge die man noch dokumentieren müsste darin?
-
 - [ ] **Drucker konfigurieren**
   - Drucker-Setup automatisieren (falls möglich)
   - Welche Drucker werden genutzt? (Business vs. Private)
   - Gibt es spezifische Drucker-Einstellungen die persistiert werden müssen?
-
-- [ ] **Extra Packages Audit**
-  - Feststellen, ob manuell npm, pip, gem, composer Pakete installiert wurden
-  - Check: `npm list -g --depth=0`, `pip list`, `gem list`, `composer global show`
-  - Gefundene Pakete in `inventories/group_vars/macs/additional-packages.yml` eintragen
-  - Ziel: Reproduzierbare Package-Installation über Ansible
 
 - [ ] **macOS Settings Audit - Funktionalität**
   - Durchgehen, welche der Mac Settings (`defaults write...` etc.) auf aktuellen macOS noch funktionieren
@@ -84,6 +76,29 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
 _(Items die gerade bearbeitet werden)_
 
 ## Erledigt
+
+- [x] **README Review** ✅ **ABGESCHLOSSEN (2025-12-24)**
+  - **Problem**: README war grösstenteils von Upstream und nicht mehr aktuell
+  - **Durchgeführte Änderungen**:
+    - Installation Section komplett neu geschrieben (init.sh, macapply, macupdate)
+    - Configuration Section: config.yml → Inventory-Hierarchie erklärt
+    - Included Applications: Upstream-Liste → Verweis auf Brewfiles
+    - Remote Mac Section: Inventory-Pfad korrigiert (inventories/macs.list)
+    - Setup Guide: full-mac-setup.md → docs/NEW_MAC_SETUP.md
+    - Testing/CI: Upstream CI → Fork CI dokumentiert
+    - Tags korrigiert: sublime-text, sudoers, terminal entfernt (existieren nicht)
+    - Dotfiles Link: geerlingguy → tuxpeople
+  - **Ergebnis**: README ist jetzt Fork-spezifisch und aktuell
+
+- [x] **Extra Packages Audit** ✅ **ABGESCHLOSSEN (2025-12-24)**
+  - **Durchgeführt**: claude-code zu npm_packages hinzugefügt
+  - **Dokumentiert in**: `inventories/group_vars/macs/additional-packages.yml`
+  - **Ziel erreicht**: NPM-Pakete werden jetzt über Ansible verwaltet
+
+- [x] **Python Version zentralisieren** ✅ **ABGESCHLOSSEN (2025-12-24)**
+  - **Implementiert**: `.python-version` File erstellt
+  - **Vorteil**: Single source of truth für Python-Version
+  - **Location**: Root-Verzeichnis des Repos
 
 - [x] **Dotfiles-Repo aufräumen** ✅ **ABGESCHLOSSEN (2025-10-24)**
   - **Entfernte Dateien**:

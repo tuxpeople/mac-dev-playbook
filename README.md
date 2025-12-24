@@ -12,18 +12,49 @@ This playbook installs and configures software on multiple Macs for development 
 
 ## Installation
 
-  1. Ensure Apple's command line tools are installed (`xcode-select --install` to launch the installer).
-  2. [Install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/index.html):
+### Fresh Mac Setup (Initial Installation)
 
-     1. Run the following command to add Python 3 to your $PATH: `export PATH="$HOME/Library/Python/3.9/bin:/opt/homebrew/bin:$PATH"`
-     2. Upgrade Pip: `sudo pip3 install --upgrade pip`
-     3. Install Ansible: `pip3 install ansible`
+For setting up a brand new Mac, use the bootstrap script:
 
-  3. Clone or download this repository to your local drive.
-  4. Run `ansible-galaxy install -r requirements.yml` inside this directory to install required Ansible roles.
-  5. Run `ansible-playbook main.yml --ask-become-pass` inside this directory. Enter your macOS account password when prompted for the 'BECOME' password.
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
+```
 
-> Note: If some Homebrew commands fail, you might need to agree to Xcode's license or fix some other Brew issue. Run `brew doctor` to see if this is the case.
+**Before running**: Create `inventories/host_vars/<hostname>.yml` for your Mac. See [docs/NEW_MAC_SETUP.md](docs/NEW_MAC_SETUP.md) for complete setup instructions.
+
+The bootstrap script will:
+- Install Xcode Command Line Tools
+- Set up Python environment (pyenv + virtualenv)
+- Install Ansible and dependencies
+- Clone this repository
+- Run the full provisioning playbook
+
+### Applying Configuration Changes
+
+After initial setup, use the `macapply` script to apply configuration changes:
+
+```bash
+# Apply all configuration changes
+./scripts/macapply
+
+# Apply only specific parts (faster)
+./scripts/macapply --tags homebrew
+./scripts/macapply --tags dock
+./scripts/macapply --tags osx
+
+# Dry run (see what would change)
+./scripts/macapply --check --diff
+```
+
+### Daily Updates
+
+For daily maintenance (updates packages, system software, etc.):
+
+```bash
+./scripts/macupdate
+```
+
+> **For complete workflow documentation**, see [docs/WORKFLOWS.md](docs/WORKFLOWS.md).
 
 ### Use with a remote Mac
 
@@ -36,129 +67,170 @@ You can use this playbook to manage other Macs as well; the playbook doesn't eve
 >
 >     sudo systemsetup -setremotelogin on
 
-Then edit the `inventory` file in this repository and change the line that starts with `127.0.0.1` to:
+Then edit `inventories/macs.list` in this repository and add your Mac to the appropriate group:
 
+```ini
+[business_mac]
+ws547 ansible_host=192.168.1.100 ansible_user=yourusername
+
+[private_mac]
+odin ansible_host=192.168.1.101 ansible_user=yourusername
 ```
-[ip address or hostname of mac]  ansible_user=[mac ssh username]
-```
+
+Create a corresponding host_vars file at `inventories/host_vars/<hostname>.yml` with host-specific configuration.
 
 If you need to supply an SSH password (if you don't use SSH keys), make sure to pass the `--ask-pass` parameter to the `ansible-playbook` command.
 
 ### Running a specific set of tagged tasks
 
-You can filter which part of the provisioning process to run by specifying a set of tags using `ansible-playbook`'s `--tags` flag. The tags available are `dotfiles`, `homebrew`, `mas`, `extra-packages` and `osx`.
+You can filter which part of the provisioning process to run by specifying a set of tags. The easiest way is to use the `macapply` script:
 
-    ansible-playbook main.yml -K --tags "dotfiles,homebrew"
-
-## Overriding Defaults
-
-Not everyone's development environment and preferred software configuration is the same.
-
-You can override any of the defaults configured in `default.config.yml` by creating a `config.yml` file and setting the overrides in that file. For example, you can customize the installed packages and apps with something like:
-
-```yaml
-homebrew_installed_packages:
-  - cowsay
-  - git
-  - go
-
-mas_installed_apps:
-  - { id: 443987910, name: "1Password" }
-  - { id: 498486288, name: "Quick Resizer" }
-  - { id: 557168941, name: "Tweetbot" }
-  - { id: 497799835, name: "Xcode" }
-
-composer_packages:
-  - name: hirak/prestissimo
-  - name: drush/drush
-    version: '^8.1'
-
-gem_packages:
-  - name: bundler
-    state: latest
-
-npm_packages:
-  - name: webpack
-
-pip_packages:
-  - name: mkdocs
-
-configure_dock: true
-dockitems_remove:
-  - Launchpad
-  - TV
-dockitems_persist:
-  - name: "Sublime Text"
-    path: "/Applications/Sublime Text.app/"
-    pos: 5
+```bash
+./scripts/macapply --tags "dotfiles,homebrew"
 ```
 
-Any variable can be overridden in `config.yml`; see the supporting roles' documentation for a complete list of available variables.
+Available tags: `dotfiles`, `homebrew`, `mas`, `dock`, `osx`, `fonts`, `extra-packages`, `post`
 
-## Included Applications / Configuration (Default)
+> **Note**: The `mas` tag is currently disabled in `plays/full.yml`
 
-Applications (installed with Homebrew Cask):
+Alternatively, you can run the playbook directly:
 
-  - [ChromeDriver](https://sites.google.com/chromium.org/driver/)
-  - [Docker](https://www.docker.com/)
-  - [Dropbox](https://www.dropbox.com/)
-  - [Firefox](https://www.mozilla.org/en-US/firefox/new/)
-  - [Google Chrome](https://www.google.com/chrome/)
-  - [Handbrake](https://handbrake.fr/)
-  - [Homebrew](http://brew.sh/)
-  - [LICEcap](http://www.cockos.com/licecap/)
-  - [nvALT](http://brettterpstra.com/projects/nvalt/)
-  - [Sequel Ace](https://sequel-ace.com) (MySQL client)
-  - [Slack](https://slack.com/)
-  - [Sublime Text](https://www.sublimetext.com/)
-  - [Transmit](https://panic.com/transmit/) (S/FTP client)
+```bash
+ansible-playbook plays/full.yml -i inventories -l $(hostname) --connection=local --tags "dotfiles,homebrew"
+```
 
-Packages (installed with Homebrew):
+## Configuration
 
-  - autoconf
-  - bash-completion
-  - doxygen
-  - gettext
-  - gifsicle
-  - git
-  - gh
-  - go
-  - gpg
-  - httpie
-  - iperf
-  - libevent
-  - sqlite
-  - nmap
-  - node
-  - nvm
-  - php
-  - ssh-copy-id
-  - cowsay
-  - readline
-  - openssl
-  - pv
-  - wget
-  - wrk
-  - zsh-history-substring-search
+This fork uses a **hierarchical inventory system** for managing multiple Macs with shared and specific configurations.
 
-My [dotfiles](https://github.com/geerlingguy/dotfiles) are also installed into the current user's home directory, including the `.osx` dotfile for configuring many aspects of macOS for better performance and ease of use. You can disable dotfiles management by setting `configure_dotfiles: no` in your configuration.
+### Configuration Hierarchy
 
-Finally, there are a few other preferences and settings added on for various apps and services.
+Configuration cascades from general → group → host-specific:
+
+```
+inventories/
+├── group_vars/
+│   ├── macs/              # Shared across ALL Macs
+│   │   ├── brew.yml       # Common Homebrew packages
+│   │   ├── dock.yml       # Default Dock configuration
+│   │   ├── general.yml    # Core settings
+│   │   └── ...
+│   ├── business_mac/      # Business Mac overrides
+│   │   ├── brew.yml       # Business-specific packages
+│   │   ├── dock.yml       # Business Dock layout
+│   │   └── main.yml
+│   └── private_mac/       # Private Mac overrides
+│       ├── brew.yml       # Private-specific packages
+│       ├── dock.yml       # Private Dock layout
+│       └── main.yml
+└── host_vars/
+    ├── odin.yml           # Host-specific (odin)
+    ├── thor.yml           # Host-specific (thor)
+    └── ws547.yml          # Host-specific (ws547)
+```
+
+### Customizing Packages
+
+**Example**: Adding packages to business Macs only:
+
+```yaml
+# inventories/group_vars/business_mac/brew.yml
+homebrew_installed_packages:
+  - kubectl
+  - terraform
+  - azure-cli
+
+homebrew_cask_apps:
+  - microsoft-teams
+  - slack
+```
+
+**Example**: Host-specific configuration:
+
+```yaml
+# inventories/host_vars/odin.yml
+ansible_become_pass: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  ...
+
+configure_dock: true
+dockitems_persist:
+  - name: "iTerm"
+    path: "/Applications/iTerm.app/"
+    pos: 1
+```
+
+For a complete list of available variables, see [CLAUDE.md](CLAUDE.md#configuration-system).
+
+## Installed Applications / Packages
+
+This fork manages packages through **Brewfiles** organized by Mac group:
+
+- **Business Macs**: `files/brewfile/business_mac/Brewfile`
+- **Private Macs**: `files/brewfile/private_mac/Brewfile`
+
+Each Brewfile contains:
+- Homebrew packages (CLI tools)
+- Homebrew casks (GUI applications)
+- Mac App Store apps (via `mas`)
+
+**To see what's installed on your Mac**, check the Brewfile for your group.
+
+### Dotfiles
+
+Dotfiles from [tuxpeople/dotfiles](https://github.com/tuxpeople/dotfiles) are installed into the current user's home directory. This includes:
+- Shell configuration (.bashrc, .zshrc)
+- Git configuration
+- macOS settings (.macos)
+- And more
+
+You can disable dotfiles management by setting `configure_dotfiles: false` in your configuration.
+
+### Additional Configuration
+
+The playbook also configures:
+- macOS system settings (Dock, Finder, etc.)
+- Development tools (kubectl, Node.js via nvm, Python via pyenv)
+- Application preferences (VSCode, iTerm2, etc.)
+- LaunchAgents for automation
+
+See [CLAUDE.md](CLAUDE.md) for complete documentation.
 
 ## Full / From-scratch setup guide
 
-Since I've used this playbook to set up something like 20 different Macs, I decided to write up a full 100% from-scratch install for my own reference (everyone's particular install will be slightly different).
+Complete step-by-step instructions for setting up a brand new Mac:
 
-You can see my full from-scratch setup document here: [full-mac-setup.md](full-mac-setup.md).
+**[docs/NEW_MAC_SETUP.md](docs/NEW_MAC_SETUP.md)** - Comprehensive guide covering:
+- Prerequisites (what you need before running init.sh)
+- Bootstrap process (init.sh)
+- Post-setup verification
+- Troubleshooting
+
+**[docs/WORKFLOWS.md](docs/WORKFLOWS.md)** - When to use which script:
+- `init.sh` - Fresh Mac setup (once per Mac)
+- `macapply` - Apply configuration changes
+- `macupdate` - Daily/weekly maintenance
 
 ## Testing the Playbook
 
-Many people have asked me if I often wipe my entire workstation and start from scratch just to test changes to the playbook. Nope! This project is [continuously tested on GitHub Actions' macOS infrastructure](https://github.com/geerlingguy/mac-dev-playbook/actions?query=workflow%3ACI).
+This fork includes CI/CD testing via GitHub Actions. The CI pipeline runs:
+- `yamllint` - YAML syntax and formatting validation
+- `ansible-lint` - Ansible best practices validation
+- `shellcheck` - Shell script analysis
+- Integration tests on macOS runners
 
-You can also run macOS itself inside a VM, for at least some of the required testing (App Store apps and some proprietary software might not install properly). I currently recommend:
+You can also run macOS inside a VM for testing changes before applying to production Macs. Recommended virtualization tools:
 
-  - [UTM](https://mac.getutm.app)
-  - [Tart](https://github.com/cirruslabs/tart)
+  - [UTM](https://mac.getutm.app) - Free, macOS native
+  - [Tart](https://github.com/cirruslabs/tart) - CLI-based VM management
+
+**Before committing changes**, run the lint tools locally:
+
+```bash
+yamllint .
+ansible-lint
+shellcheck scripts/*.sh init*.sh
+```
 
 ## Ansible for DevOps
 

@@ -84,7 +84,8 @@ Defined in `requirements.yml`:
 # Dry run (see what would change)
 ./scripts/macapply --check --diff
 
-# Available tags: homebrew, dotfiles, mas, dock, sudoers, terminal, osx, fonts, extra-packages, sublime-text, post
+# Available tags: homebrew, dotfiles, mas, dock, osx, fonts, extra-packages, post
+# Note: mas tag is currently disabled in plays/full.yml
 ```
 
 ### Daily Updates (Maintenance)
@@ -124,7 +125,7 @@ ansible-playbook plays/update.yml -i inventories -l odin --connection=local
 # Run with specific tags
 ansible-playbook main.yml -i inventories -l $(hostname) --connection=local --tags "homebrew,dotfiles"
 
-# Available tags: dotfiles, homebrew, mas, dock, sudoers, terminal, osx, fonts, extra-packages, sublime-text, post
+# Available tags: dotfiles, homebrew, mas, dock, osx, fonts, extra-packages, post
 ```
 
 ## Configuration System
