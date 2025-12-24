@@ -1,3 +1,4 @@
+tap "1password/tap"
 tap "buo/cask-upgrade"
 tap "carvel-dev/carvel"
 tap "devopyio/yamlfmt"
@@ -6,6 +7,8 @@ tap "fluxcd/tap"
 tap "gabrie30/utils"
 tap "go-task/tap"
 tap "hashicorp/tap"
+tap "homebrew/cask"
+tap "homebrew/core"
 tap "johanhaleby/kubetail"
 tap "mfuentesg/tap"
 tap "norwoodj/tap"
@@ -14,6 +17,7 @@ tap "siderolabs/tap"
 tap "tuxpeople/personal"
 tap "utkuozdemir/pv-migrate"
 tap "vmware-tanzu/tanzu"
+tap "weaveworks/tap"
 # Simple, modern, secure file encryption
 brew "age"
 # Utility to check whether MAC addresses are already taken on a LAN
@@ -40,8 +44,6 @@ brew "cloudflared"
 brew "clusterctl"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
-# AI-powered CLI assistant
-brew "codex"
 # Container Signing
 brew "cosign"
 # Tool for interacting with remote images and registries
@@ -82,11 +84,9 @@ brew "gh"
 brew "git"
 # Highly caffeinated git GUI
 brew "git-cola"
-# Extensions to follow Vincent Driessen's branching model
-brew "git-flow"
 # Audit git repos for secrets
 brew "gitleaks"
-# GitLab CLI tool
+# Open-source GitLab command-line tool
 brew "glab"
 # Convert text strings to printed bars
 brew "gnu-barcode"
@@ -98,7 +98,7 @@ brew "gnu-sed"
 brew "gnu-tar"
 # Library for USB device access
 brew "libusb"
-# GNU Pretty Good Privacy (PGP) package
+# GNU Privacy Guard (OpenPGP)
 brew "gnupg"
 # Command-driven, interactive function plotting
 brew "gnuplot"
@@ -120,8 +120,6 @@ brew "grype"
 brew "gzip"
 # Smarter Dockerfile linter to validate best practices
 brew "hadolint"
-# CLI client for haste-server
-brew "haste-client"
 # Kubernetes package manager
 brew "helm"
 # Deploy Kubernetes Helm Charts
@@ -144,6 +142,8 @@ brew "ipcalc"
 brew "iperf"
 # Update of iperf: measures TCP, UDP, and SCTP bandwidth
 brew "iperf3"
+# Duplicate file finder and an enhanced fork of 'fdupes'
+brew "jdupes"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
 # Command-line JSON pretty-printer
@@ -164,12 +164,12 @@ brew "kubernetes-cli"
 brew "krew"
 # Static analysis tool for Kubernetes YAML files and Helm charts
 brew "kube-linter"
-# Kubernetes prompt helper
+# Kubernetes prompt info for bash and zsh
 brew "kube-ps1"
-# FAST Kubernetes manifests validator, with support for Custom Resources!
-brew "kubeconform"
 # Colorize your kubectl output
 brew "kubecolor"
+# FAST Kubernetes manifests validator, with support for Custom Resources!
+brew "kubeconform"
 # Easily check your clusters for use of deprecated APIs
 brew "kubent"
 # Template-free customization of Kubernetes YAML manifests
@@ -202,7 +202,7 @@ brew "mas"
 brew "memtester"
 # Replacement for ls, cp and other commands for object storage
 brew "minio-mc"
-# Polyglot runtime manager (rtx successor)
+# Polyglot runtime manager (asdf rust clone)
 brew "mise"
 # Move, copy, append, and link multiple files
 brew "mmv"
@@ -230,8 +230,6 @@ brew "netcat"
 brew "ngrep"
 # Port scanning utility for large networks
 brew "nmap"
-# Node.js JavaScript runtime and npm package manager
-brew "node"
 # Prometheus exporter for machine metrics
 brew "node_exporter", restart_service: :changed
 # Network performance measurement tool
@@ -246,10 +244,6 @@ brew "p7zip"
 brew "pandoc"
 # Efficient rsh-like utility, for using hosts in parallel
 brew "pdsh"
-# Display the PID number for a given process name
-brew "pidof"
-# New zlib (gzip, deflate) compatible compressor
-brew "zopfli"
 # Parallel gzip
 brew "pigz"
 # Pinentry for GPG on Mac
@@ -258,6 +252,8 @@ brew "pinentry-mac"
 brew "pkgconf"
 # Tool for managing OCI containers and pods
 brew "podman"
+# Kubernetes cluster resource sanitizer
+brew "popeye"
 # Framework for managing multi-language pre-commit hooks
 brew "pre-commit"
 # Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
@@ -274,12 +270,12 @@ brew "pyenv"
 brew "pyenv-virtualenv"
 # Tools for and transforming and inspecting PDF files
 brew "qpdf"
-# Rancher CLI
-brew "rancher-cli"
 # Encoder and decoder for quoted-printable encoding
 brew "qprint"
 # QR Code generation
 brew "qrencode"
+# Unified tool to manage your Rancher server
+brew "rancher-cli"
 # Rsync for cloud storage
 brew "rclone"
 # Reverse differential backup tool, over a network or locally
@@ -292,6 +288,8 @@ brew "ren"
 brew "rename"
 # Fast, efficient and secure backup program
 brew "restic"
+# Search tool like grep and The Silver Searcher
+brew "ripgrep"
 # File system snapshot utility (based on rsync)
 brew "rsnapshot"
 # Utility that provides fast incremental file transfer
@@ -320,6 +318,8 @@ brew "stern"
 brew "sysdig"
 # Configuration helper for talos clusters
 brew "talhelper"
+# CLI for out-of-band management of Kubernetes nodes created by Talos
+brew "talosctl"
 # Command-line packet analyzer
 brew "tcpdump"
 # TCP/IP packet demultiplexer
@@ -328,8 +328,6 @@ brew "tcpflow"
 brew "tcping"
 # Active TCP connections monitoring tool
 brew "tcpstat"
-# Analyze tcpdump output
-brew "tcptrace"
 # Traceroute implementation using TCP packets
 brew "tcptraceroute"
 # User interface to the TELNET protocol
@@ -372,6 +370,8 @@ brew "wifi-password"
 brew "wput"
 # Linter for YAML files
 brew "yamllint"
+# Tool for managing your YubiKey configuration
+brew "ykman"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
 # Feature-rich command-line audio/video downloader
@@ -394,8 +394,6 @@ brew "johanhaleby/kubetail/kubetail"
 brew "mfuentesg/tap/ksd"
 # Automatically generate markdown documentation for helm charts
 brew "norwoodj/tap/helm-docs"
-# CLI for out-of-band management of Kubernetes nodes created by Talos
-brew "siderolabs/tap/talosctl"
 # Persistent volume migration plugin for Kubernetes
 brew "utkuozdemir/pv-migrate/pv-migrate"
 # Password manager that keeps all passwords secure behind one password
@@ -406,8 +404,16 @@ cask "1password-cli"
 cask "aerial"
 # Tool to flash OS images to SD cards & USB drives
 cask "balenaetcher"
+# 3D model slicing software for 3D printers, maintained by Bambu Lab
+cask "bambu-studio"
+# Compact TeX distribution as alternative to the full TeX Live / MacTeX
+cask "basictex"
 # Text, code, and markup editor
 cask "bbedit"
+# Build, render, and create LEGO instructions
+cask "bricklink-studio"
+# OpenAI's coding agent that runs in your terminal
+cask "codex"
 # Universal database tool and SQL client
 cask "dbeaver-community"
 # Drivers for DisplayLink docks, adapters and monitors
@@ -418,8 +424,6 @@ cask "displaylink-login-extension"
 cask "drawio"
 # Client for the Dropbox cloud storage service
 cask "dropbox"
-# Finds duplicate files in a computer system
-cask "dupeguru"
 # Web browser
 cask "firefox"
 cask "font-roboto"
@@ -430,18 +434,14 @@ cask "forticlient-vpn"
 cask "google-chrome"
 # Tools to protect your emails and files
 cask "gpg-suite"
-# Open-source video transcoder
-cask "handbrake"
 # Automated organisation
 cask "hazel"
-# IDE for Java development - community edition
-cask "intellij-idea-ce"
 # Terminal emulator as alternative to Apple's Terminal app
 cask "iterm2"
 # Note taking and to-do application with synchronisation capabilities
 cask "joplin"
-# Personal data manager focusing on security
-cask "keepassx"
+# Password manager app
+cask "keepassxc"
 # Host-based application firewall
 cask "little-snitch"
 # Software for Logitech devices
@@ -456,26 +456,21 @@ cask "microsoft-auto-update"
 cask "microsoft-teams"
 # Orchestrates virtual Ubuntu instances
 cask "multipass"
-cask "mysides"
 # Rename a list of files quickly
 cask "namechanger"
 # WiFi site survey software and WiFi scanner
 cask "netspot"
 # Knowledge base that works on top of a local folder of plain text Markdown files
 cask "obsidian"
-# Create, run, and share large language models (LLMs)
+# Get up and running with large language models locally
 cask "ollama-app"
 # Virtual machine client
 cask "omnissa-horizon-client"
-# Tool to create native applications from command-line scripts
-cask "platypus"
 # Podcast platform
 cask "pocket-casts"
 # Browse, manage, inspect containers and images
 cask "podman-desktop"
-# IDE for Python programming - Community Edition
-cask "pycharm-ce"
-# Free and Open Source messaging and emailing app
+# Workspace simplifier - to organize your workspace and boost your productivity
 cask "rambox"
 # Archive manager for data compression and backups
 cask "rar"
@@ -492,7 +487,7 @@ cask "spotify"
 # Native GUI tool for relational databases
 cask "tableplus"
 # Mesh VPN based on WireGuard
-cask "tailscale"
+cask "tailscale-app"
 # Remote access and connectivity software focused on security
 cask "teamviewer"
 # Free and open-source OpenVPN client
@@ -510,9 +505,9 @@ cask "vlc"
 # Video communication and virtual meeting platform
 cask "webex-meetings"
 # Network protocol analyzer
-cask "wireshark"
-# Application for configuring any YubiKey
-cask "yubico-yubikey-manager"
+cask "wireshark-app"
+# Application for generating TOTP and HOTP codes
+cask "yubico-authenticator"
 mas "1Password for Safari", id: 1569813296
 mas "Affinity Designer", id: 824171161
 mas "Affinity Photo", id: 824183456
@@ -521,14 +516,13 @@ mas "Agenda", id: 1287445660
 mas "Apple Configurator", id: 1037126344
 mas "Bear", id: 1091189122
 mas "DaisyDisk", id: 411643860
+mas "Dipper", id: 6450242673
+mas "Exporter", id: 1099120373
 mas "ForkLift", id: 412448059
 mas "FruitJuice", id: 671736912
-mas "Goodnotes", id: 1444383602
-mas "Grammarly for Safari", id: 1462114288
 mas "iMovie", id: 408981434
 mas "Irvue", id: 1039633667
 mas "Keynote", id: 409183694
-mas "Kindle", id: 302584613
 mas "Kubeterm", id: 6450548861
 mas "LanScan", id: 472226235
 mas "Lightweight PDF", id: 1450640351
@@ -539,8 +533,7 @@ mas "Microsoft OneNote", id: 784801555
 mas "Microsoft Outlook", id: 985367838
 mas "Microsoft PowerPoint", id: 462062816
 mas "Microsoft To Do", id: 1274495053
-mas "Microsoft Word", id: 462054704
-mas "MindNode", id: 1289197285
+mas "MindNode Classic", id: 1289197285
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 mas "PDFCombo", id: 1030461463
@@ -549,16 +542,16 @@ mas "Reeder", id: 1529448980
 mas "Sid Meier's Railroads!", id: 536502825
 mas "SQLPro for SQLite", id: 586001240
 mas "Swift Playground", id: 1496833156
-mas "Termius", id: 1176074088
 mas "TextSniper", id: 1528890965
 mas "Todoist", id: 585829637
 mas "Toggl Track", id: 1291898086
 mas "Unibox", id: 702816521
 mas "VMware Remote Console", id: 1230249825
-mas "Windows App", id: 1295203466
 mas "WireGuard", id: 1451685025
 vscode "4ops.terraform"
 vscode "albert.tabout"
+vscode "anthropic.claude-code"
+vscode "blueglassblock.better-json5"
 vscode "britesnow.vscode-toggle-quotes"
 vscode "codezombiech.gitignore"
 vscode "continue.continue"
@@ -571,6 +564,7 @@ vscode "editorconfig.editorconfig"
 vscode "esbenp.prettier-vscode"
 vscode "exiasr.hadolint"
 vscode "fcrespo82.markdown-table-formatter"
+vscode "fnando.linter"
 vscode "foxundermoon.shell-format"
 vscode "github.copilot"
 vscode "github.copilot-chat"
@@ -580,9 +574,11 @@ vscode "gitlab.gitlab-workflow"
 vscode "golang.go"
 vscode "hashicorp.terraform"
 vscode "irarainey.applicationregistrations"
+vscode "irongeek.vscode-env"
 vscode "joaompinto.vscode-graphviz"
 vscode "kennylong.kubernetes-yaml-formatter"
 vscode "lunuan.kubernetes-templates"
+vscode "mechatroner.rainbow-csv"
 vscode "mgtrrz.terraform-completer"
 vscode "misodee.vscode-nbt"
 vscode "mitchdenny.ecdc"
@@ -591,6 +587,7 @@ vscode "mohsen1.prettify-json"
 vscode "ms-azure-load-testing.microsoft-testing"
 vscode "ms-azuretools.azure-dev"
 vscode "ms-azuretools.vscode-azure-github-copilot"
+vscode "ms-azuretools.vscode-azure-mcp-server"
 vscode "ms-azuretools.vscode-azureappservice"
 vscode "ms-azuretools.vscode-azurecontainerapps"
 vscode "ms-azuretools.vscode-azurefunctions"
@@ -599,6 +596,7 @@ vscode "ms-azuretools.vscode-azurestaticwebapps"
 vscode "ms-azuretools.vscode-azurestorage"
 vscode "ms-azuretools.vscode-azureterraform"
 vscode "ms-azuretools.vscode-azurevirtualmachines"
+vscode "ms-azuretools.vscode-containers"
 vscode "ms-azuretools.vscode-cosmosdb"
 vscode "ms-azuretools.vscode-docker"
 vscode "ms-dotnettools.vscode-dotnet-runtime"
@@ -607,6 +605,7 @@ vscode "ms-python.debugpy"
 vscode "ms-python.isort"
 vscode "ms-python.python"
 vscode "ms-python.vscode-pylance"
+vscode "ms-python.vscode-python-envs"
 vscode "ms-vscode-remote.remote-containers"
 vscode "ms-vscode-remote.remote-ssh"
 vscode "ms-vscode-remote.remote-ssh-edit"
@@ -616,6 +615,7 @@ vscode "ms-vscode.cpptools"
 vscode "ms-vscode.hexeditor"
 vscode "ms-vscode.remote-explorer"
 vscode "ms-vscode.vscode-node-azure-pack"
+vscode "ms-windows-ai-studio.windows-ai-studio"
 vscode "oderwat.indent-rainbow"
 vscode "pjmiravalle.terraform-advanced-syntax-highlighting"
 vscode "platformio.platformio-ide"
@@ -628,9 +628,13 @@ vscode "redhat.vscode-yaml"
 vscode "run-at-scale.terraform-doc-snippets"
 vscode "samuelcolvin.jinjahtml"
 vscode "signageos.signageos-vscode-sops"
+vscode "streetsidesoftware.code-spell-checker"
+vscode "teamsdevapp.vscode-ai-foundry"
 vscode "tfsec.tfsec"
+vscode "timonwong.shellcheck"
 vscode "usernamehw.errorlens"
 vscode "vscode-icons-team.vscode-icons"
 vscode "will-stone.in-any-case"
+vscode "yzane.markdown-pdf"
 vscode "yzdann.k8s-snippets"
 vscode "yzhang.markdown-all-in-one"

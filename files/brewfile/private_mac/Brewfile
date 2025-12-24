@@ -392,6 +392,8 @@ brew "whois"
 brew "wifi-password"
 # Tiny, wget-like FTP client for uploading files
 brew "wput"
+# Build, render, and create LEGO instructions
+cask "bricklink-studio"
 # Linter for YAML files
 brew "yamllint"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
