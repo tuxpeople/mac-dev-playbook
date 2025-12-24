@@ -25,9 +25,9 @@ fonts_licensed_source: "{{ myhomedir }}/iCloudDrive/Allgemein/fonts/licensed"
 # fonts_licensed_source: "/Volumes/ExternalDrive/Fonts"
 
 # Font installation target
-# User fonts (recommended): ~/Library/Fonts
-# System fonts (requires sudo): /Library/Fonts
-fonts_target_dir: "{{ myhomedir }}/Library/Fonts"
+# User fonts: ~/Library/Fonts
+# System fonts (all users, requires sudo): /Library/Fonts
+fonts_target_dir: "/Library/Fonts"
 
 # Supported font formats
 fonts_extensions:

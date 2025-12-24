@@ -10,7 +10,7 @@
     path: "{{ fonts_target_dir }}"
     state: directory
     mode: '0755'
-  become: false
+  become: true
 
 - name: Find common fonts in repository
   ansible.builtin.find:
@@ -32,7 +32,7 @@
   when:
     - configure_fonts | default(false)
     - common_fonts_found.matched > 0
-  become: false
+  become: true
 
 - name: Find private fonts in repository
   ansible.builtin.find:
@@ -57,7 +57,7 @@
     - configure_fonts | default(false)
     - "'private_mac' in group_names"
     - private_fonts_found.matched > 0
-  become: false
+  become: true
 
 - name: Check if licensed fonts source exists
   ansible.builtin.stat:
@@ -98,11 +98,11 @@
     - "'private_mac' in group_names"
     - licensed_fonts_dir.stat.exists | default(false)
     - licensed_fonts_found.matched > 0
-  become: false
+  become: true
 
 - name: Clear font cache (macOS)
   ansible.builtin.command:
-    cmd: "atsutil databases -removeUser"
+    cmd: "atsutil databases -remove"
   when:
     - configure_fonts | default(false)
     - >
@@ -111,4 +111,4 @@
       (licensed_fonts_found is defined and (licensed_fonts_found.matched | default(0)) > 0)
   changed_when: true
   failed_when: false
-  become: false
+  become: true
