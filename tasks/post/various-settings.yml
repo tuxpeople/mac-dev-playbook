@@ -100,10 +100,11 @@
   changed_when: false
   become: false
 
-- name: Enable SSH access
+- name: Enable SSH access (private_mac only - disabled by policy on business_mac)
   shell: systemsetup -setremotelogin on
   become: true
   changed_when: true
+  when: "'private_mac' in group_names"
 
 - name: Add Pictures folder to sidebar
   shell: "mysides add Bilder file://$HOME/Pictures/"

@@ -1,0 +1,61 @@
+defaults:
+  # Apple Watch Unlock removed - com.apple.applicationaccess domain no longer exists in macOS 26.2
+  - domain: com.apple.dock
+    key: tilesize
+    name: Set Dock tile size to 36 points
+    type: int
+    value: '36'
+  - domain: com.apple.dock
+    key: orientation
+    name: Change Dock's position to the bottom of the screen
+    type: string
+    value: 'bottom'
+  - domain: com.apple.dock
+    key: autohide
+    name: Always display the Dock
+    type: bool
+    value: 'false'
+  - domain: com.apple.screensaver
+    key: idleTime
+    name: Disable the Screensaver
+    value: '0'
+  - domain: com.apple.finder
+    key: ShowHardDrivesOnDesktop
+    name: Show Drives on the Desktop
+    type: bool
+    value: 'true'
+  - domain: com.apple.finder
+    key: ShowExternalHardDrivesOnDesktop
+    name: Show External Drives on the Desktop
+    type: bool
+    value: 'true'
+  - domain: com.apple.finder
+    key: ShowRemovableMediaOnDesktop
+    name: Show Removable Media on the Desktop
+    type: bool
+    value: 'true'
+  - domain: com.apple.finder
+    key: AppleShowAllFiles
+    name: Show Hidden Files
+    type: bool
+    value: 'true'
+  - domain: NSGlobalDomain
+    key: AppleShowAllExtensions
+    name: Show File Extensions
+    type: bool
+    value: 'true'
+  - domain: com.apple.finder
+    key: ShowStatusBar
+    name: Show the Status Bar in Finder
+    type: bool
+    value: 'true'
+  - domain: com.apple.finder
+    key: ShowPathbar
+    name: Show the Path Bar in Finder
+    type: bool
+    value: 'true'
+  - domain: com.apple.TextEdit
+    key: RichText
+    name: Disable rich text in textedit
+    type: bool
+    value: 'false'

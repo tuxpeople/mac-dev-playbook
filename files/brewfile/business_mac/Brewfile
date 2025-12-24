@@ -206,6 +206,8 @@ brew "minio-mc"
 brew "mise"
 # Move, copy, append, and link multiple files
 brew "mmv"
+# Add or remove items to the Finder sidebar
+cask "mysides"
 # Collection of tools that nobody wrote when UNIX was young
 brew "moreutils"
 # Remote terminal application
