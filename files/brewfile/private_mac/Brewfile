@@ -452,8 +452,6 @@ cask "displaylink"
 cask "displaylink-login-extension"
 # Online diagram software
 cask "drawio"
-# Client for the Dropbox cloud storage service
-cask "dropbox"
 # Finds duplicate files in a computer system
 cask "dupeguru"
 # Web browser
@@ -474,18 +472,12 @@ cask "hazel"
 cask "intellij-idea-ce"
 # Terminal emulator as alternative to Apple's Terminal app
 cask "iterm2"
-# Note taking and to-do application with synchronisation capabilities
-cask "joplin"
 # Personal data manager focusing on security
 cask "keepassx"
 # Host-based application firewall
 cask "little-snitch"
 # Software for Logitech devices
 cask "logi-options+"
-# Privacy-first, open-source platform for knowledge sharing and management
-cask "logseq"
-# Open-source, KeePass-client and password manager
-cask "macpass"
 # Provides updates to various Microsoft products
 cask "microsoft-auto-update"
 # Meet, chat, call, and collaborate in just one place
@@ -535,8 +527,6 @@ cask "tailscale-app"
 cask "teamviewer"
 # Free and open-source OpenVPN client
 cask "tunnelblick"
-# Die Deutschschweizer Basisschrift ist eine didaktische Schrift, die für den Handschrifterwerb konzipiert worden ist. Sie ist bewusst keine Satzschrift, die gestalterische Möglichkeiten bei der Erstellung von Arbeitsblättern und Materialien zulässt. Es gibt daher auch keine fette oder kursive Version der Schrift. Das Konzept der Deutschschweizer Basisschrift setzt bewusst auf handschrifltiche Vorlagen von Lehrpersonen.
-cask "tuxpeople-font-dch-basisschrift"
 # Tool to install Linux/BSD distributions to a partition or USB drive
 cask "unetbootin"
 # Development environment
