@@ -76,8 +76,6 @@ brew "diceware"
 brew "direnv"
 # Pack, ship and run any application as a lightweight container
 brew "docker"
-# Isolated development environments using Docker
-brew "docker-compose", link: false
 # Platform keystore credential helper for Docker
 brew "docker-credential-helper"
 # Embeddable SQL OLAP Database Management System

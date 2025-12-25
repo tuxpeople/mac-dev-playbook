@@ -62,8 +62,6 @@ brew "diceware"
 brew "direnv"
 # Pack, ship and run any application as a lightweight container
 brew "docker"
-# Isolated development environments using Docker
-brew "docker-compose"
 # Utilities for the ext2, ext3, and ext4 file systems
 brew "e2fsprogs"
 # Perl lib for reading and writing EXIF metadata
