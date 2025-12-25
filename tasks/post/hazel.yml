@@ -61,16 +61,16 @@
 
     - name: Deploy Hazel rules with volume-specific naming
       copy:
-        src: "{{ item.path }}"
-        dest: "{{ myhomedir }}/Library/Application Support/Hazel/{{ volume_uuid.stdout }}-{{ item.path | basename | regex_replace('.hazelrules$', '') }}.hazelrules"
+        src: "{{ hazel_rule.path }}"
+        dest: "{{ myhomedir }}/Library/Application Support/Hazel/{{ volume_uuid.stdout }}-{{ hazel_rule.path | basename | regex_replace('.hazelrules$', '') }}.hazelrules"
         mode: '0644'
       loop: "{{ hazel_rules_found.files }}"
       loop_control:
         loop_var: hazel_rule
-        label: "{{ item.path | basename }}"
+        label: "{{ hazel_rule.path | basename }}"
       when: hazel_deploy_all_rules | default(true)
       become: false
-      notify: restart_hazel
+      register: hazel_rules_deployed
 
     # 5. DEPLOY LICENSE FILE
     - name: Check if Hazel license already exists
@@ -85,7 +85,7 @@
         - configure_hazel_license | default(true)
         - not hazel_license_exists.stat.exists
       become: false
-      notify: restart_hazel
+      register: hazel_license_downloaded
 
     # 6. SET HAZEL PREFERENCES
     - name: Configure Hazel preferences
@@ -99,7 +99,7 @@
         loop_var: hazel_pref
         label: "{{ hazel_pref.key }}"
       become: false
-      notify: restart_hazel
+      register: hazel_preferences_configured
 
     # 7. SET HAZEL HELPER PREFERENCES
     - name: Configure Hazel Helper preferences
@@ -113,30 +113,35 @@
         loop_var: hazel_helper_pref
         label: "{{ hazel_helper_pref.key }}"
       become: false
+      register: hazel_helper_preferences_configured
 
-  when: 
+    # 8. RESTART HAZEL IF NEEDED
+    - name: Restart Hazel if configuration changed
+      block:
+        - name: Quit Hazel
+          shell: osascript -e 'quit app "Hazel"' 2>/dev/null || true
+          changed_when: false
+          become: false
+
+        - name: Kill Hazel Helper
+          shell: killall HazelHelper 2>/dev/null || true
+          changed_when: false
+          ignore_errors: yes
+
+        - name: Wait for Hazel to quit
+          pause:
+            seconds: 3
+
+        - name: Restart Hazel
+          shell: open -a Hazel
+          changed_when: false
+          become: false
+      when:
+        - hazel_rules_deployed.changed | default(false) or
+          hazel_license_downloaded.changed | default(false) or
+          hazel_preferences_configured.changed | default(false) or
+          hazel_helper_preferences_configured.changed | default(false)
+
+  when:
     - hazel_app.stat.exists
     - configure_hazel | default(false)
-
-# HANDLERS
-- name: restart_hazel
-  block:
-    - name: Quit Hazel
-      shell: osascript -e 'quit app "Hazel"' 2>/dev/null || true
-      changed_when: false
-      become: false
-
-    - name: Kill Hazel Helper
-      shell: killall HazelHelper 2>/dev/null || true
-      changed_when: false
-      ignore_errors: yes
-
-    - name: Wait for Hazel to quit
-      pause:
-        seconds: 3
-
-    - name: Restart Hazel
-      shell: open -a Hazel
-      changed_when: false
-      become: false
-  listen: restart_hazel
