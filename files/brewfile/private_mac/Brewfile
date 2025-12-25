@@ -474,10 +474,6 @@ cask "keepassx"
 cask "little-snitch"
 # Software for Logitech devices
 cask "logi-options+"
-# Provides updates to various Microsoft products
-cask "microsoft-auto-update"
-# Meet, chat, call, and collaborate in just one place
-cask "microsoft-teams"
 # Orchestrates virtual Ubuntu instances
 cask "multipass"
 cask "mysides"
@@ -557,11 +553,6 @@ mas "LanScan", id: 472226235
 mas "Lightweight PDF", id: 1450640351
 mas "Magnet", id: 441258766
 mas "Matter", id: 1548677272
-mas "Microsoft Excel", id: 462058435
-mas "Microsoft OneNote", id: 784801555
-mas "Microsoft Outlook", id: 985367838
-mas "Microsoft PowerPoint", id: 462062816
-mas "Microsoft To Do", id: 1274495053
 mas "MindNode Classic", id: 1289197285
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
