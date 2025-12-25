@@ -26,7 +26,7 @@ repos:
           echo "ansible-lint not installed, skipping"'
         language: system
         files: \.(yaml|yml)$
-        exclude: ^\.github/|^requirements\.yml$|^\.yamllint$|^inventories/host_vars/
+        exclude: ^\.github/|^requirements\.yml$|^\.yamllint$|^inventories/host_vars/|^inventories/group_vars/.*/secrets\.yml$
         pass_filenames: false
 
   # Shell Script Linting
@@ -56,7 +56,7 @@ repos:
         exclude: ^files/
       - id: check-yaml
         args: [--allow-multiple-documents]
-        exclude: ^inventories/host_vars/.*\.yml$  # Exclude Ansible Vault files
+        exclude: ^inventories/host_vars/.*\.yml$|^inventories/group_vars/.*/secrets\.yml$  # Exclude Ansible Vault files
       - id: check-added-large-files
         args: [--maxkb=1024]
       - id: check-merge-conflict

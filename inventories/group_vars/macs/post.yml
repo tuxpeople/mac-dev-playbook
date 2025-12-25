@@ -13,5 +13,4 @@ post_provision_tasks:
   - ../tasks/post/k8s.yml
   - ../tasks/post/printers.yml
   - ../tasks/post/vscode.yml
-  - ../tasks/post/whereami.yml
   - ../tasks/post/{{ myenv }}-settings.yml
