@@ -92,12 +92,6 @@ if [[ "${sync_icloud}" == "y" || "${sync_icloud}" == "Y" ]]; then
   echo " - Downloading important files from iCloud"
   cd ~
 
-
-  if [ -f "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password" ]; then
-    "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password"
-  else
-    echo "⚠️  WARNING: add_vault_password script not found in iCloud"
-  fi
 else
   echo " - Skipping iCloud sync (you'll need to provide vault password manually)"
 fi
