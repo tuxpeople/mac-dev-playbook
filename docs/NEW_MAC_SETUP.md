@@ -74,46 +74,100 @@ git push
 
 ## Running the Setup
 
-### On the New Mac
+The setup is split into 3 phases for better reliability and control:
 
-1. **Open Terminal** (use the built-in Terminal.app, NOT iTerm2 if it's already installed)
+### Phase 1: Bootstrap (Automated) - init.sh
 
-2. **Log into Mac App Store** (setup will prompt you to verify this)
+**On the New Mac:**
 
-3. **Run init.sh**:
+1. **Open Terminal** (use the built-in Terminal.app, NOT iTerm2 if already installed)
+
+2. **Grant Full Disk Access to Terminal**:
+   - Open System Settings → Privacy & Security → Full Disk Access
+   - Click (+) and add Terminal.app
+   - Required for SSH setup and system configuration
+
+3. **Log into Mac App Store** (setup will prompt you to verify this)
+
+4. **Run init.sh**:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
 ```
 
-4. **Follow the prompts**:
+5. **Follow the prompts**:
    - Confirm you're logged into Mac App Store
-   - Enter the hostname (must match the one you configured above)
-   - Choose whether to sync files from iCloud Drive:
-     - `y` = Download dotfiles and vault password from iCloud (requires iCloud sync)
-     - `n` = Skip iCloud sync, you'll be prompted for vault password during Ansible run
+   - Enter the hostname (must match the one you configured in Prerequisites)
 
-### What Happens During Setup
+**What Phase 1 Does:**
 
-The init.sh script will:
+The init.sh script (bootstrap phase) will:
 
-1. ✅ Install Command Line Tools (if needed)
-2. ✅ Clone the playbook repository to `/tmp/git`
-3. ✅ (Optional) Download files from iCloud Drive
+1. ✅ Run pre-flight checks (admin privileges, internet, disk space)
+2. ✅ Install Xcode Command Line Tools (if needed)
+3. ✅ Clone the playbook repository to `/tmp/git`
 4. ✅ Install Python dependencies and Ansible
 5. ✅ Install Ansible Galaxy requirements
 6. ✅ Configure system limits (max open files/processes)
 7. ✅ Set hostname
-8. ✅ Check for host configuration file
-9. ✅ Run the full provisioning playbook (`plays/full.yml`)
+8. ✅ Create ~/iCloudDrive symlink
+9. ✅ Run bootstrap playbook (`plays/bootstrap.yml`):
+   - Install Homebrew
+   - Install essential CLI tools (git, bash, jq, node)
+   - Install 1Password app
 
-### Password Prompts
+**Important:** Phase 1 requires **NO vault password**, **NO iCloud sync**, and **NO 1Password login**.
+This makes it ultra-robust and impossible to fail due to missing external dependencies.
 
-Depending on your setup, you may be prompted for:
+### Phase 2: Manual Configuration (5-10 minutes)
 
-- **Sudo password**: At the beginning (for initial system changes)
-- **Ansible Vault password**: If iCloud sync is skipped and no vault_password_file is found
-  - This decrypts the `ansible_become_pass` from your host_vars file
+After Phase 1 completes, you'll see instructions for manual steps:
+
+1. **Open 1Password and sign in**:
+   - 1Password was installed to /Applications during Phase 1
+   - Sign in with your account credentials
+
+2. **Wait for iCloud Drive to sync** (optional):
+   - If you use iCloud for dotfiles/SSH keys, wait for sync to complete
+   - Skip this if you don't use iCloud sync
+
+3. **Add vault password to macOS Keychain**:
+
+```bash
+~/iCloudDrive/Allgemein/bin/add_vault_password
+```
+
+This stores the Ansible Vault password in your keychain so Phase 3 can run without prompting.
+
+### Phase 3: Full Configuration (Automated) - macapply
+
+Once Phase 2 is complete, run the full configuration:
+
+```bash
+cd /tmp/git
+./scripts/macapply
+```
+
+**What Phase 3 Does:**
+
+The macapply script (`plays/full.yml`) will:
+
+1. ✅ Install all Brewfile packages (hundreds of apps)
+2. ✅ Configure dotfiles (with SSH keys from iCloud)
+3. ✅ Configure Hazel (with license from 1Password)
+4. ✅ Configure Dock
+5. ✅ Apply macOS settings
+6. ✅ Install fonts
+7. ✅ Clone GitHub repositories
+8. ✅ Run all post-provision tasks
+9. ✅ Configure printers
+10. ✅ Everything else
+
+**Password Prompts:**
+
+- **Phase 1**: Only interactive sudo (system password)
+- **Phase 2**: 1Password master password (manual login)
+- **Phase 3**: Vault password automatically from keychain (no prompt)
 
 ### Troubleshooting
 
@@ -198,6 +252,8 @@ Solution (Automatic as of 2025-12-25):
 
 ### Verify the Installation
 
+After Phase 3 completes, verify everything is set up correctly:
+
 ```bash
 # Check installed software
 brew list
@@ -208,6 +264,21 @@ ls -la ~/development/github/tuxpeople/dotfiles
 
 # Check SSH keys (if configured)
 ls -la ~/.ssh
+
+# Verify Ansible is working
+ansible --version
+```
+
+### Move Repository from /tmp/git (Optional)
+
+The repository is initially cloned to `/tmp/git`. You may want to move it:
+
+```bash
+# Move to permanent location
+mv /tmp/git ~/development/github/tuxpeople/mac-dev-playbook
+
+# Or use the default location if dotfiles already set it up
+cd ~/development/github/tuxpeople/mac-dev-playbook
 ```
 
 ### Daily Updates
@@ -227,26 +298,37 @@ ln -sf ~/development/github/tuxpeople/mac-dev-playbook/scripts/macupdate \
 macupdate
 ```
 
-## Advanced: Without iCloud Sync
+## Workflow Summary
 
-If you want to run the setup without iCloud Drive dependencies:
+The 3-phase approach provides:
 
-1. Answer `n` when prompted for iCloud sync
-2. You'll be prompted for Ansible Vault password during playbook run
-3. You can manually sync dotfiles and other files later
+- **Phase 1 (init.sh)**: Ultra-robust bootstrap, no external dependencies → 30-45 min
+- **Phase 2 (manual)**: User-controlled 1Password/iCloud setup → 5-10 min
+- **Phase 3 (macapply)**: Full configuration with all dependencies available → 20-30 min
+
+**Benefits:**
+
+- Phase 1 cannot fail due to missing secrets or iCloud
+- User has control over when to set up 1Password
+- Phase 3 runs smoothly with all dependencies ready
+- Better error isolation (which phase has the problem?)
+- Can re-run Phase 3 multiple times (idempotent)
 
 ## File Locations
 
 After successful setup:
 
-- **Playbook**: `~/development/github/tuxpeople/mac-dev-playbook`
-- **Dotfiles**: `~/development/github/tuxpeople/dotfiles`
-- **Brewfiles**: In dotfiles repo under `machine/business_mac/` or `machine/private_mac/`
-- **Logs**: Check Terminal output during run
+- **Playbook**: `/tmp/git` (initially) → move to `~/development/github/tuxpeople/mac-dev-playbook`
+- **Dotfiles**: `~/development/github/tuxpeople/dotfiles` (cloned in Phase 3)
+- **Brewfiles**: `files/brewfile/business_mac/` or `files/brewfile/private_mac/`
+- **iCloud symlink**: `~/iCloudDrive` → `~/Library/Mobile Documents/com~apple~CloudDocs/Dateien`
 
 ## Reference Files
 
-- Host configuration template: `inventories/host_vars/TEMPLATE.yml`
-- Helper script: `scripts/create-host-config.sh`
-- Full playbook: `plays/full.yml`
-- Update playbook: `plays/update.yml`
+- **Bootstrap playbook**: `plays/bootstrap.yml` (Phase 1)
+- **Full playbook**: `plays/full.yml` (Phase 3)
+- **Update playbook**: `plays/update.yml` (for macupdate)
+- **Host configuration template**: `inventories/host_vars/TEMPLATE.yml`
+- **Helper script**: `scripts/create-host-config.sh`
+- **Apply script**: `scripts/macapply` (runs full.yml)
+- **Update script**: `scripts/macupdate` (runs update.yml)

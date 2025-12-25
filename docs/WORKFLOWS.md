@@ -46,19 +46,26 @@ This document explains the different workflows and when to use which script/play
 
 **When**: You got a new Mac or did a clean macOS install
 
+**Overview**: The setup is split into 3 phases for better reliability:
+
+### Phase 1: Bootstrap (Automated)
+
 **Script**: `init.sh`
 
 **What it does**:
 
-1. Installs Command Line Tools (if needed)
-2. Installs Homebrew
+1. Runs pre-flight checks (admin, internet, disk space)
+2. Installs Xcode Command Line Tools (if needed)
 3. Clones this repository to `/tmp/git`
-4. (Optional) Syncs files from iCloud Drive
-5. Installs Python and Ansible (system Python)
-6. Installs Ansible Galaxy requirements
-7. Configures system limits (max files/processes)
-8. Sets hostname
-9. Runs `plays/full.yml` for complete system provisioning
+4. Installs Python and Ansible (system Python)
+5. Installs Ansible Galaxy requirements
+6. Configures system limits (max files/processes)
+7. Sets hostname
+8. Creates ~/iCloudDrive symlink
+9. Runs `plays/bootstrap.yml`:
+   - Installs Homebrew
+   - Installs essential CLI tools (git, bash, jq, node)
+   - Installs 1Password app
 
 **How to run**:
 
@@ -67,12 +74,56 @@ This document explains the different workflows and when to use which script/play
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
 ```
 
-**Important**: You must create `inventories/host_vars/<hostname>.yml` BEFORE running this.
-See: [docs/NEW_MAC_SETUP.md](NEW_MAC_SETUP.md)
+**Duration**: 30-45 minutes
 
-**Duration**: 30-60 minutes (depends on internet speed, number of packages)
+**Important**:
+
+- You must create `inventories/host_vars/<hostname>.yml` BEFORE running this
+- NO vault password, iCloud sync, or 1Password login required
+- Ultra-robust - cannot fail due to external dependencies
+
+### Phase 2: Manual Setup (User-controlled)
+
+**What to do**:
+
+1. **Open 1Password** (installed in Phase 1) and **sign in**
+2. **Wait for iCloud Drive to sync** (optional, if you use iCloud)
+3. **Add vault password to keychain**:
+
+   ```bash
+   ~/iCloudDrive/Allgemein/bin/add_vault_password
+   ```
+
+**Duration**: 5-10 minutes
+
+### Phase 3: Full Configuration (Automated)
+
+**Script**: `macapply`
+
+**What it does**:
+
+1. Runs `plays/full.yml` with all dependencies available
+2. Installs all Brewfile packages (hundreds of apps)
+3. Configures dotfiles (with SSH keys from iCloud)
+4. Configures Hazel (with license from 1Password)
+5. Applies Dock settings, macOS settings, fonts
+6. Clones GitHub repositories
+7. Runs all post-provision tasks
+
+**How to run**:
+
+```bash
+cd /tmp/git
+./scripts/macapply
+```
+
+**Duration**: 20-30 minutes
+
+**Total Time**: ~60-90 minutes (mostly automated)
 
 **Frequency**: Once per Mac (or after clean install)
+
+**See**: [docs/NEW_MAC_SETUP.md](NEW_MAC_SETUP.md) for detailed step-by-step guide
 
 ---
 
