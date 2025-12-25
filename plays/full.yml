@@ -66,6 +66,19 @@
         mode: '0700'
       become: false
 
+    - name: Load GitHub token from 1Password (batch with other 1Password prompts)
+      ansible.builtin.shell: op read "{{ onepassword_github_token_ref }}"
+      register: github_token_result
+      no_log: true
+      become: false
+      when: onepassword_github_token_ref is defined
+
+    - name: Set GitHub token fact
+      ansible.builtin.set_fact:
+        github_personal_token: "{{ github_token_result.stdout }}"
+      no_log: true
+      when: github_token_result is defined and not github_token_result.failed
+
   tasks:
     - name: Main playbook execution with guaranteed sudo cleanup
       block:
