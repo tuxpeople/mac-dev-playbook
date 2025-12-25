@@ -23,18 +23,26 @@
   become: false
 
 - name: Get latest dockutil version
-  shell: curl --silent "https://api.github.com/repos/kcrawford/dockutil/releases/latest" | jq -r .assets[].browser_download_url | grep pkg
+  shell: |
+    curl --silent \
+      -H "Authorization: token {{ github_personal_token }}" \
+      "https://api.github.com/repos/kcrawford/dockutil/releases/latest" \
+    | jq -r .assets[].browser_download_url | grep pkg
   register: dockutil_dl
+  no_log: true  # Protect token in logs
+  when: github_personal_token is defined
 
 - name: Download dockutil pkg
   get_url:
     url: "{{ dockutil_dl.stdout }}"
     dest: /tmp/dockutil.pkg
   become: false
+  when: dockutil_dl is defined and dockutil_dl.stdout is defined
 
 - name: Run dockutil installer
   shell: 'installer -pkg "/tmp/dockutil.pkg" -target /'
   become: true
+  when: dockutil_dl is defined and dockutil_dl.stdout is defined
 
 - name: Remove dockutil pkg
   ansible.builtin.file:
