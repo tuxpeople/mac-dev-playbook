@@ -96,6 +96,13 @@ fi
 echo -e "${GREEN}[macrun]${NC} ========================================"
 echo ""
 
+# Setup Python environment
+# shellcheck source=scripts/lib/python-env.sh
+source "${SCRIPT_DIR}/lib/python-env.sh"
+if ! setup_python_env; then
+    exit 1
+fi
+
 # Run ansible-playbook
 if "${ANSIBLE_CMD[@]}"; then
     echo ""

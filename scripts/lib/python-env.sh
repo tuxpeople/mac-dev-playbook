@@ -11,29 +11,27 @@
 # Default virtualenv name
 VENV_NAME="${VENV_NAME:-mac-dev-playbook-venv}"
 
-# Color codes (if not already defined)
-if [[ -z "${RED}" ]]; then
-    RED='\033[0;31m'
-    GREEN='\033[0;32m'
-    YELLOW='\033[1;33m'
-    BLUE='\033[0;34m'
-    NC='\033[0m'
-fi
+# Color codes (define if not already set)
+RED="${RED:-\033[0;31m}"
+GREEN="${GREEN:-\033[0;32m}"
+YELLOW="${YELLOW:-\033[1;33m}"
+BLUE="${BLUE:-\033[0;34m}"
+NC="${NC:-\033[0m}"
 
-# Log functions (if not already defined)
-if ! command -v log &> /dev/null; then
+# Log functions (if not already defined as functions)
+if ! declare -f log &> /dev/null; then
     log() { echo -e "${BLUE}[$(basename "$0")]${NC} $*"; }
 fi
 
-if ! command -v log_warn &> /dev/null; then
+if ! declare -f log_warn &> /dev/null; then
     log_warn() { echo -e "${YELLOW}[$(basename "$0")]${NC} $*"; }
 fi
 
-if ! command -v log_error &> /dev/null; then
+if ! declare -f log_error &> /dev/null; then
     log_error() { echo -e "${RED}[$(basename "$0")]${NC} $*"; }
 fi
 
-if ! command -v log_success &> /dev/null; then
+if ! declare -f log_success &> /dev/null; then
     log_success() { echo -e "${GREEN}[$(basename "$0")]${NC} $*"; }
 fi
 
@@ -43,7 +41,7 @@ setup_python_env() {
     local venv_name="${1:-$VENV_NAME}"
 
     # Check if we're already in a pyenv virtualenv
-    if [[ -n "${PYENV_VERSION}" ]]; then
+    if [[ -n "${PYENV_VERSION:-}" ]]; then
         log "Already in pyenv virtualenv: ${PYENV_VERSION}"
         return 0
     fi
