@@ -16,6 +16,20 @@
         - onepassword_sudo_item is defined
       become: false
 
+    - name: Ensure /private/etc/sudoers.d exists
+      file:
+        path: '/private/etc/sudoers.d'
+        state: directory
+      become: true
+
+    - name: Add temporary passwordless sudo permissions
+      ansible.builtin.copy:
+        content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL"
+        dest: "/private/etc/sudoers.d/99_tmp_ansible"
+        validate: /usr/sbin/visudo -csf %s
+        mode: 0440
+      become: true
+
     - name: Gather system facts
       ansible.builtin.setup:
       become: true
@@ -51,20 +65,6 @@
         dest: "{{ myhomedir }}/bin/vault_password_mac_dev_playbook"
         mode: '0700'
       become: false
-
-    - name: Ensure /private/etc/sudoers.d exists
-      file:
-        path: '/private/etc/sudoers.d'
-        state: directory
-      become: true
-
-    - name: Add temporary passwordless sudo permissions
-      ansible.builtin.copy:
-        content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL"
-        dest: "/private/etc/sudoers.d/99_tmp_ansible"
-        validate: /usr/sbin/visudo -csf %s
-        mode: 0440
-      become: true
 
   tasks:
     - name: Main playbook execution with guaranteed sudo cleanup
