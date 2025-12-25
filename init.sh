@@ -101,13 +101,6 @@ echo "  2. Click the (+) button and add Terminal.app"
 echo "  3. Unlock with your password if needed"
 echo ""
 read -r -p "Press enter once you've granted Full Disk Access..."
-echo ""
-echo "Do you want to sync files from iCloud Drive? (y/N)"
-echo "This will download dotfiles and vault password from iCloud."
-read -r -p "Choose: " sync_icloud
-sync_icloud=${sync_icloud:-n}
-echo ""
-
 [ ! -d "/Library/Developer/CommandLineTools" ] && installcli
 
 step "Preparing system"
@@ -130,107 +123,6 @@ if ! git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git; then
   echo "❌ ERROR: Failed to clone repository"
   echo "   Check internet connection and GitHub access"
   exit 1
-fi
-
-if [[ "${sync_icloud}" == "y" || "${sync_icloud}" == "Y" ]]; then
-  echo " - Downloading important files from iCloud"
-  cd ~
-
-  # Check if brctl is available
-  if ! command -v brctl &>/dev/null; then
-    echo "⚠️  WARNING: brctl command not found"
-    echo "   iCloud file downloads will be skipped"
-    echo "   You may need to manually sync files from iCloud Drive"
-  else
-    # Download file and folder lists with timeout
-    FILELIST="Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt"
-    FOLDERLIST="Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt"
-
-    echo "   Downloading file lists from iCloud..."
-    for LIST in "${FILELIST}" "${FOLDERLIST}"; do
-      if [[ ! -f "${LIST}" ]]; then
-        brctl download "${LIST}" 2>/dev/null || true
-        # Wait up to 60 seconds for file to appear
-        TIMEOUT=60
-        ELAPSED=0
-        while [[ ! -f "${LIST}" ]] && [[ ${ELAPSED} -lt ${TIMEOUT} ]]; do
-          sleep 5
-          ELAPSED=$((ELAPSED + 5))
-        done
-
-        if [[ ! -f "${LIST}" ]]; then
-          echo "⚠️  WARNING: Could not download ${LIST}"
-          echo "   Continuing without this list..."
-        fi
-      fi
-    done
-
-    # Download files from filelist.txt if available
-    if [[ -f "${FILELIST}" ]]; then
-      echo "   Downloading files from filelist..."
-      while IFS= read -r FILE; do
-        [[ -z "${FILE}" ]] && continue  # Skip empty lines
-        if [[ ! -f "${FILE}" ]]; then
-          brctl download "${FILE}" 2>/dev/null || true
-          # Wait up to 30 seconds per file
-          TIMEOUT=30
-          ELAPSED=0
-          while [[ ! -f "${FILE}" ]] && [[ ${ELAPSED} -lt ${TIMEOUT} ]]; do
-            sleep 5
-            ELAPSED=$((ELAPSED + 5))
-          done
-
-          if [[ ! -f "${FILE}" ]]; then
-            echo "⚠️  Could not download: ${FILE}"
-          fi
-        fi
-      done < "${FILELIST}"
-    fi
-
-    # Download folders from folderlist.txt if available
-    if [[ -f "${FOLDERLIST}" ]]; then
-      echo "   Downloading folders from folderlist..."
-      while IFS= read -r DIR; do
-        [[ -z "${DIR}" ]] && continue  # Skip empty lines
-        if [[ ! -d "${DIR}" ]]; then
-          brctl download "${DIR}" 2>/dev/null || true
-          # Wait up to 30 seconds per folder
-          TIMEOUT=30
-          ELAPSED=0
-          while [[ ! -d "${DIR}" ]] && [[ ${ELAPSED} -lt ${TIMEOUT} ]]; do
-            sleep 5
-            ELAPSED=$((ELAPSED + 5))
-          done
-
-          if [[ ! -d "${DIR}" ]]; then
-            echo "⚠️  Could not download: ${DIR}"
-          fi
-        fi
-      done < "${FOLDERLIST}"
-    fi
-
-    echo "✓ iCloud sync completed (some files may have been skipped)"
-
-    # Try to run add_vault_password script if available (stores password in keychain)
-    if [[ -f "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password" ]]; then
-      echo "   Running add_vault_password script..."
-      # Capture output and filter out "already exists" messages
-      if OUTPUT=$("${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password" 2>&1); then
-        echo "✓ Vault password configured in keychain"
-      else
-        # Check if error was just "already exists"
-        if echo "${OUTPUT}" | grep -q "already exists in the keychain"; then
-          echo "✓ Vault password already configured in keychain"
-        else
-          echo "⚠️  WARNING: add_vault_password script encountered issues:"
-          echo "${OUTPUT}"
-          echo "   Continuing anyway..."
-        fi
-      fi
-    fi
-  fi
-else
-  echo " - Skipping iCloud sync (you'll need to provide vault password manually)"
 fi
 
 echo " - Upgrading PIP"
@@ -279,8 +171,6 @@ step "Preparing Ansible configuration"
 
 # Check if host_vars file exists in the repo
 HOST_VARS_FILE="/tmp/git/inventories/host_vars/${newhostname}.yml"
-VAULT_PASSWORD_FILE="${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/vault_password_file"
-ANSIBLE_EXTRA_ARGS=""
 
 if [[ ! -f "${HOST_VARS_FILE}" ]]; then
   echo ""
@@ -292,8 +182,6 @@ if [[ ! -f "${HOST_VARS_FILE}" ]]; then
   echo "  2. Or: Copy inventories/host_vars/TEMPLATE.yml to inventories/host_vars/${newhostname}.yml"
   echo "  3. Commit and push to git"
   echo ""
-  echo "Without this file, sudo password cannot be decrypted!"
-  echo ""
   read -r -p "Continue anyway? (y/N): " continue_setup
   if [[ "${continue_setup}" != "y" && "${continue_setup}" != "Y" ]]; then
     echo "Aborting setup. Please create host configuration first."
@@ -301,23 +189,36 @@ if [[ ! -f "${HOST_VARS_FILE}" ]]; then
   fi
 fi
 
-# Determine vault password source
-if [[ -f "${VAULT_PASSWORD_FILE}" ]]; then
-  echo "✓ Using vault password from: ${VAULT_PASSWORD_FILE}"
-  ANSIBLE_EXTRA_ARGS=(--vault-password-file "${VAULT_PASSWORD_FILE}")
-else
-  echo "ℹ️  Vault password file not found"
-  echo "You will be prompted for Ansible Vault password during playbook run"
-  ANSIBLE_EXTRA_ARGS=(--ask-vault-pass)
-fi
+step "Running Bootstrap Playbook (Phase 1)"
 
-step "Starting Ansible run"
+echo "This will install:"
+echo "  - Homebrew"
+echo "  - Essential CLI tools (git, bash, jq, node)"
+echo "  - 1Password app"
+echo ""
+echo "No vault password or iCloud sync required for this phase."
+echo ""
 
-echo "If something went wrong, start this step again with:"
-echo "     cd /tmp/git"
-echo "     export newhostname=<HOSTNAME>"
-if [[ ${#ANSIBLE_EXTRA_ARGS[@]} -gt 0 ]]; then
-  echo "     ansible-playbook plays/full.yml -i inventories -l \${newhostname} --extra-vars \"newhostname=\${newhostname}\" --connection=local ${ANSIBLE_EXTRA_ARGS[*]}"
-fi
+ansible-playbook plays/bootstrap.yml -i inventories -l "${newhostname}" --connection=local
 
-ansible-playbook plays/full.yml -i inventories -l "${newhostname}" --extra-vars "newhostname=${newhostname}" --connection=local "${ANSIBLE_EXTRA_ARGS[@]}"
+echo ""
+echo "=========================================="
+echo "✅ Bootstrap Phase 1 Complete!"
+echo "=========================================="
+echo ""
+echo "Next Steps (Phase 2 - Manual):"
+echo ""
+echo "  1. Open 1Password and sign in"
+echo "     (1Password was installed to /Applications)"
+echo ""
+echo "  2. Wait for iCloud Drive to sync"
+echo "     (or skip if you don't use iCloud sync)"
+echo ""
+echo "  3. Add vault password to macOS Keychain:"
+echo "     ~/iCloudDrive/Allgemein/bin/add_vault_password"
+echo ""
+echo "Then run Phase 3 (Full Configuration):"
+echo "  cd /tmp/git"
+echo "  ./scripts/macapply"
+echo ""
+echo "=========================================="

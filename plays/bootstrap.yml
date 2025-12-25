@@ -1,0 +1,91 @@
+---
+# Bootstrap Playbook - Phase 1 of Mac Setup
+#
+# Purpose: Minimal setup to get Mac "Ansible-ready" with essential tools
+# Requirements: NONE - No vault password, no iCloud, no 1Password login needed
+# Installs: Homebrew + essential CLI tools (git, bash, jq, node) + 1Password app
+#
+# After this playbook:
+#   1. Open 1Password and sign in
+#   2. Wait for iCloud Drive to sync (optional)
+#   3. Run: ~/iCloudDrive/Allgemein/bin/add_vault_password (adds vault password to keychain)
+#   4. Run: ./scripts/macapply (full configuration with all dependencies)
+#
+# Usage:
+#   ansible-playbook plays/bootstrap.yml -i inventories -l <hostname> --connection=local
+
+- hosts: all
+  gather_facts: false
+  environment:
+    PATH: "{{env_path}}"
+
+  pre_tasks:
+    - name: Gather system facts
+      ansible.builtin.setup:
+      become: true
+
+    - import_tasks: ../tasks/pre/additional-facts.yml
+    - import_tasks: ../tasks/pre/baseconfig.yml
+
+    - name: Validate required variables are defined
+      ansible.builtin.assert:
+        that:
+          - env_path is defined
+          - env_path | length > 0
+          - mybrewbindir is defined
+          - myhomedir is defined
+        fail_msg: "Required variables missing. Check group_vars/macs/general.yml and additional-facts.yml"
+        success_msg: "All required variables validated successfully"
+
+    - name: Ensure /private/etc/sudoers.d exists
+      file:
+        path: '/private/etc/sudoers.d'
+        state: directory
+      become: true
+
+  tasks:
+    - name: Bootstrap setup - minimal dependencies
+      block:
+        - name: Install command line tools
+          include_role:
+            name: elliotweiser.osx-command-line-tools
+
+        - name: Ensure we have a link to iCloudDrive in homedir
+          ansible.builtin.file:
+            src: "{{ myhomedir }}/Library/Mobile Documents/com~apple~CloudDocs/Dateien"
+            dest: "{{ myhomedir }}/iCloudDrive"
+            state: link
+            force: true
+          become: false
+          ignore_errors: true  # May not exist if iCloud not synced yet
+
+        - name: Install Homebrew + essential packages
+          include_role:
+            name: geerlingguy.mac.homebrew
+          vars:
+            homebrew_use_brewfile: false  # Only install packages from group_vars, no Brewfile
+          tags: ['homebrew']
+
+      always:
+        - name: Display next steps
+          ansible.builtin.debug:
+            msg:
+              - "========================================="
+              - "✅ Bootstrap Phase 1 Complete!"
+              - "========================================="
+              - ""
+              - "Installed:"
+              - "  - Homebrew"
+              - "  - Essential CLI tools: {{ homebrew_installed_packages | join(', ') }}"
+              - "  - 1Password app"
+              - ""
+              - "Next Steps (Phase 2 - Manual):"
+              - "  1. Open 1Password and sign in"
+              - "  2. Wait for iCloud Drive to sync (or skip if not needed)"
+              - "  3. Add vault password to keychain:"
+              - "     ~/iCloudDrive/Allgemein/bin/add_vault_password"
+              - ""
+              - "Then run Phase 3 (Full Configuration):"
+              - "  ./scripts/macapply"
+              - ""
+              - "========================================="
