@@ -16,12 +16,14 @@ This document defines the strategy for keeping dependencies up-to-date in the ma
 **Status**: ✅ Renovate is active on this repository
 
 Renovate automatically handles updates for:
+
 - Python packages in `requirements.txt`
 - Ansible roles and collections in `requirements.yml`
 
 ### Renovate Configuration
 
 Review PRs created by Renovate:
+
 - **Patch updates** (e.g., 1.2.3 → 1.2.4): Auto-merge if tests pass
 - **Minor updates** (e.g., 1.2.x → 1.3.0): Review and merge within 1 week
 - **Major updates** (e.g., 1.x → 2.0): Test thoroughly before merging
@@ -33,6 +35,7 @@ Review PRs created by Renovate:
 ## 🐍 Python Version Strategy
 
 ### Current Version
+
 - **Python 3.11.8** (defined in `scripts/macupdate`)
 - Released: April 2023
 - End of Life: October 2027
@@ -48,11 +51,13 @@ Review PRs created by Renovate:
 ### Update Process
 
 1. **Check for new Python versions**:
+
    ```bash
    pyenv install --list | grep "^  3\."
    ```
 
 2. **Test new version locally**:
+
    ```bash
    pyenv install 3.12.8
    pyenv virtualenv 3.12.8 test-env
@@ -77,6 +82,7 @@ Q4 2025: 3.13.x (after 6+ months stability)
 ```
 
 **Rationale**:
+
 - Skip 3.13.x for now (too new, released Dec 2024)
 - Move to 3.12.x first (mature, stable)
 - Avoid Python EOL issues (3.11 EOL: Oct 2027)
@@ -90,22 +96,26 @@ Q4 2025: 3.13.x (after 6+ months stability)
 **Pinned exact versions** (e.g., `ansible==10.2.0`)
 
 **Pros**:
+
 - Reproducible builds
 - No surprise breakage
 - Easy rollback
 
 **Cons**:
+
 - Manual updates needed (handled by Renovate)
 - May miss security patches
 
 ### Version Constraints
 
 We use **exact pinning** (`==`) for all dependencies because:
+
 1. Renovate handles updates automatically
 2. Ensures consistent behavior across all Macs
 3. Easier to track what changed when issues occur
 
 **Do NOT use**:
+
 - `>=` (too permissive)
 - `~=` (allows patch updates, but Renovate is better)
 
@@ -125,6 +135,7 @@ Ansible roles and collections follow similar rules:
 ```
 
 **Update Frequency**:
+
 - Check Renovate PRs weekly
 - Test collection updates in non-production first
 - Merge after successful test runs
@@ -151,11 +162,13 @@ Ansible roles and collections follow similar rules:
 ## 🚨 Security Updates
 
 **Immediate action required** for:
+
 - CVEs in cryptography, paramiko, ansible
 - Python security releases
 - Critical Homebrew package vulnerabilities
 
 **Process**:
+
 1. Renovate usually creates PR within 24h of release
 2. Review CVE details
 3. Test on non-production Mac
@@ -196,15 +209,18 @@ ansible-playbook plays/update.yml -i inventories -l test-mac --connection=local
 ## 🎯 Current Action Items
 
 ### Immediate (Next Run)
+
 - [x] cryptography upgraded to 46.0.3
 - [x] paramiko upgraded to 4.0.0
 - [x] pyenv virtualenv-init error fixed
 
 ### Q1 2025
+
 - [ ] Review Renovate PRs weekly
 - [ ] Consider Python 3.11.8 → 3.11.9 (when released)
 
 ### Q2 2025
+
 - [ ] Plan Python 3.12.x migration
 - [ ] Test Ansible 12.x compatibility
 

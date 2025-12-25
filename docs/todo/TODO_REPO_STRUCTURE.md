@@ -18,17 +18,20 @@
 
 ## 1. Scripts & Executables Review
 
-### Zu prüfen:
+### Zu prüfen
+
 - [ ] Alle Dateien im Root-Verzeichnis identifizieren die eigentlich in `scripts/` gehören
 - [ ] Shell-Scripts ohne `.sh` Extension (init*, setup*, etc.)
 - [ ] Python-Scripts die als Helfer dienen
 - [ ] Obsolete Scripts identifizieren und entfernen
 
-### Bekannte Scripts:
+### Bekannte Scripts
+
 - `scripts/macupdate` - ✅ Bereits im scripts/ Ordner
 - Root-Level Scripts? (noch zu identifizieren)
 
-### Fragen:
+### Fragen
+
 - Gibt es `init*` oder `setup*` Scripts im Root?
 - Gibt es alte/ungenutzte Scripts?
 
@@ -36,7 +39,8 @@
 
 ## 2. Dokumentation & Markdown Files
 
-### Aktuelle Struktur (Root-Level):
+### Aktuelle Struktur (Root-Level)
+
 ```
 CLAUDE.md
 DEPENDENCY_STRATEGY.md
@@ -52,7 +56,8 @@ TODO_REPO_STRUCTURE.md (dieses Dokument)
 UPSTREAM_SYNC.md (?)
 ```
 
-### Vorgeschlagene Struktur:
+### Vorgeschlagene Struktur
+
 ```
 README.md                          # Bleibt im Root (Hauptdokumentation)
 CLAUDE.md                          # Bleibt im Root (wichtig für Claude Code)
@@ -77,7 +82,8 @@ docs/
       └── REPO_STRUCTURE.md        # Dieses Dokument
 ```
 
-### Zu entscheiden:
+### Zu entscheiden
+
 - [ ] Soll diese Struktur implementiert werden?
 - [ ] Welche Dateien müssen im Root bleiben für Upstream-Kompatibilität?
 - [ ] Gibt es obsolete Markdown-Dateien?
@@ -86,13 +92,15 @@ docs/
 
 ## 3. Lokale Änderungen & Custom Features Review
 
-### Custom Roles (bereits analysiert):
+### Custom Roles (bereits analysiert)
+
 - ✅ `roles/ansible-mac-update` - Custom, wird verwendet
 - ✅ `roles/munki_update` - Custom, wird verwendet
 
-### Zu prüfen:
+### Zu prüfen
 
-#### Tasks & Playbooks:
+#### Tasks & Playbooks
+
 - [ ] `tasks/pre/*` - Welche sind custom vs. upstream?
 - [ ] `tasks/post/*` - Alle Custom-Tasks evaluieren:
   - Werden sie noch verwendet?
@@ -100,12 +108,14 @@ docs/
   - Könnten sie zu Rollen konsolidiert werden?
 - [ ] `plays/*` - Custom Playbooks vs. Upstream
 
-#### Inventory & Configuration:
+#### Inventory & Configuration
+
 - [ ] Sind alle Host-Vars noch aktuell?
 - [ ] Gibt es obsolete Group-Vars?
 - [ ] Secrets richtig verwaltet?
 
-#### GitHub Workflows:
+#### GitHub Workflows
+
 - [ ] `.github/workflows/*` - Custom vs. Upstream
 - [ ] Sind alle CI-Jobs noch relevant?
 - [ ] Optimierungspotential?
@@ -114,14 +124,16 @@ docs/
 
 ## 4. Upstream Sync Strategy
 
-### Bidirektionale Review:
+### Bidirektionale Review
 
-#### Upstream → Fork (bereits in FORK_ANALYSIS.md):
+#### Upstream → Fork (bereits in FORK_ANALYSIS.md)
+
 - MAS conditional fix
 - Cowsay removal
 - dotfiles_repo_version updates
 
-#### Fork → Upstream (NEU - zu prüfen):
+#### Fork → Upstream (NEU - zu prüfen)
+
 - [ ] Welche lokalen Improvements könnten Upstream beitragen?
 - [ ] Security-Fixes (C6, C7, C8) relevant für Upstream?
 - [ ] macupdate Script-Konzept für Upstream interessant?
@@ -133,17 +145,20 @@ docs/
 
 ## 5. Optimierungspotentiale
 
-### Performance:
+### Performance
+
 - [ ] Können Tasks parallelisiert werden?
 - [ ] Gibt es redundante Operations?
 - [ ] Caching-Möglichkeiten?
 
-### Sicherheit:
+### Sicherheit
+
 - [ ] Alle Secrets aus Repos entfernt?
 - [ ] Sichere Defaults überall?
 - [ ] Sudo-Handling optimal?
 
-### Wartbarkeit:
+### Wartbarkeit
+
 - [ ] Code-Duplikation reduzieren
 - [ ] Bessere Modularisierung
 - [ ] Dokumentation vervollständigen
@@ -152,17 +167,20 @@ docs/
 
 ## 6. Konkrete Aktionen (Priorisiert)
 
-### High Priority:
+### High Priority
+
 1. [ ] Root-Level Scripts identifizieren und nach `scripts/` verschieben
 2. [ ] Obsolete Dateien/Features finden und entfernen
 3. [ ] Markdown-Struktur evaluieren (docs/ Ordner ja/nein?)
 
-### Medium Priority:
+### Medium Priority
+
 4. [ ] Alle `tasks/post/*` durchgehen: Noch verwendet?
 5. [ ] Custom Playbooks dokumentieren
 6. [ ] Inventory aufräumen
 
-### Low Priority:
+### Low Priority
+
 7. [ ] Upstream Contribution evaluieren
 8. [ ] Performance-Optimierungen
 9. [ ] Weitere Code-Qualität-Verbesserungen
@@ -171,15 +189,18 @@ docs/
 
 ## 7. Risiken & Überlegungen
 
-### Upstream-Kompatibilität:
+### Upstream-Kompatibilität
+
 - **Risiko**: Zu viel Umstrukturierung → schwierig Updates zu mergen
 - **Mitigation**: Änderungen dokumentieren, Merge-Strategy festlegen
 
-### Breaking Changes:
+### Breaking Changes
+
 - **Risiko**: Scripts/Paths verschieben → bestehende Workflows brechen
 - **Mitigation**: Symlinks für Backward-Compatibility, Migration-Guide
 
-### Time Investment:
+### Time Investment
+
 - **Risiko**: Zu viel Zeit für Organisation statt Features
 - **Mitigation**: Fokus auf Quick Wins, iteratives Vorgehen
 
@@ -188,6 +209,7 @@ docs/
 ## 8. Nächste Schritte
 
 1. **Quick Scan durchführen**:
+
    ```bash
    # Scripts im Root finden
    find . -maxdepth 1 -type f -executable

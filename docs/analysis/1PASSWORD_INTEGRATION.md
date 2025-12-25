@@ -9,6 +9,7 @@
 ## 🎯 Strategie: Zwei-Stufen-Ansatz
 
 ### Phase 1: Bootstrap (Ansible Vault)
+
 **Wann**: Initial provisioning, bevor 1Password installiert/konfiguriert ist
 **Was**: `inventories/group_vars/macs/secrets.yml` (Ansible Vault encrypted)
 
@@ -21,6 +22,7 @@ ssh_private_keys:
 ```
 
 **Nutzung in Playbooks**:
+
 ```yaml
 - name: Clone private repos during bootstrap
   git:
@@ -29,6 +31,7 @@ ssh_private_keys:
 ```
 
 ### Phase 2: Laufender Betrieb (1Password CLI)
+
 **Wann**: Nach Installation, für Developer-Tools
 **Was**: User-Config-Files mit `op://` References
 
@@ -38,6 +41,7 @@ GHORG_GITHUB_TOKEN: op://Private/GitHub ghorg Token/token
 ```
 
 **Nutzung**:
+
 ```bash
 # Im Terminal oder via Alias
 op run -- ghorg clone tuxpeople
@@ -50,6 +54,7 @@ op run -- ghorg clone tuxpeople
 ### 1. 1Password CLI Installation (via Homebrew)
 
 Bereits in `inventories/group_vars/macs/brew.yml`:
+
 ```yaml
 homebrew_cask_apps:
   - 1password-cli
@@ -58,6 +63,7 @@ homebrew_cask_apps:
 ### 2. Token in 1Password speichern
 
 **Option A: Via CLI**
+
 ```bash
 op item create \
   --category=password \
@@ -67,6 +73,7 @@ op item create \
 ```
 
 **Option B: Via 1Password App**
+
 1. Neues Item → Password
 2. Title: "GitHub ghorg Token"
 3. Vault: Private
@@ -76,6 +83,7 @@ op item create \
 ### 3. ghorg Config Template erstellen
 
 **Für Dotfiles Repo**: `~/.config/ghorg/conf.yaml.template`
+
 ```yaml
 # ghorg configuration
 # Token wird via 1Password CLI injiziert
@@ -94,6 +102,7 @@ GHORG_SKIP_ARCHIVED: true
 ```
 
 **Deployment via Ansible**:
+
 ```yaml
 # tasks/post/developer-tools.yml
 - name: Deploy ghorg config template
@@ -106,6 +115,7 @@ GHORG_SKIP_ARCHIVED: true
 ### 4. Convenience Aliases
 
 **In `~/.aliases` (Dotfiles Repo)**:
+
 ```bash
 # 1Password wrapped commands
 alias ghorg='op run -- ghorg'
@@ -122,6 +132,7 @@ oprun() {
 ## 🔐 Welche Secrets gehören wohin?
 
 ### ✅ Ansible Vault (secrets.yml)
+
 **Regel**: Alles was während Playbook-Runs benötigt wird
 
 - SSH Private Keys (für git clone während provisioning)
@@ -131,6 +142,7 @@ oprun() {
 - Zertifikate
 
 ### ✅ 1Password CLI
+
 **Regel**: Tokens für Developer-Tools im User-Space
 
 - GitHub Personal Access Tokens (für ghorg, gh CLI)
@@ -140,6 +152,7 @@ oprun() {
 - API Keys für Development Tools
 
 ### 🚫 Nie in Git (auch nicht im Dotfiles Repo)
+
 - Aktuelle/aktive Tokens
 - Private Keys
 - Passwörter
@@ -207,11 +220,13 @@ oprun() {
 ## 📚 1Password Secret Reference Syntax
 
 ### Basic Syntax
+
 ```
 op://vault-name/item-name/field-name
 ```
 
 ### Examples
+
 ```bash
 # Password field
 op://Private/GitHub Token/password
@@ -227,6 +242,7 @@ op://Work/Database/production/password
 ```
 
 ### In Config Files
+
 ```yaml
 # YAML
 api_token: op://Private/API Keys/github-token
@@ -242,6 +258,7 @@ export TOKEN="op://Private/API Keys/github-token"
 ```
 
 ### Usage Patterns
+
 ```bash
 # Single command
 op run -- ghorg clone tuxpeople
@@ -258,6 +275,7 @@ op run --config=/path/to/config.yaml -- command
 ## 🎯 Migration Plan: ghorg Config
 
 ### Step 1: Create Token in 1Password
+
 ```bash
 # 1. Revoke old token: https://github.com/settings/tokens
 # 2. Create new token with minimal permissions (repo:read)
@@ -272,6 +290,7 @@ op item create \
 ```
 
 ### Step 2: Create Template in Dotfiles Repo
+
 ```bash
 cd ~/development/github/tuxpeople/dotfiles
 
@@ -288,6 +307,7 @@ cp ~/.config/ghorg/conf.yaml .config/ghorg/conf.yaml.template
 ```
 
 ### Step 3: Add to .gitignore
+
 ```bash
 echo "# 1Password-managed configs (templates only)" >> .gitignore
 echo ".config/ghorg/conf.yaml" >> .gitignore
@@ -295,6 +315,7 @@ echo ".config/gh/hosts.yml" >> .gitignore
 ```
 
 ### Step 4: Test
+
 ```bash
 # Deploy template
 cp .config/ghorg/conf.yaml.template ~/.config/ghorg/conf.yaml
@@ -307,6 +328,7 @@ echo 'alias ghorg="op run -- ghorg"' >> ~/.aliases
 ```
 
 ### Step 5: Cleanup
+
 ```bash
 # Remove old config with plaintext token
 # (Already done via template deployment)
@@ -322,6 +344,7 @@ git log --all --full-history --source --oneline -S 'ghp_'
 ## 🔄 Other Tools for 1Password Integration
 
 ### GitHub CLI (gh)
+
 ```yaml
 # ~/.config/gh/hosts.yml.template
 github.com:
@@ -335,6 +358,7 @@ alias gh='op run -- gh'
 ```
 
 ### Docker Hub
+
 ```json
 // ~/.docker/config.json.template
 {
@@ -347,12 +371,14 @@ alias gh='op run -- gh'
 ```
 
 ### NPM
+
 ```ini
 # ~/.npmrc.template
 //registry.npmjs.org/:_authToken=op://Private/NPM Token/token
 ```
 
 ### AWS CLI
+
 ```ini
 # ~/.aws/credentials.template
 [default]
@@ -365,6 +391,7 @@ aws_secret_access_key = op://Private/AWS/secret-access-key
 ## ⚠️ Security Best Practices
 
 ### 1. Token Permissions
+
 **Principle of Least Privilege**: Tokens sollten minimal-notwendige Permissions haben
 
 ```
@@ -375,6 +402,7 @@ npm:                    read-only or publish
 ```
 
 ### 2. Token Rotation
+
 ```bash
 # Alle 90 Tage Tokens rotieren
 # 1. Neues Token generieren
@@ -383,6 +411,7 @@ npm:                    read-only or publish
 ```
 
 ### 3. .gitignore Hygiene
+
 ```gitignore
 # 1Password managed (templates only in repo)
 **/.config/*/conf.yaml
@@ -396,6 +425,7 @@ npm:                    read-only or publish
 ```
 
 ### 4. Ansible Vault für Bootstrap
+
 ```yaml
 # secrets.yml bleibt encrypted, enthält:
 # - SSH Keys (für initial git clone)
@@ -436,7 +466,7 @@ npm:                    read-only or publish
 ## 🚀 Next Steps
 
 1. **Immediate**:
-   - [ ] Revoke exposed GitHub token: https://github.com/settings/tokens
+   - [ ] Revoke exposed GitHub token: <https://github.com/settings/tokens>
    - [ ] Create new token with minimal permissions
    - [ ] Store in 1Password via CLI or App
 
@@ -458,10 +488,10 @@ npm:                    read-only or publish
 
 ## 📚 References
 
-- 1Password CLI: https://developer.1password.com/docs/cli
-- Secret References: https://developer.1password.com/docs/cli/secrets-reference-syntax
-- Service Account (für CI/CD): https://developer.1password.com/docs/service-accounts
-- Ansible + 1Password: https://developer.1password.com/docs/cli/shell-plugins/ansible
+- 1Password CLI: <https://developer.1password.com/docs/cli>
+- Secret References: <https://developer.1password.com/docs/cli/secrets-reference-syntax>
+- Service Account (für CI/CD): <https://developer.1password.com/docs/service-accounts>
+- Ansible + 1Password: <https://developer.1password.com/docs/cli/shell-plugins/ansible>
 
 ---
 

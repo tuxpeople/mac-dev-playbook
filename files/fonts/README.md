@@ -29,6 +29,7 @@ files/fonts/
 **Requirements**: Only free/open-source fonts that can be redistributed
 
 **Example**:
+
 ```bash
 files/fonts/common/
 ├── SourceCodePro-Regular.ttf
@@ -49,6 +50,7 @@ files/fonts/common/
 **Requirements**: Only free/open-source fonts that can be redistributed
 
 **Example**:
+
 ```bash
 files/fonts/private/
 ├── ComicSans.ttf
@@ -68,6 +70,7 @@ files/fonts/private/
 **Installed on**: Private Macs only (odin, thor)
 
 **Example**:
+
 ```bash
 ~/iCloudDrive/Allgemein/fonts/licensed/
 ├── DebiHandschrift4-Regular-1.ttf
@@ -88,6 +91,7 @@ Run the font installation playbook:
 ```
 
 This will:
+
 1. Install fonts from `files/fonts/common/` (all Macs)
 2. Install fonts from `files/fonts/private/` (private Macs only)
 3. Install fonts from `~/iCloudDrive/Allgemein/fonts/licensed/` (private Macs only)
@@ -98,9 +102,10 @@ This will:
 
 ### **Adding New Fonts**
 
-#### **Common or Private Fonts** (free to redistribute):
+#### **Common or Private Fonts** (free to redistribute)
 
 1. **Place font files** in the appropriate directory:
+
    ```bash
    # For all Macs:
    cp MyFont.ttf files/fonts/common/
@@ -110,6 +115,7 @@ This will:
    ```
 
 2. **Commit and push**:
+
    ```bash
    git add files/fonts/
    git commit -m "feat: add new fonts"
@@ -117,15 +123,17 @@ This will:
    ```
 
 3. **Apply on Macs**:
+
    ```bash
    ./scripts/macapply --tags fonts
    ```
 
 ---
 
-#### **Licensed Fonts** (cannot be redistributed):
+#### **Licensed Fonts** (cannot be redistributed)
 
 1. **Place font files in iCloud**:
+
    ```bash
    cp LicensedFont.ttf ~/iCloudDrive/Allgemein/fonts/licensed/
    ```
@@ -133,6 +141,7 @@ This will:
 2. **Wait for iCloud sync** (automatic)
 
 3. **Apply on private Macs**:
+
    ```bash
    # On odin or thor:
    ./scripts/macapply --tags fonts
@@ -176,6 +185,7 @@ fonts_extensions:
 **IMPORTANT**: Only place fonts in `common/` or `private/` directories if you have the **right to redistribute** them!
 
 **For commercial/licensed fonts**:
+
 - ✅ Use the `licensed/` directory (via iCloud)
 - ✅ These are **NOT committed to git** (in `.gitignore`)
 - ✅ Only installed on your private Macs

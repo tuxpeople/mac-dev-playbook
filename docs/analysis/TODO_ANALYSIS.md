@@ -5,9 +5,11 @@ Diese Datei enthält die Aufgaben für die Analyse des mac-dev-playbook Forks.
 ## ✅ ABGESCHLOSSEN - 2025-10-22
 
 ### 1. Fork-Divergenz analysieren
+
 **Status**: ✅ COMPLETED
 
 Prüfen, ob dieses Repo zu weit vom Upstream (geerlingguy/mac-dev-playbook) abgewichen ist:
+
 - [x] Upstream Repository identifizieren und aktuellen Stand prüfen
 - [x] Strukturelle Unterschiede zwischen Fork und Upstream analysieren
 - [x] Breaking Changes identifizieren, die Updates verhindern würden

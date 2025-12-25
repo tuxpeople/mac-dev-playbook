@@ -30,14 +30,17 @@ Diese Session hat eine **umfassende Analyse und Verbesserung** des mac-dev-playb
 ## ✅ Implementierte Security Fixes (3 Critical Issues)
 
 ### Fix 1: GitHub Token (C6)
+
 **Datei**: `tasks/post/github.yml`
 
 **Vorher**: Token in Git URLs embedded
+
 ```yaml
 base_url: "https://{{ github_personal_token }}@github.com"
 ```
 
 **Nachher**: Environment Variable + no_log
+
 ```yaml
 environment:
   GIT_PASSWORD: "{{ github_personal_token }}"
@@ -47,15 +50,18 @@ no_log: true
 ---
 
 ### Fix 2: OpenCage API Key (C7)
+
 **Datei**: `tasks/post/whereami.yml`
 
 **Vorher**: API Key im Klartext in Script
+
 ```yaml
 line: "{{ myhomedir }}/bin/whereami -k {{ OpenCageAPIKey }}"
 mode: '0750'
 ```
 
 **Nachher**: Separate sichere Datei
+
 ```yaml
 dest: "{{ myhomedir }}/.config/opencage/api_key"
 mode: '0600'
@@ -65,14 +71,17 @@ no_log: true
 ---
 
 ### Fix 3: SSH Config & Keys (C8)
+
 **Datei**: `roles/ansible-mac-update/tasks/ssh.yaml`
 
 **Vorher**: Kein Backup, shell commands
+
 ```yaml
 ansible.builtin.shell: "truncate -s0 {{myhomedir}}/.ssh/config; ..."
 ```
 
 **Nachher**: Backup + Ansible modules
+
 ```yaml
 - name: Backup existing SSH config
   ansible.builtin.copy:
@@ -88,7 +97,8 @@ ansible.builtin.shell: "truncate -s0 {{myhomedir}}/.ssh/config; ..."
 
 ## 📊 Code Review Ergebnisse
 
-### Gefundene Issues:
+### Gefundene Issues
+
 - 🔴 **11 CRITICAL** (Sicherheit & Datenverlust)
 - 🟠 **21 HIGH** (Zuverlässigkeit)
 - 🟡 **41 MEDIUM** (Best Practices)
@@ -96,7 +106,8 @@ ansible.builtin.shell: "truncate -s0 {{myhomedir}}/.ssh/config; ..."
 
 **Total**: 75 Issues identifiziert
 
-### Behobene Issues (diese Session):
+### Behobene Issues (diese Session)
+
 - ✅ C6: GitHub Token Security
 - ✅ C7: OpenCage API Key Security
 - ✅ C8: SSH Config Backup
@@ -107,17 +118,20 @@ ansible.builtin.shell: "truncate -s0 {{myhomedir}}/.ssh/config; ..."
 
 ## 🔍 Fork Analyse Ergebnisse
 
-### Upstream Divergenz:
+### Upstream Divergenz
+
 - **Gemeinsamer Ancestor**: Commit 358f663
 - **Upstream Commits seit Fork**: ~23 commits
 - **Fork Commits**: Eigene Entwicklung (plays/, inventories/, roles/)
 
-### Bewertung:
+### Bewertung
+
 - ❌ **KEIN** Breaking Changes Problem
 - ✅ Fork ist **additiv** (Enterprise-Upgrade)
 - 📋 **Empfehlung**: Selective Cherry-Picking statt Full Merge
 
-### Wichtigste Upstream Changes zu übernehmen:
+### Wichtigste Upstream Changes zu übernehmen
+
 1. 🔴 MAS conditional fix (Issue #232)
 2. 🔴 Cowsay package removal (nicht mehr verfügbar)
 3. ⚠️ dotfiles_repo_version hinzufügen
@@ -127,13 +141,16 @@ ansible.builtin.shell: "truncate -s0 {{myhomedir}}/.ssh/config; ..."
 
 ## 🎯 Munki Konfiguration
 
-### Erkenntnisse:
+### Erkenntnisse
+
 - ✅ Bereits gut gelöst mit group_vars
 - ✅ `business_mac`: munki_update: true
 - ✅ `private_mac`: munki_update: false
 
-### Verbesserung dokumentiert:
+### Verbesserung dokumentiert
+
 Multi-Level Configuration System:
+
 - **Global**: `munki_check_only: true` (safe default)
 - **Group**: Business vs. Private
 - **Host**: Opt-in für Auto-Install via `host_vars/`
@@ -142,10 +159,12 @@ Multi-Level Configuration System:
 
 ## 🖥️ macOS Defaults Management
 
-### Problem:
+### Problem
+
 Manuelle Einstellungen auf dem Mac nicht im Playbook erfasst.
 
-### Lösung:
+### Lösung
+
 Zwei Scripts erstellt:
 
 1. **export-macos-defaults.sh**:
@@ -158,8 +177,10 @@ Zwei Scripts erstellt:
    - Zeigt Änderungen seit Baseline
    - Generiert nur geänderte Settings
 
-### Integration:
+### Integration
+
 Guide erstellt für 3 Optionen:
+
 - Option A: Dotfiles `.macos` script (empfohlen)
 - Option B: `tasks/osx.yml`
 - Option C: `tasks/post/my-settings.yml`
@@ -168,13 +189,15 @@ Guide erstellt für 3 Optionen:
 
 ## 🔐 1Password SSH Agent Analyse
 
-### Aktuelle Situation (festgestellt):
+### Aktuelle Situation (festgestellt)
+
 - ✅ 1Password SSH Agent ist aktiv
 - ✅ 14 SSH Keys in 1Password
 - ✅ Hybrid Setup: 1Password + Filesystem Keys
 - ⚠️ GitHub/GitLab mit `IdentityAgent none` (bewusst)
 
-### SSH Config Architektur verstanden:
+### SSH Config Architektur verstanden
+
 ```
 ~/iCloudDrive/Allgemein/dotfiles/ssh_config/*  (Source)
                     ↓
@@ -183,7 +206,8 @@ Guide erstellt für 3 Optionen:
             ~/.ssh/config  (Generated)
 ```
 
-### Empfehlung:
+### Empfehlung
+
 - ✅ **Behalte** SSH Key Sync aus iCloud (Backup + Initial Setup)
 - ✅ **Implementierte Fixes bleiben sinnvoll** (Backup, no_log, etc.)
 - 📋 **Optional**: SSH Config Fragmente in iCloud aufräumen (manuell, wenn Zeit)
@@ -192,7 +216,8 @@ Guide erstellt für 3 Optionen:
 
 ## 📈 Verbesserungen Übersicht
 
-### Security:
+### Security
+
 | Aspekt | Vorher | Nachher |
 |--------|--------|---------|
 | GitHub Token | ❌ In URLs | ✅ Environment Var + no_log |
@@ -201,7 +226,8 @@ Guide erstellt für 3 Optionen:
 | SSH Keys Copy | ⚠️ Kein no_log | ✅ no_log bei allen Operations |
 | File Permissions | ⚠️ Teilweise falsch | ✅ Korrekt (600/700) |
 
-### Reliability:
+### Reliability
+
 | Aspekt | Vorher | Nachher |
 |--------|--------|---------|
 | SSH Config Loss | ❌ Hoch | ✅ Niedrig (Backup) |
@@ -213,13 +239,15 @@ Guide erstellt für 3 Optionen:
 
 ## 🎓 Wichtige Erkenntnisse
 
-### Repository-Architektur:
+### Repository-Architektur
+
 1. **Fork ist bewusst weit vom Upstream entfernt**
    - Eigene Playbook-Struktur (plays/)
    - Eigenes Inventory-System (inventories/)
    - Custom Roles (ansible-mac-update, munki_update)
 
 2. **Konfigurationshierarchie**:
+
    ```
    default.config.yml (Upstream basis)
         ↓
@@ -236,12 +264,14 @@ Guide erstellt für 3 Optionen:
    - Orchestriert kompletten Update-Workflow
    - Sollte dokumentiert bleiben in CLAUDE.md ✅
 
-### Ansible Vault:
+### Ansible Vault
+
 - ✅ **Bereits korrekt eingerichtet**
 - ✅ `secrets.yml` ist verschlüsselt
 - ⚠️ **Problem war**: Unsichere Verwendung der Secrets (jetzt gefixt)
 
-### 1Password SSH:
+### 1Password SSH
+
 - ✅ **Wird bereits genutzt**
 - ✅ Hybrid-Setup ist sinnvoll
 - ✅ SSH Config aus iCloud Fragmenten zusammengesetzt
@@ -250,17 +280,20 @@ Guide erstellt für 3 Optionen:
 
 ## 📝 Offene Aufgaben (Optional)
 
-### Kurzfristig:
+### Kurzfristig
+
 - [ ] Upstream Bugfixes cherry-picken (MAS conditional, cowsay removal)
 - [ ] Security Fixes testen auf Non-Production Mac
 - [ ] Duplicate SSH Key in 1Password löschen (id_ed25519 vs SSH-Key Ed25519 Github)
 
-### Mittelfristig:
+### Mittelfristig
+
 - [ ] Weitere HIGH Issues beheben (siehe IMPROVEMENTS.md)
 - [ ] SSH Config Fragmente in iCloud aufräumen
 - [ ] macOS defaults exportieren und in dotfiles integrieren
 
-### Langfristig:
+### Langfristig
+
 - [ ] Alle MEDIUM Issues durchgehen
 - [ ] Markdown Linting in CI/CD
 - [ ] Molecule Testing Setup (optional)
@@ -269,8 +302,10 @@ Guide erstellt für 3 Optionen:
 
 ## 🚀 Nächste Schritte Empfehlung
 
-### Sofort (5 Minuten):
+### Sofort (5 Minuten)
+
 1. **Review** der implementierten Fixes:
+
    ```bash
    git diff tasks/post/github.yml
    git diff tasks/post/whereami.yml
@@ -278,6 +313,7 @@ Guide erstellt für 3 Optionen:
    ```
 
 2. **Commit** der Security Fixes:
+
    ```bash
    git add tasks/post/github.yml tasks/post/whereami.yml
    git add roles/ansible-mac-update/tasks/ssh.yaml
@@ -291,13 +327,16 @@ Guide erstellt für 3 Optionen:
    Fixes: #C6, #C7, #C8 from IMPROVEMENTS.md"
    ```
 
-### Diese Woche (2 Stunden):
+### Diese Woche (2 Stunden)
+
 3. **Test Run** auf diesem Mac:
+
    ```bash
    ansible-playbook plays/update.yml -i inventories -l $(hostname) --connection=local -v
    ```
 
 4. **Verify** nach Run:
+
    ```bash
    # OpenCage API Key:
    ls -la ~/.config/opencage/api_key  # Sollte mode 0600 haben
@@ -311,7 +350,8 @@ Guide erstellt für 3 Optionen:
    git remote -v  # Sollte git@github.com:... zeigen (SSH)
    ```
 
-### Nächste 2 Wochen (Optional):
+### Nächste 2 Wochen (Optional)
+
 5. **Cherry-pick** wichtigste Upstream Fixes
 6. **Export** macOS defaults für Dokumentation
 7. **Cleanup** SSH Config Fragmente in iCloud
@@ -320,44 +360,54 @@ Guide erstellt für 3 Optionen:
 
 ## 📚 Erstellte Ressourcen - Quick Reference
 
-### Für Upstream-Integration:
+### Für Upstream-Integration
+
 → **FORK_ANALYSIS.md** (Abschnitt 6: Konkrete Aktionsempfehlungen)
 
-### Für Code-Verbesserungen:
+### Für Code-Verbesserungen
+
 → **IMPROVEMENTS.md** (Priorisierte Liste mit Fixes)
 
-### Für Munki Setup:
+### Für Munki Setup
+
 → **MUNKI_IMPROVEMENTS.md** (Configuration Matrix)
 
-### Für macOS Settings:
+### Für macOS Settings
+
 → **MACOS_DEFAULTS_GUIDE.md** (Kompletter Workflow)
 
-### Für SSH/1Password:
+### Für SSH/1Password
+
 → **1PASSWORD_SSH_STRATEGY.md** (Strategie-Optionen)
 
-### Für Security Review:
+### Für Security Review
+
 → **SECRETS_FIXES_APPLIED.md** (Was wurde gefixt)
 
-### Für zukünftige Claude Instanzen:
+### Für zukünftige Claude Instanzen
+
 → **CLAUDE.md** (Repository-Architektur)
 
 ---
 
 ## 🎯 Geschätzter Impact
 
-### Time Investment:
+### Time Investment
+
 - **Analyse**: ~3 Stunden
 - **Implementation**: ~1 Stunde
 - **Dokumentation**: ~1 Stunde
 - **Total**: ~5 Stunden
 
-### Time Saved (zukünftig):
+### Time Saved (zukünftig)
+
 - Schnelleres Onboarding neuer Macs (bessere Doku)
 - Weniger Debugging (Fixes implementiert)
 - Klarheit über Upstream-Strategie
 - Dokumentierte Best Practices
 
-### Security Improvement:
+### Security Improvement
+
 - 3 Critical Issues behoben
 - Secrets besser geschützt
 - Backups vor Datenverlust
@@ -369,6 +419,7 @@ Guide erstellt für 3 Optionen:
 Dieses Repository ist ein **sehr solides, professionelles Setup** für Multi-Mac Management. Die gefundenen Issues sind größtenteils **normal** für ein gewachsenes Projekt und zeigen dass es aktiv genutzt wird.
 
 Die **größten Verbesserungen** dieser Session:
+
 1. ✅ Security Fixes für Secrets
 2. ✅ Umfassende Dokumentation
 3. ✅ Klarheit über Fork-Strategie

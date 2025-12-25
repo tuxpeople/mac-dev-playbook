@@ -14,6 +14,7 @@ This repository uses **Renovate** to automatically manage dependency updates wit
 ## 🤖 What Gets Auto-Merged?
 
 Renovate will **automatically merge** PRs when:
+
 1. ✅ **CI tests pass** (requirements-check + lint + integration)
 2. ✅ **Update type matches rules** (see below)
 
@@ -34,11 +35,13 @@ Renovate will **automatically merge** PRs when:
 Every Renovate PR triggers these tests:
 
 ### 1. **Lint Job**
+
 - yamllint (YAML syntax)
 - ansible-lint (Playbook best practices)
 - shellcheck (Shell script validation)
 
 ### 2. **Requirements Check** (NEW!)
+
 - Install all packages from requirements.txt
 - Verify no dependency conflicts (`pip check`)
 - Test Ansible can be imported
@@ -46,6 +49,7 @@ Every Renovate PR triggers these tests:
 - Verify ansible-playbook executable works
 
 ### 3. **Integration Test**
+
 - Run full playbook on macOS 11 & 12
 - Syntax check
 - Full execution test
@@ -76,12 +80,14 @@ Every Renovate PR triggers these tests:
 **Example**: `bcrypt==4.2.0 → 4.3.0`
 
 **Auto-merged packages**:
+
 - bcrypt (password hashing)
 - pyparsing (parsing library)
 - jmespath (JSON query)
 - pexpect (process automation)
 
 **Why auto-merge?**
+
 - Stable APIs
 - Rare breaking changes
 - Low impact on Ansible
@@ -93,10 +99,12 @@ Every Renovate PR triggers these tests:
 **Example**: `paramiko==4.0.0 → 4.1.0`
 
 **Auto-merged packages**:
+
 - cryptography (TLS/SSL)
 - paramiko (SSH library)
 
 **Why auto-merge minor, not major?**
+
 - Minor: Usually new features + bug fixes
 - Major: API changes, deprecations
 - Security patches: Often in minor releases
@@ -110,12 +118,14 @@ Every Renovate PR triggers these tests:
 **Labels**: `ansible-update`, `needs-testing`
 
 **Why manual?**
+
 - High risk of breaking changes
 - Playbook syntax changes
 - Module deprecations
 - Requires thorough testing
 
 **Process**:
+
 1. Renovate creates PR
 2. Review changelog
 3. Test on non-production Mac
@@ -130,11 +140,13 @@ Every Renovate PR triggers these tests:
 **Behavior**: ❌ **NOT auto-merged** (even patches!)
 
 **Why?**
+
 - Requires human review of CVE details
 - May need additional changes beyond version bump
 - Security fixes should be tested immediately
 
 **Process**:
+
 1. Renovate creates PR with `security` label
 2. Review CVE details in PR description
 3. Test on non-production Mac (fast track)
@@ -147,6 +159,7 @@ Every Renovate PR triggers these tests:
 **Renovate runs**: Every Monday before 6am (Europe/Zurich)
 
 **Why Monday morning?**
+
 - Updates available at start of week
 - Time to test before weekend
 - Matches your workflow
@@ -162,6 +175,7 @@ Every Renovate PR triggers these tests:
 **GitHub**: Settings → Integrations → Renovate
 
 Shows:
+
 - Pending updates
 - Failed runs
 - Rate limits
@@ -172,6 +186,7 @@ Shows:
 **Filter PRs**: `label:dependencies`
 
 **PR Format**:
+
 ```
 deps: update cryptography to v46.0.4
 
@@ -205,12 +220,14 @@ Without this, `platformAutomerge: true` won't work!
 ### Auto-Merge Not Working
 
 **Check**:
+
 1. GitHub auto-merge enabled? (see above)
 2. All CI tests passing?
 3. Branch protection rules configured?
 4. Renovate has write permissions?
 
 **Debug**:
+
 ```bash
 # Check Renovate logs in PR description
 # Look for: "Automerge: Enabled"
@@ -219,6 +236,7 @@ Without this, `platformAutomerge: true` won't work!
 ### CI Tests Failing
 
 **Common issues**:
+
 1. **pip check fails**: Dependency conflict
    - Review requirements.txt
    - Pin conflicting package
@@ -231,6 +249,7 @@ Without this, `platformAutomerge: true` won't work!
 ### Too Many PRs
 
 **Reduce noise**:
+
 ```json
 // In renovate.json
 "prConcurrentLimit": 1,  // Only 1 PR at a time
@@ -244,6 +263,7 @@ Without this, `platformAutomerge: true` won't work!
 ### Week 1: Patch Updates Auto-Merge
 
 **Monday 5:30 AM**:
+
 ```
 Renovate detects:
 - cryptography 46.0.3 → 46.0.4 (patch)
@@ -251,6 +271,7 @@ Renovate detects:
 ```
 
 **Monday 5:45 AM**:
+
 ```
 - Creates 2 PRs
 - CI runs on both
@@ -259,6 +280,7 @@ Renovate detects:
 ```
 
 **Monday 8:00 AM** (Next macupdate run):
+
 ```
 ./scripts/macupdate
 → Pulls latest master
@@ -273,12 +295,14 @@ Renovate detects:
 ### Week 2: Ansible Update (Manual)
 
 **Monday 5:30 AM**:
+
 ```
 Renovate detects:
 - ansible 10.2.0 → 12.1.0 (major)
 ```
 
 **Monday 5:45 AM**:
+
 ```
 - Creates PR with labels: ansible-update, needs-testing
 - CI runs
@@ -286,14 +310,17 @@ Renovate detects:
 ```
 
 **Your action**:
-1. Review changelog: https://github.com/ansible/ansible/blob/devel/changelogs/CHANGELOG-v12.rst
+
+1. Review changelog: <https://github.com/ansible/ansible/blob/devel/changelogs/CHANGELOG-v12.rst>
 2. Test on non-production Mac:
+
    ```bash
    git fetch origin pull/XXX/head:renovate-test
    git checkout renovate-test
    pip install -r requirements.txt
    ansible-playbook plays/update.yml --check
    ```
+
 3. If OK: Merge manually
 4. If issues: Add comment, close PR, pin version
 

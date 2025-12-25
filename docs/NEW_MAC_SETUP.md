@@ -134,7 +134,7 @@ You entered the wrong Ansible Vault password.
 
 Solution:
 
-- Ensure you're using the correct vault password (stored in `~/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/vault_password_file ` or your personal vault)
+- Ensure you're using the correct vault password (stored in `~/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/vault_password_file` or your personal vault)
 - If using iCloud sync, ensure the `vault_password_file` is accessible
 
 **Error: "Cannot decrypt ansible_become_pass"**

@@ -1,8 +1,8 @@
 # Fork Analysis: mac-dev-playbook
 
 **Analysiert am**: 2025-10-22
-**Upstream**: https://github.com/geerlingguy/mac-dev-playbook
-**Fork**: https://github.com/tuxpeople/mac-dev-playbook
+**Upstream**: <https://github.com/geerlingguy/mac-dev-playbook>
+**Fork**: <https://github.com/tuxpeople/mac-dev-playbook>
 **Gemeinsamer Basis-Commit**: 358f663
 
 ---
@@ -22,12 +22,15 @@ Dieser Fork hat sich **erheblich** vom Upstream entfernt und ist als **grundlege
 Der Fork fügt folgende Strukturen hinzu, die **nicht im Upstream existieren**:
 
 #### `plays/` Verzeichnis
+
 - **plays/full.yml**: Erweitertes Provisioning-Playbook mit Rosetta 2, SSH-Setup, temporary sudo
 - **plays/update.yml**: Spezialisiertes Update-Playbook für tägliche Wartung
 - **Status**: ✅ **Kein Konflikt** - Upstream hat kein `plays/` Verzeichnis
 
 #### `inventories/` Verzeichnis
+
 Vollständige Ansible-Inventory-Hierarchie:
+
 - **inventories/macs.list**: Host-Gruppen (business_mac, private_mac)
 - **inventories/group_vars/**: Mehrstufige Konfigurationshierarchie
   - `macs/`: Basis-Konfiguration für alle Macs
@@ -37,7 +40,9 @@ Vollständige Ansible-Inventory-Hierarchie:
 - **Status**: ✅ **Kein Konflikt** - Upstream hat kein `inventories/` Verzeichnis
 
 #### `roles/` Verzeichnis
+
 Custom Roles für erweiterte Funktionalität:
+
 - **ansible-mac-update/**: Microsoft Updates, kubectl, SSH/GPG key management
 - **munki_update/**: Munki package management
 - **ansible-role-nvm/**: Node.js version management
@@ -46,12 +51,15 @@ Custom Roles für erweiterte Funktionalität:
 ### 1.2 Unterschiede in gemeinsamen Dateien
 
 #### `main.yml`
+
 **Upstream (Zeile 23)**:
+
 ```yaml
 when: (mas_installed_apps | bool) or (mas_installed_app_ids | bool)
 ```
 
 **Fork (Zeile 23)**:
+
 ```yaml
 when: mas_installed_apps or mas_installed_app_ids
 ```
@@ -74,6 +82,7 @@ when: mas_installed_apps or mas_installed_app_ids
 #### `requirements.yml`
 
 **Upstream**:
+
 ```yaml
 roles:
   - name: elliotweiser.osx-command-line-tools
@@ -83,6 +92,7 @@ collections:
 ```
 
 **Fork**:
+
 ```yaml
 roles:
   - name: elliotweiser.osx-command-line-tools
@@ -97,6 +107,7 @@ collections:
 ```
 
 **Impact**:
+
 - ✅ **Gut**: Fork pinnt Versionen (bessere Reproduzierbarkeit)
 - ⚠️ **Achtung**: Veraltete Versionen möglich, Updates erforderlich
 
@@ -135,6 +146,7 @@ Bei einem Merge vom Upstream werden folgende Konflikte erwartet:
 ### 3.1 Wichtige Upstream Bugfixes
 
 #### 🐛 **Issue #232: MAS Conditional Fix** (Commit 719de35)
+
 **Priorität**: ⚠️ **HOCH**
 
 ```yaml
@@ -152,6 +164,7 @@ when: (mas_installed_apps | bool) or (mas_installed_app_ids | bool)
 ---
 
 #### 🐛 **Issue #186: Become Capitalization** (Commit 2f5dc88)
+
 **Priorität**: ℹ️ **NIEDRIG**
 
 Korrektur der `Become` Parameter-Schreibweise in `ansible.cfg`.
@@ -161,6 +174,7 @@ Korrektur der `Become` Parameter-Schreibweise in `ansible.cfg`.
 ---
 
 #### 🐛 **Cowsay Package Removal** (Commit 6e028c0)
+
 **Priorität**: ⚠️ **MITTEL**
 
 ```yaml
@@ -175,6 +189,7 @@ Korrektur der `Become` Parameter-Schreibweise in `ansible.cfg`.
 ### 3.2 Neue Features im Upstream
 
 #### ✨ **pngpaste Package** (Commit 347ea7a)
+
 **Priorität**: ℹ️ **OPTIONAL**
 
 Neues Homebrew Package für Clipboard-zu-PNG Konvertierung.
@@ -184,6 +199,7 @@ Neues Homebrew Package für Clipboard-zu-PNG Konvertierung.
 ---
 
 #### ✨ **Dependabot Integration** (Commit 5e60540)
+
 **Priorität**: ℹ️ **OPTIONAL**
 
 GitHub Dependabot für automatische Dependency-Updates.
@@ -193,6 +209,7 @@ GitHub Dependabot für automatische Dependency-Updates.
 ---
 
 #### ✨ **macOS 14 & 15 Testing** (Commit 3e46828)
+
 **Priorität**: ℹ️ **OPTIONAL**
 
 GitHub Actions Tests für macOS Sonoma (14) und Sequoia (15).
@@ -215,6 +232,7 @@ GitHub Actions Tests für macOS Sonoma (14) und Sequoia (15).
 ### Fork-Architektur: **Multi-Mac Management System**
 
 **Stärken**:
+
 - ✅ Professionelle Inventory-Hierarchie für mehrere Macs
 - ✅ Separation of Concerns: `plays/full.yml` (Setup) vs. `plays/update.yml` (Maintenance)
 - ✅ Wiederverwendbare Custom Roles (Munki, Updates, NVM)
@@ -223,6 +241,7 @@ GitHub Actions Tests für macOS Sonoma (14) und Sequoia (15).
 - ✅ Temporary Sudo Handling für unattended execution
 
 **Komplexität**:
+
 - ⚠️ Deutlich komplexer als Upstream
 - ⚠️ Mehr Wartungsaufwand
 - ⚠️ Erfordert Ansible-Expertise
@@ -230,12 +249,14 @@ GitHub Actions Tests für macOS Sonoma (14) und Sequoia (15).
 ### Upstream-Architektur: **Single-Mac Setup Tool**
 
 **Stärken**:
+
 - ✅ Einfach und verständlich
 - ✅ Gut dokumentiert
 - ✅ Aktiv gewartet
 - ✅ Community-getestet
 
 **Limitierungen**:
+
 - ⚠️ Keine native Multi-Mac Unterstützung
 - ⚠️ Keine Separation zwischen Setup und Updates
 - ⚠️ Weniger Flexibilität
@@ -247,6 +268,7 @@ GitHub Actions Tests für macOS Sonoma (14) und Sequoia (15).
 ### Option A: **Selective Cherry-Picking** ⭐ **EMPFOHLEN**
 
 **Vorgehen**:
+
 1. ✅ Cherry-pick kritische Bugfixes:
    - Issue #232: MAS conditional fix
    - Cowsay removal
@@ -258,11 +280,13 @@ GitHub Actions Tests für macOS Sonoma (14) und Sequoia (15).
 3. ❌ **NICHT übernehmen**: Strukturelle Upstream-Änderungen
 
 **Vorteile**:
+
 - Behält Fork-Architektur bei
 - Minimales Konflikt-Risiko
 - Kontrollierter Prozess
 
 **Nachteile**:
+
 - Manueller Aufwand
 - Kein automatisches Upstream-Tracking
 
@@ -271,14 +295,17 @@ GitHub Actions Tests für macOS Sonoma (14) und Sequoia (15).
 ### Option B: **Full Merge** ⚠️ **NICHT EMPFOHLEN**
 
 **Vorgehen**:
+
 ```bash
 git merge upstream/master
 ```
 
 **Vorteile**:
+
 - Alle Upstream-Änderungen auf einmal
 
 **Nachteile**:
+
 - ⚠️ Merge-Konflikte bei `default.config.yml` und `requirements.yml`
 - ⚠️ Potenzielle Überraschungen bei impliziten Änderungen
 - ⚠️ Erfordert sorgfältiges Testing aller Playbooks
@@ -290,14 +317,17 @@ git merge upstream/master
 ### Option C: **Fork weiterführen ohne Upstream** ℹ️ **AKZEPTABEL**
 
 **Vorgehen**:
+
 - Fork als eigenständiges Projekt behandeln
 - Nur kritische Security-Fixes manuell portieren
 
 **Vorteile**:
+
 - Keine Merge-Komplexität
 - Volle Kontrolle
 
 **Nachteile**:
+
 - Verliert Upstream-Verbesserungen
 - Mehr Eigenverantwortung für Maintenance
 
@@ -308,12 +338,14 @@ git merge upstream/master
 ### 🔴 Kritisch (Sofort umsetzen)
 
 1. **MAS Conditional Fix** (Issue #232):
+
    ```bash
    # In main.yml und plays/full.yml ändern:
    when: (mas_installed_apps | bool) or (mas_installed_app_ids | bool)
    ```
 
 2. **Cowsay entfernen** aus `inventories/group_vars/macs/brew.yml`:
+
    ```yaml
    # Zeile entfernen:
    - cowsay
@@ -322,17 +354,20 @@ git merge upstream/master
 ### 🟡 Wichtig (Nächste Wochen)
 
 3. **dotfiles_repo_version hinzufügen** in group_vars:
+
    ```yaml
    dotfiles_repo_version: master  # oder main, je nach Branch
    ```
 
 4. **Sublime Package Update**:
+
    ```yaml
    # WordCount → WordingStatus (falls gewünscht)
    # Cobalt2 Theme hinzufügen (optional)
    ```
 
 5. **Version Updates prüfen** in `requirements.yml`:
+
    ```bash
    ansible-galaxy collection list
    # Prüfen ob neuere Versionen verfügbar
@@ -360,6 +395,7 @@ git merge upstream/master
 → **Ja, selektiv**: Bugfixes ✅, Features optional, strukturelle Änderungen ❌.
 
 **Nächste Schritte**:
+
 1. ✅ Kritische Bugfixes cherry-picken (siehe Abschnitt 6)
 2. ✅ Dependency-Versionen in requirements.yml aktualisieren
 3. ✅ Testing der Änderungen auf einem Non-Production Mac

@@ -17,6 +17,7 @@ Das Repository ist jetzt ein eigenständiges Projekt (bereits auf GitHub deforke
 ## 📊 Upstream Divergenz (Kontext)
 
 **Analyse vom 2025-12-22:**
+
 ```bash
 Letzter gemeinsamer Commit: 358f663 (26. Juni 2024)
 Deine Commits: 289 ahead
@@ -35,6 +36,7 @@ Dateien geändert: 137 files, 17,032+ lines added
 **Problem**: Ansible parst alle Dateien in `group_vars/` als YAML. Brewfiles sind Ruby DSL → YAML parsing error.
 
 **Lösung**:
+
 ```bash
 # Brewfiles verschoben von:
 ~/dotfiles/machine/business_mac/Brewfile
@@ -46,6 +48,7 @@ files/brewfile/private_mac/Brewfile
 ```
 
 **Config geändert**:
+
 - `inventories/group_vars/business_mac/brew.yml`
 - `inventories/group_vars/private_mac/brew.yml`
 - Beide zeigen jetzt auf `{{ playbook_dir }}/files/brewfile/<group>`
@@ -61,6 +64,7 @@ files/brewfile/private_mac/Brewfile
 **Problem**: Python Version war in mehreren Dateien hardcoded (macupdate, general.yml).
 
 **Lösung**:
+
 ```bash
 # Erstellt: .python-version (pyenv standard)
 3.11.8
@@ -71,6 +75,7 @@ PYTHON_VERSION=$(cat "${PYTHON_VERSION_FILE}" | tr -d '[:space:]')
 ```
 
 **Geänderte Dateien**:
+
 - `.python-version` (neu)
 - `scripts/macupdate:23-30` (liest aus .python-version)
 - `inventories/group_vars/macs/general.yml:25-26` (Kommentar aktualisiert)
@@ -88,16 +93,19 @@ PYTHON_VERSION=$(cat "${PYTHON_VERSION_FILE}" | tr -d '[:space:]')
 **Problem**: `plays/full.yml:39` importierte direkt aus Role tasks (Anti-Pattern).
 
 **Vorher**:
+
 ```yaml
 - import_tasks: ../roles/ansible-mac-update/tasks/ssh.yaml  # ❌
 ```
 
 **Nachher**:
+
 ```yaml
 - import_tasks: ../tasks/pre/ssh.yml  # ✅
 ```
 
 **Dateien**:
+
 - Erstellt: `tasks/pre/ssh.yml` (kopiert aus role)
 - Geändert: `plays/full.yml:39`
 
@@ -110,6 +118,7 @@ PYTHON_VERSION=$(cat "${PYTHON_VERSION_FILE}" | tr -d '[:space:]')
 **Grund** (vom User bestätigt): Alle Mac App Store Apps werden via Homebrew Casks in Brewfiles installiert statt über mas CLI.
 
 **Lösung**: Ausführlicher Kommentar in `plays/full.yml:82-92`:
+
 ```yaml
 # Mac App Store (MAS) integration - DISABLED
 # Why: All Mac App Store apps are managed via Homebrew casks in Brewfiles instead
@@ -124,12 +133,14 @@ PYTHON_VERSION=$(cat "${PYTHON_VERSION_FILE}" | tr -d '[:space:]')
 **Problem**: `with_fileglob` macht es schwer zu sehen was ausgeführt wird.
 
 **Vorher**:
+
 ```yaml
 - include_tasks: "{{ outer_item }}"
   with_fileglob: "{{ post_provision_tasks|default(omit) }}"
 ```
 
 **Nachher**:
+
 ```yaml
 - include_tasks: "{{ item }}"
   loop: "{{ post_provision_tasks | default([]) }}"
@@ -146,6 +157,7 @@ PYTHON_VERSION=$(cat "${PYTHON_VERSION_FILE}" | tr -d '[:space:]')
 **Geändert**: `README.md`
 
 **Ergänzungen**:
+
 1. **Zeilen 7-9**: Prominent Fork-Notice am Anfang
 2. **Zeilen 202-250**: Neue Sektion "Key Differences from Upstream"
    - Multi-Mac Management
@@ -165,6 +177,7 @@ PYTHON_VERSION=$(cat "${PYTHON_VERSION_FILE}" | tr -d '[:space:]')
 **Grund**: Wird nicht genutzt (User-Bestätigung).
 
 **Gelöscht**:
+
 ```bash
 rm -rf files/sublime/                              # 5 Dateien
 rm tasks/sublime-text.yml
@@ -172,6 +185,7 @@ rm templates/Package_Control.sublime-settings.j2
 ```
 
 **Geänderte Dateien**:
+
 - `plays/full.yml:113-115` (import_tasks entfernt)
 - `main.yml:53-55` (import_tasks entfernt)
 - `inventories/group_vars/macs/general.yml:18` (configure_sublime entfernt)
@@ -186,11 +200,13 @@ rm templates/Package_Control.sublime-settings.j2
 **Grund**: Wird nicht genutzt (User-Bestätigung).
 
 **Gelöscht**:
+
 ```bash
 rm tasks/post/citrix.yml
 ```
 
 **Bereinigt**:
+
 - `inventories/group_vars/business_mac/dock.yml:53-54` - Citrix Workspace Dock-Entry entfernt
 - `inventories/group_vars/macs/post.yml:7` - Kommentierte Zeile entfernt
 
@@ -203,12 +219,14 @@ rm tasks/post/citrix.yml
 **Grund**: User nutzt iTerm2, nicht Terminal.app.
 
 **Gelöscht**:
+
 ```bash
 rm tasks/terminal.yml
 rm -rf files/terminal/  # JJG-Term.terminal, Solarized Dark
 ```
 
 **Bereinigt**:
+
 - `plays/full.yml:110-112` - import_tasks entfernt
 - `main.yml:43-45` - import_tasks entfernt
 - `default.config.yml:3` - configure_terminal entfernt
@@ -225,11 +243,13 @@ rm -rf files/terminal/  # JJG-Term.terminal, Solarized Dark
 **Grund**: Disabled, leer, nicht benötigt (Playbooks haben eigenes temporäres sudo).
 
 **Gelöscht**:
+
 ```bash
 rm tasks/sudoers.yml
 ```
 
 **Bereinigt**:
+
 - `plays/full.yml:106-108` - import_tasks entfernt
 - `main.yml:39-41` - import_tasks entfernt
 - `default.config.yml:18-23` - configure_sudoers + sudoers_custom_config entfernt
@@ -246,6 +266,7 @@ rm tasks/sudoers.yml
 **Ergebnis**: BEHALTEN - Korrekt konfiguriert!
 
 **Was installiert wird**:
+
 - **Basisschrift** (Schweizer Handschrift-Font) von basisschrift.ch
 - **Hack Nerd Font** (v3.1.1) von GitHub
 
@@ -263,6 +284,7 @@ rm tasks/sudoers.yml
 **Config**: `inventories/group_vars/macs/additional-packages.yml`
 
 **Aktueller Stand**:
+
 - Alle Package-Arrays leer (`composer_packages`, `gem_packages`, `npm_packages`, `pip_packages`)
 - Gut dokumentiert mit Beispielen
 - Bereit zur Nutzung wenn benötigt
@@ -290,23 +312,27 @@ rm tasks/sudoers.yml
 **Datei**: `tasks/terminal.yml` (29 Zeilen)
 
 **Was es macht**:
+
 - Installiert custom Terminal theme "JJG-Term" (von Upstream geerbt)
 - Setzt es als Default Terminal Profile
 - Kopiert Theme von `files/terminal/JJG-Term.terminal`
 
 **Aktueller Status**:
+
 - `configure_terminal: false` (disabled in general.yml)
 - User hat `tasks/post/iterm2.yml` konfiguriert (iTerm2 Preferences)
 
 **Vermutung**: User nutzt iTerm2, nicht Terminal.app.
 
 **Offene Fragen**:
+
 1. Nutzt du Terminal.app oder iTerm2?
 2. Brauchst du das JJG-Term Theme?
 
 **Empfehlung**: Löschen (iTerm2 wird genutzt, Terminal.app nicht).
 
 **Nächste Schritte wenn LÖSCHEN**:
+
 ```bash
 rm tasks/terminal.yml
 rm -rf files/terminal/  # Falls existiert
@@ -341,17 +367,20 @@ rm -rf files/terminal/  # Falls existiert
 **Problem**: `munki_check_only: true` (nur checken, nicht installieren)
 
 **Lösung**:
+
 ```yaml
 # inventories/group_vars/macs/munki.yml
 munki_check_only: false  # Von true geändert
 ```
 
 **Verifiziert**:
+
 - ✅ `business_mac/main.yml`: `munki_update: true` (aktiviert)
 - ✅ `private_mac/main.yml`: `munki_update: false` (deaktiviert)
 - ✅ Role war bereits korrekt konfiguriert, nur check-only musste deaktiviert werden
 
 **Was passiert jetzt**:
+
 - Business Mac: Prüft UND installiert Munki Updates
 - Private Mac: Munki wird komplett übersprungen
 
@@ -364,6 +393,7 @@ munki_check_only: false  # Von true geändert
 ### Sofort (High Priority)
 
 1. **Terminal Config analysieren & entscheiden**
+
    ```bash
    # Lesen:
    cat tasks/terminal.yml
@@ -376,6 +406,7 @@ munki_check_only: false  # Von true geändert
    ```
 
 2. **Sudoers Config analysieren & entscheiden**
+
    ```bash
    # Lesen:
    cat tasks/sudoers.yml
@@ -386,6 +417,7 @@ munki_check_only: false  # Von true geändert
    ```
 
 3. **Citrix Cleanup abschließen**
+
    ```bash
    # Edit inventories/group_vars/business_mac/dock.yml
    # Entferne Zeilen 53-54 (Citrix Workspace Dock Entry)
@@ -395,6 +427,7 @@ munki_check_only: false  # Von true geändert
    ```
 
 4. **Fonts analysieren**
+
    ```bash
    cat tasks/fonts.yml
    grep -r "font" inventories/group_vars/
@@ -404,6 +437,7 @@ munki_check_only: false  # Von true geändert
 ### Mittelfristig
 
 5. **Extra Packages analysieren**
+
    ```bash
    cat tasks/extra-packages.yml
    grep -r "composer_packages\|gem_packages\|npm_packages\|pip_packages" inventories/
@@ -411,6 +445,7 @@ munki_check_only: false  # Von true geändert
    ```
 
 6. **Munki Enhancement**
+
    ```bash
    cat roles/munki_update/tasks/main.yml
    # Von check-only auf install umstellen
@@ -420,6 +455,7 @@ munki_check_only: false  # Von true geändert
 ### Abschluss
 
 7. **Alles testen**
+
    ```bash
    # Dry run
    ./scripts/macapply --check --diff
@@ -429,6 +465,7 @@ munki_check_only: false  # Von true geändert
    ```
 
 8. **Committen**
+
    ```bash
    git status
    git add -A
@@ -527,6 +564,7 @@ templates/Package_Control.sublime-settings.j2
 5. Dokumentiere deine Änderungen hier in dieser Datei
 
 **User-Präferenzen bisher**:
+
 - Nutzt iTerm2 (nicht Terminal.app)
 - Nutzt Homebrew für fast alles
 - Nutzt Munki auf Business Mac
@@ -548,9 +586,11 @@ templates/Package_Control.sublime-settings.j2
 **Problem**: Symlink `roles/homebrew` verwies auf archivierten Fork
 
 **Gelöscht**:
+
 - `roles/homebrew` (broken symlink)
 
 **Geändert**:
+
 - `plays/update.yml:67` - `name: homebrew` → `name: geerlingguy.mac.homebrew`
 - `.yamllint` - Ignore-Regel für `roles/homebrew/` entfernt
 - Dokumentation aktualisiert (4 Dateien)
@@ -563,6 +603,7 @@ templates/Package_Control.sublime-settings.j2
 ### 13. TODO-Liste erweitert
 
 **Hinzugefügt**:
+
 - Drucker konfigurieren
 - Extra Packages Audit (npm, pip, gem, composer)
 - macOS Settings Audit - Funktionalität
@@ -579,12 +620,14 @@ templates/Package_Control.sublime-settings.j2
 **Problem**: `munki_check_only: true` (nur checken, nicht installieren)
 
 **Lösung**:
+
 ```yaml
 # inventories/group_vars/macs/munki.yml
 munki_check_only: false  # Von true geändert
 ```
 
 **Verhalten jetzt**:
+
 - Business Mac: Prüft UND installiert Munki Updates
 - Private Mac: Munki wird komplett übersprungen (via `myenv == "business_mac"`)
 
@@ -598,10 +641,12 @@ munki_check_only: false  # Von true geändert
 **Problem**: Redundante `munki_update` Variable
 
 **Gelöscht**:
+
 - `inventories/group_vars/business_mac/main.yml` (munki_update: true)
 - `inventories/group_vars/private_mac/main.yml` (munki_update: false)
 
 **Geändert**:
+
 - `plays/update.yml:76` - `when: munki_update` → `when: myenv == "business_mac"`
 
 **Vorteil**: Single Source of Truth mit `myenv` Fact aus `additional-facts.yml`
@@ -623,6 +668,7 @@ munki_check_only: false  # Von true geändert
 ### 17. Extra Packages Audit
 
 **Durchgeführt**:
+
 ```bash
 npm list -g --depth=0  # 5 packages gefunden
 pip list              # 471 packages (projektspezifisch)
@@ -631,11 +677,13 @@ composer global show  # Nicht installiert
 ```
 
 **Entscheidung**:
+
 - ✅ `@anthropic-ai/claude-code` → In Ansible (alle Macs)
 - ❌ Andere npm Packages → Projektspezifisch
 - ❌ PIP Packages → Projektspezifisch (requirements.txt)
 
 **Hinzugefügt**:
+
 ```yaml
 # inventories/group_vars/macs/additional-packages.yml
 npm_packages:
@@ -644,6 +692,7 @@ npm_packages:
 ```
 
 **Update-Integration**:
+
 - `plays/update.yml` - `import_tasks: ../tasks/extra-packages.yml` hinzugefügt
 - NPM Packages werden nun bei `macupdate` aktualisiert
 
@@ -659,6 +708,7 @@ npm_packages:
 ### 18. TODO Items: Desktop & Fonts
 
 **Hinzugefügt zu TODO.md**:
+
 - Desktop-Hintergrund automatisiert setzen (business vs private, externe Monitore)
 - Zusätzliche Fonts für Private Macs (Lösung für nicht-öffentliche Fonts)
 
@@ -672,16 +722,19 @@ npm_packages:
 **Problem**: Node.js war via Homebrew installiert (v25.2.1), aber nicht im Brewfile getracked
 
 **Analyse**:
+
 - `nodejs_enabled: false` - nvm Role wird übersprungen
 - Node.js bereits via Homebrew installiert (nicht nvm)
 - `extra-packages.yml` läuft unabhängig → claude-code wird trotzdem installiert/upgegraded
 
 **Entscheidung**: Homebrew bevorzugen (nicht nvm)
+
 - Konsistenz: Ein Package Manager
 - Einfachheit: Kein zusätzlicher Version Manager
 - Passt zum bestehenden Setup
 
 **Lösung**:
+
 ```ruby
 # files/brewfile/business_mac/Brewfile (Zeile 220)
 brew "node"  # Node.js JavaScript runtime and npm package manager
@@ -699,11 +752,13 @@ brew "node"  # Node.js JavaScript runtime and npm package manager
 **Durchgeführt**: Vollständiger Audit aller installierten Homebrew Packages
 
 **Ergebnisse**:
+
 - **Total installiert**: 441 Packages
 - **In Brewfile**: 183 Packages
 - **Fehlend**: 258 Packages (davon 234 Dependencies, 24 explizit installiert)
 
 **Explizit installierte Packages** (`brew leaves`):
+
 ```
 asciidoctor, boost, codex, d2, diceware, duckdb, falcosecurity-libs,
 glab, grype, k8sgpt, kube-ps1, kubecolor, marp-cli, mbedtls, mise,
@@ -712,13 +767,16 @@ talosctl, weasyprint
 ```
 
 **Wichtige Entdeckung**: Homebrew/mise Duplikate (17 Tools)
+
 ```
 age, cilium-cli, cloudflared, cue, flux, go-task, helm, helmfile,
 jq, kubeconform, kustomize, m-cli, pre-commit, sops, talhelper, yq
 ```
+
 → Diese sind via Homebrew UND mise (k8s-homelab/.mise.toml) installiert
 
 **Entscheidung User**:
+
 - ✅ Zu Brewfile hinzufügen: mise, kube-ps1, glab, pandoc, grype, rancher-cli, diceware, kubecolor, codex
 - ⏸️ Ignorieren vorerst: d2, popeye, k8sgpt, duckdb, pup, bun, marp-cli, weasyprint
 - ⏸️ Duplikate: Bis auf weiteres ignorieren (beide parallel OK, mise hat PATH-Vorrang)
@@ -742,6 +800,7 @@ jq, kubeconform, kustomize, m-cli, pre-commit, sops, talhelper, yq
 | rancher-cli | ✅ (Zeile 278) | ✅ (Zeile 268) | Rancher CLI |
 
 **Dateien geändert**:
+
 - `files/brewfile/business_mac/Brewfile` (+18 Zeilen)
 - `files/brewfile/private_mac/Brewfile` (+16 Zeilen)
 
@@ -752,9 +811,10 @@ jq, kubeconform, kustomize, m-cli, pre-commit, sops, talhelper, yq
 
 ## 📊 Gesamtübersicht: 2025-12-22 + 2025-12-23
 
-### Commits (11 total):
+### Commits (11 total)
 
 **2025-12-22:**
+
 1. `7c420f0` - Major cleanup (Terminal, Sudoers, Citrix, Sublime)
 
 **2025-12-23 (Morning):**
@@ -771,7 +831,8 @@ jq, kubeconform, kustomize, m-cli, pre-commit, sops, talhelper, yq
 10. `3455b1e` - Node.js to business_mac Brewfile
 11. `6894795` - Add 9 explicitly installed tools to Brewfiles
 
-### Statistiken:
+### Statistiken
+
 - **Dateien geändert**: ~40
 - **Deletions**: ~1,650 Zeilen
 - **Insertions**: ~650 Zeilen
@@ -779,7 +840,8 @@ jq, kubeconform, kustomize, m-cli, pre-commit, sops, talhelper, yq
 - **Brewfile**: 183 → 192 Packages (+9)
 - **Reproduzierbarkeit**: Node.js + 9 Tools jetzt explizit getracked
 
-### Verbesserungen:
+### Verbesserungen
+
 - ✅ Repository deutlich schlanker (1650 Zeilen entfernt)
 - ✅ Homebrew Collection-Integration funktional
 - ✅ Munki installiert Updates automatisch (business_mac)
@@ -791,13 +853,15 @@ jq, kubeconform, kustomize, m-cli, pre-commit, sops, talhelper, yq
 - ✅ Homebrew-Audit durchgeführt (441 Packages analysiert)
 - ✅ Bessere Dokumentation (TODO.md erweitert)
 
-### Identifizierte Issues (nicht behoben):
+### Identifizierte Issues (nicht behoben)
+
 - ⚠️ 17 Homebrew/mise Duplikate (ignoriert bis auf weiteres)
 - ⚠️ 8 experimentelle Packages nicht getracked (d2, popeye, k8sgpt, etc.)
 
 ---
 
 **Next Steps** (aus TODO.md):
+
 - README Review
 - macOS Settings Audits (Funktionalität, Manuelle Änderungen, Automatisierung)
 - Drucker konfigurieren

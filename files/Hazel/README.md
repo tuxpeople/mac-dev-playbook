@@ -20,12 +20,14 @@ Hazel/
 ### 1. Export Rules from Existing Mac
 
 In Hazel app:
+
 1. Select a folder in the sidebar
 2. Right-click the folder → Export Rules
 3. Save with a descriptive name
 4. Copy to `files/Hazel/hazelrules/`
 
 Or manually:
+
 ```bash
 # On mac with existing Hazel setup:
 cp ~/Library/Application\ Support/Hazel/*.hazelrules /path/to/repo/files/Hazel/hazelrules/
@@ -37,10 +39,12 @@ cp ~/Library/Application\ Support/Hazel/*.hazelrules /path/to/repo/files/Hazel/h
 The Hazel license is automatically downloaded from 1Password during deployment if it doesn't already exist.
 
 **No manual action required!** The playbook will:
+
 1. Check if `~/Library/Application Support/Hazel/license` exists
 2. If not, download from 1Password: `op://Privat/Hazel 6 license/Thomas Deutsch.hazellicense`
 
 To disable automatic license download, set in `hazel.yml`:
+
 ```yaml
 configure_hazel_license: false
 ```
@@ -79,6 +83,7 @@ Configuration is in `inventories/group_vars/macs/hazel.yml`:
 The "Delete files from Trash" feature requires Full Disk Access, which **cannot be automated** due to macOS security restrictions.
 
 **Manual setup required:**
+
 1. Open **System Settings** → **Privacy & Security** → **Full Disk Access**
 2. Click **+** and add:
    - `/Applications/Hazel.app`

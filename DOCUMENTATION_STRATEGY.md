@@ -5,11 +5,13 @@
 ## 🔑 TL;DR - Quick Reference
 
 **Need technical implementation details?** → Look here (Git Repository)
+
 - How to install: `README.md`
 - Complete reference: `CLAUDE.md`
 - Detailed guides: `docs/`
 
 **Need conceptual understanding & integration?** → Look in Obsidian
+
 - Path: `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Personal/📚 Wissen/🏠 Persönlich/🎨 Hobbys/Homelab/Clients/macOS/`
 - Why Ansible was chosen (Decision Records)
 - How this integrates with Homelab infrastructure
@@ -76,6 +78,7 @@ mac-dev-playbook/
 ```
 
 **Repository Documentation Contains:**
+
 - ✅ Installation & setup instructions
 - ✅ How to run playbooks
 - ✅ Technical reference (variables, roles, tasks)
@@ -99,6 +102,7 @@ Obsidian: ~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Personal/
 ```
 
 **Obsidian Documentation Contains:**
+
 - ✅ WHY Ansible was chosen (Decision Records)
 - ✅ Integration with Homelab infrastructure
 - ✅ Business vs Private differences (conceptual)
@@ -106,7 +110,7 @@ Obsidian: ~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Personal/
 - ✅ High-level operational procedures
 - ✅ Context & decision history
 
-> ⚠️ **Important:** Concepts, decisions, and integration context live in Obsidian, NOT in this repository.  
+> ⚠️ **Important:** Concepts, decisions, and integration context live in Obsidian, NOT in this repository.
 > Don't duplicate conceptual content here - use cross-references instead.
 
 ## 🔗 Cross-Referencing
@@ -144,8 +148,10 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ### Core Documentation
 
 #### README.md
+
 **Purpose:** Quick start for humans
 **Content:**
+
 - Project overview
 - Prerequisites
 - Quick installation
@@ -158,8 +164,10 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ---
 
 #### CLAUDE.md
+
 **Purpose:** Complete technical reference for AI assistants
 **Content:**
+
 - Full project structure
 - All playbooks & roles explained
 - Variables & their purposes
@@ -172,8 +180,10 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ---
 
 #### DOCUMENTATION_STRATEGY.md (This File)
+
 **Purpose:** Explain documentation architecture
 **Content:**
+
 - Layered documentation concept
 - What goes where (Repository vs Obsidian)
 - Cross-referencing guidelines
@@ -184,8 +194,10 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ### Extended Documentation (docs/)
 
 #### docs/installation.md
+
 **Purpose:** Detailed setup guide
 **Content:**
+
 - Prerequisites (detailed)
 - Step-by-step installation
 - Configuration options
@@ -194,8 +206,10 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ---
 
 #### docs/playbooks.md
+
 **Purpose:** Playbook reference
 **Content:**
+
 - List of all playbooks
 - What each playbook does (technical)
 - Parameters & options
@@ -204,8 +218,10 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ---
 
 #### docs/roles.md
+
 **Purpose:** Role reference
 **Content:**
+
 - Role structure
 - Tasks in each role
 - Dependencies
@@ -214,8 +230,10 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ---
 
 #### docs/variables.md
+
 **Purpose:** Variable reference
 **Content:**
+
 - All available variables
 - Default values
 - Where they're used
@@ -224,8 +242,10 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ---
 
 #### docs/troubleshooting.md
+
 **Purpose:** Common issues & solutions
 **Content:**
+
 - Error messages & fixes
 - Platform-specific issues
 - Workarounds
@@ -236,6 +256,7 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ### When Code Changes
 
 **Repository Update Process:**
+
 1. Update code (playbooks, roles, variables)
 2. Update `CLAUDE.md` (technical reference)
 3. Update relevant `docs/*.md` files
@@ -243,6 +264,7 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 5. Commit with clear message
 
 **Obsidian Update Process:**
+
 1. Only if *concepts* change (why, integration)
 2. Update Decision Records if architecture changes
 3. Update integration docs if dependencies change
@@ -251,11 +273,13 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ### Version Control
 
 **Repository:**
+
 - All changes tracked in Git
 - Semantic versioning for major changes
 - Changelog maintained
 
 **Obsidian:**
+
 - Versioned via Obsidian Git Plugin (if enabled)
 - Or manual backups (iCloud)
 - Date stamps in frontmatter
@@ -265,18 +289,21 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ### For Repository Documentation
 
 **Style:**
+
 - ✅ Technical and precise
 - ✅ Code examples included
 - ✅ Markdown formatting
 - ✅ Keep it DRY (Don't Repeat Yourself)
 
 **Structure:**
+
 - Clear headings
 - Table of contents for long docs
 - Examples before explanations
 - Links to related docs
 
 **Maintenance:**
+
 - Update with code changes
 - Test examples regularly
 - Remove outdated content
@@ -285,18 +312,21 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 ### For Obsidian Documentation
 
 **Style:**
+
 - ✅ Conceptual and contextual
 - ✅ Links to other Homelab areas
 - ✅ Decision-focused
 - ✅ Integration-focused
 
 **Structure:**
+
 - Emoji prefixes for visual navigation
 - Cross-references to repository
 - Tags for discoverability
 - Frontmatter for metadata
 
 **Maintenance:**
+
 - Update when concepts change
 - Add Decision Records for major choices
 - Maintain cross-references
@@ -309,12 +339,14 @@ See: `/Volumes/development/github/tuxpeople/mac-dev-playbook/CLAUDE.md`
 This repository includes `CLAUDE.md` as a complete technical reference for AI assistants like Claude.
 
 **Purpose:**
+
 - Provide full context to AI in a single file
 - Enable autonomous task completion
 - Maintain consistency across sessions
 - Reduce need for repeated explanations
 
 **Update When:**
+
 - New playbooks/roles added
 - Structure changes
 - New features implemented
@@ -323,6 +355,7 @@ This repository includes `CLAUDE.md` as a complete technical reference for AI as
 ### Documentation Strategy for AI
 
 **AI assistants should:**
+
 1. Read `CLAUDE.md` first for full context
 2. Reference `README.md` for quick overview
 3. Check `docs/` for specific details
@@ -332,6 +365,7 @@ This repository includes `CLAUDE.md` as a complete technical reference for AI as
 ## 📊 Documentation Metrics
 
 **Good Documentation:**
+
 - New user can set up in < 30 minutes
 - Common tasks have clear examples
 - AI assistant can complete tasks autonomously
@@ -339,6 +373,7 @@ This repository includes `CLAUDE.md` as a complete technical reference for AI as
 - No conflicting information across layers
 
 **Maintenance Indicators:**
+
 - Last updated date on each doc
 - Changelog tracks major changes
 - Examples tested and working
@@ -347,17 +382,20 @@ This repository includes `CLAUDE.md` as a complete technical reference for AI as
 ## 🔗 Related Documentation
 
 **In This Repository:**
+
 - `README.md` - Quick start
 - `CLAUDE.md` - Complete technical reference
 - `CHANGELOG.md` - Version history
 
 **In Obsidian Vault:**
+
 - `Homelab/Clients/macOS/README.md` - macOS overview
 - `Homelab/Clients/README.md` - Client management
 - `Homelab/README.md` - Homelab hub
 - `Homelab/Documentation Strategy.md` - Vault-wide strategy
 
 **External:**
+
 - [Ansible Documentation](https://docs.ansible.com/)
 - [Homebrew Documentation](https://docs.brew.sh/)
 - [macOS Defaults](https://macos-defaults.com/)
@@ -367,6 +405,7 @@ This repository includes `CLAUDE.md` as a complete technical reference for AI as
 When adding a new feature/playbook/role:
 
 **Repository:**
+
 - [ ] Implement code (playbook/role)
 - [ ] Update `CLAUDE.md` with technical details
 - [ ] Update `docs/playbooks.md` or `docs/roles.md`
@@ -377,6 +416,7 @@ When adding a new feature/playbook/role:
 - [ ] Update `CHANGELOG.md`
 
 **Obsidian (if applicable):**
+
 - [ ] Update concept docs if *why* changes
 - [ ] Add Decision Record for major choices
 - [ ] Update integration docs if dependencies change
@@ -384,7 +424,7 @@ When adding a new feature/playbook/role:
 
 ---
 
-**Maintained By:** Thomas Deutsch  
-**Last Updated:** 2025-12-20  
-**Repository:** `/Volumes/development/github/tuxpeople/mac-dev-playbook`  
+**Maintained By:** Thomas Deutsch
+**Last Updated:** 2025-12-20
+**Repository:** `/Volumes/development/github/tuxpeople/mac-dev-playbook`
 **Obsidian Vault:** `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Personal/📚 Wissen/🏠 Persönlich/🎨 Hobbys/Homelab/Clients/macOS/`

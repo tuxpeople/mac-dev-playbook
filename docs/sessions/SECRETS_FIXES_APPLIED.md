@@ -24,6 +24,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 **Datei**: `tasks/post/github.yml`
 
 **Vorher** (UNSICHER):
+
 ```yaml
 - name: Clone my GitHub repositories
   vars:
@@ -33,6 +34,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 ```
 
 **Risiken**:
+
 - Token erscheint in `git remote -v` Output
 - Token ist sichtbar in Prozess-Liste während git läuft
 - Token könnte in Ansible Logs erscheinen
@@ -40,6 +42,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 ### Lösung
 
 **Nachher** (SICHER):
+
 ```yaml
 - name: Query GitHub API for my repositories
   ansible.builtin.uri:
@@ -71,6 +74,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 ```
 
 **Verbesserungen**:
+
 - ✅ Token wird NICHT in Git URLs embedded
 - ✅ Token wird als Environment Variable übergeben
 - ✅ `no_log: true` verhindert Logging
@@ -88,6 +92,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 **Datei**: `tasks/post/whereami.yml`
 
 **Vorher** (UNSICHER):
+
 ```yaml
 - name: Configure whereami with key
   ansible.builtin.lineinfile:
@@ -98,6 +103,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 ```
 
 **Risiken**:
+
 - API Key steht im Klartext im Filesystem
 - Datei ist group-readable (0750)
 - Kein `no_log` - Key erscheint in Ansible Logs
@@ -105,6 +111,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 ### Lösung
 
 **Nachher** (SICHER):
+
 ```yaml
 - name: Create .config directory for API keys
   ansible.builtin.file:
@@ -141,6 +148,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 ```
 
 **Verbesserungen**:
+
 - ✅ API Key in separater Datei mit `mode: 0600`
 - ✅ Wrapper Script liest Key aus sicherer Datei
 - ✅ `no_log: true` beim API Key schreiben
@@ -158,6 +166,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 **Datei**: `roles/ansible-mac-update/tasks/ssh.yaml`
 
 **Vorher** (UNSICHER):
+
 ```yaml
 - name: Regenerating ssh config
   ansible.builtin.shell: "truncate -s0 {{myhomedir}}/.ssh/config; for i in {{ ssh_config_src }}/*; do cat $i >> {{myhomedir}}/.ssh/config; echo '' >> {{myhomedir}}/.ssh/config; done; chmod 700 {{myhomedir}}/.ssh/config"
@@ -172,6 +181,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 ```
 
 **Risiken**:
+
 - SSH Config wird ohne Backup gelöscht
 - Bei Fehler ist Config leer (Datenverlust!)
 - Keine Validierung ob Source existiert
@@ -181,6 +191,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 ### Lösung
 
 **Nachher** (SICHER):
+
 ```yaml
 - name: Check if SSH config exists
   ansible.builtin.stat:
@@ -248,6 +259,7 @@ Alle Änderungen wurden mit `no_log: true` abgesichert um Secret-Leakage in Ansi
 ```
 
 **Verbesserungen**:
+
 - ✅ **Backup vor Änderung** mit Timestamp
 - ✅ Verwendung von `assemble` module statt shell
 - ✅ Richtige Permissions (0600 für config, nicht 700)
@@ -360,7 +372,7 @@ ansible-playbook plays/update.yml -i inventories -l $(hostname) --connection=loc
 
 ## ⚠️ Was beim nächsten Playbook Run passiert
 
-### Erste Ausführung nach den Fixes:
+### Erste Ausführung nach den Fixes
 
 1. **GitHub Repos** werden neu gecloned mit sicherer Methode
    - Bestehende Repos bleiben unverändert
@@ -376,7 +388,7 @@ ansible-playbook plays/update.yml -i inventories -l $(hostname) --connection=loc
    - Config wird sauber neu generiert aus Fragmenten
    - Permissions werden korrigiert auf 0600
 
-### Erwartete Änderungen:
+### Erwartete Änderungen
 
 ```
 TASK [Query GitHub API] ****************
@@ -396,9 +408,10 @@ ok: [hostname]
 
 ## 📝 Nächste Schritte
 
-### Empfohlen vor dem nächsten Run:
+### Empfohlen vor dem nächsten Run
 
 1. **Review der Änderungen**:
+
    ```bash
    cd ~/development/github/tuxpeople/mac-dev-playbook
    git diff tasks/post/github.yml
@@ -407,6 +420,7 @@ ok: [hostname]
    ```
 
 2. **Optional: Manual Backup**:
+
    ```bash
    # Falls du extra vorsichtig sein willst:
    cp ~/.ssh/config ~/.ssh/config.manual_backup
@@ -414,6 +428,7 @@ ok: [hostname]
    ```
 
 3. **Test Run**:
+
    ```bash
    # Dry-run first (check mode):
    ansible-playbook plays/update.yml -i inventories -l $(hostname) --connection=local --check -v
@@ -423,6 +438,7 @@ ok: [hostname]
    ```
 
 4. **Verify**:
+
    ```bash
    # Prüfe dass alles funktioniert:
    ~/bin/wobinich  # Sollte Standort zeigen

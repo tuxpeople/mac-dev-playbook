@@ -84,6 +84,7 @@ du -sh ~/.pyenv/versions/*
 ```
 
 Beispiel:
+
 - 5 alte Versionen × 150 MB = **~750 MB** frei
 
 ## Troubleshooting
@@ -91,6 +92,7 @@ Beispiel:
 ### "pyenv: command not found"
 
 Stelle sicher dass pyenv installiert ist:
+
 ```bash
 brew install pyenv pyenv-virtualenv
 ```
@@ -98,6 +100,7 @@ brew install pyenv pyenv-virtualenv
 ### "Version X is still in use"
 
 Prüfe ob ein Virtualenv diese Version nutzt:
+
 ```bash
 pyenv virtualenvs | grep "X.Y.Z"
 ```
@@ -105,6 +108,7 @@ pyenv virtualenvs | grep "X.Y.Z"
 ### Manuelle Bereinigung
 
 Falls Ansible-Task fehlschlägt, manuell:
+
 ```bash
 pyenv uninstall 3.10.12
 ```

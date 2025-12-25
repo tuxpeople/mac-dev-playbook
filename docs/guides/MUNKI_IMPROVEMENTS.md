@@ -24,12 +24,14 @@
 ## Problem 1: Munki Conditional könnte klarer sein
 
 **Aktuell** in `plays/update.yml`:
+
 ```yaml
 - role: munki_update
   when: munki_update  # Variable name = role name (verwirrend)
 ```
 
 **Empfohlene Verbesserung**:
+
 ```yaml
 - role: munki_update
   when: munki_update | default(false) | bool
@@ -37,6 +39,7 @@
 ```
 
 **Warum besser**:
+
 - Expliziter `| bool` cast (Best Practice)
 - Default auf `false` wenn nicht definiert (fail-safe)
 - Tag für selektive Ausführung
@@ -46,6 +49,7 @@
 ## Problem 2: Install vs Check Mode - Flexibilität fehlt
 
 **Aktuell**:
+
 - `munki_check_only: true` ist global in `macs/munki.yml`
 - Alle Geräte machen nur Check, keine Installation
 
@@ -55,6 +59,7 @@
 ### Lösung: Multi-Level Configuration
 
 #### Ebene 1: Global Default (macs/munki.yml)
+
 ```yaml
 # Global defaults für alle Macs
 munki_check_only: true  # Safe default - nur checken
@@ -69,6 +74,7 @@ munki_skip_if_present: []
 #### Ebene 2: Group Level (business_mac/main.yml, private_mac/main.yml)
 
 **business_mac/main.yml**:
+
 ```yaml
 # Business Macs haben Munki
 munki_update: true
@@ -82,6 +88,7 @@ munki_skip_if_present:
 ```
 
 **private_mac/main.yml**:
+
 ```yaml
 # Private Macs haben KEIN Munki
 munki_update: false
@@ -95,6 +102,7 @@ munki_check_only: true
 Für spezifische Geräte wo Munki Updates tatsächlich installiert werden sollen:
 
 **host_vars/ws547.yml** (Beispiel):
+
 ```yaml
 # Dieses Gerät soll Munki Updates INSTALLIEREN
 munki_check_only: false
@@ -103,6 +111,7 @@ munki_munkipkgsonly: false
 ```
 
 **host_vars/UMB-L3VWMGM77F.yml** (Beispiel - nur check):
+
 ```yaml
 # Dieses Gerät soll nur checken (default behavior)
 # munki_check_only: true  # Bereits durch group_vars gesetzt
@@ -173,6 +182,7 @@ munki_check_only: true
 Erstelle für jedes Gerät das Munki Updates installieren soll:
 
 **host_vars/ws547.yml**:
+
 ```yaml
 ---
 # ws547 - Business Laptop mit Auto-Update
@@ -210,6 +220,7 @@ ansible-playbook plays/update.yml -i inventories -l ws547 --connection=local --t
 ```
 
 **Erwartetes Ergebnis**:
+
 - Munki role wird ausgeführt
 - Check wird durchgeführt
 - Installation nur wenn `munki_check_only: false` in host_vars
@@ -222,6 +233,7 @@ ansible-playbook plays/update.yml -i inventories -l odin --connection=local --ta
 ```
 
 **Erwartetes Ergebnis**:
+
 - Munki role wird ÜBERSPRUNGEN (when condition false)
 - Output: "skipping: [odin]"
 
@@ -251,6 +263,7 @@ ansible-playbook plays/update.yml -i inventories -l ws547 --connection=local --t
 Wenn du möchtest dass `ws547` automatisch Munki Updates installiert:
 
 1. **Erstelle/Editiere** `inventories/host_vars/ws547.yml`:
+
    ```yaml
    ---
    # ws547 - Business Laptop mit Munki Auto-Update
@@ -264,6 +277,7 @@ Wenn du möchtest dass `ws547` automatisch Munki Updates installiert:
    ```
 
 2. **Run update**:
+
    ```bash
    ansible-playbook plays/update.yml -i inventories -l ws547 --connection=local
    ```
@@ -293,9 +307,10 @@ ansible-playbook plays/update.yml -i inventories -l ws547 --connection=local \
 
 ## Empfohlene Defaults für neue Geräte
 
-### Neues Business MacBook:
+### Neues Business MacBook
 
 1. **Add to** `inventories/macs.list`:
+
    ```ini
    [business_mac]
    ws547
@@ -304,6 +319,7 @@ ansible-playbook plays/update.yml -i inventories -l ws547 --connection=local \
    ```
 
 2. **Create** `inventories/host_vars/ws999.yml`:
+
    ```yaml
    ---
    # ws999 - Business Laptop
@@ -320,9 +336,10 @@ ansible-playbook plays/update.yml -i inventories -l ws547 --connection=local \
    - `munki_update: true`
    - `munki_check_only: true` (safe default)
 
-### Neues Private MacBook:
+### Neues Private MacBook
 
 1. **Add to** `inventories/macs.list`:
+
    ```ini
    [private_mac]
    odin
@@ -331,6 +348,7 @@ ansible-playbook plays/update.yml -i inventories -l ws547 --connection=local \
    ```
 
 2. **Create** `inventories/host_vars/loki.yml`:
+
    ```yaml
    ---
    # loki - Private MacBook
@@ -346,6 +364,7 @@ ansible-playbook plays/update.yml -i inventories -l ws547 --connection=local \
 ### Munki Check Output
 
 Wenn `munki_check_only: true`:
+
 ```
 TASK [munki_update : Check if updates are pending (via regex)] ****
 ok: [ws547] => {
@@ -362,6 +381,7 @@ skipping: [ws547] => (item=None)  # Skipped wegen check_only
 ```
 
 Wenn `munki_check_only: false`:
+
 ```
 TASK [munki_update : Install pending updates with Munki] ****
 changed: [ws547] => {
@@ -376,7 +396,7 @@ changed: [ws547] => {
 
 ## Zusammenfassung
 
-### Was ist jetzt besser:
+### Was ist jetzt besser
 
 1. ✅ **Klare 3-Level Hierarchie**:
    - Global (macs/) → Group (business_mac/) → Host (host_vars/)
@@ -396,7 +416,7 @@ changed: [ws547] => {
    - Private Macs niemals Munki
    - Explizite Opt-ins erforderlich
 
-### Nächste Schritte:
+### Nächste Schritte
 
 1. Implementiere die 4 Schritte oben
 2. Teste auf einem Business Mac

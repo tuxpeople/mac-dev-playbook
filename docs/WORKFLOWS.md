@@ -80,7 +80,7 @@ See: [docs/NEW_MAC_SETUP.md](NEW_MAC_SETUP.md)
 
 **When**: You made configuration changes and want to apply them
 
-### Examples of Configuration Changes:
+### Examples of Configuration Changes
 
 - Added a new Homebrew package to `brew.yml`
 - Changed Dock settings in `dock.yml`

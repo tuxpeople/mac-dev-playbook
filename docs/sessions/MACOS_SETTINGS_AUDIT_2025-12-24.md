@@ -15,6 +15,7 @@ Conducted comprehensive audit of all macOS settings in Ansible configuration to 
 ## Fixes Implemented
 
 ### 1. ✅ Dock Tile Size Updated
+
 **Issue**: Manual change not reflected in Ansible
 **Change**: Updated `defaults.yml` from 30 → 36 points
 **File**: `inventories/group_vars/macs/defaults.yml`
@@ -32,6 +33,7 @@ value: '36'
 ---
 
 ### 2. ✅ AppleShowAllExtensions Domain Corrected
+
 **Issue**: Setting configured with wrong domain
 **Change**: Changed domain from `com.apple.finder` → `NSGlobalDomain`
 **File**: `inventories/group_vars/macs/defaults.yml`
@@ -47,6 +49,7 @@ value: '36'
 ```
 
 **Verification**:
+
 ```bash
 $ defaults read NSGlobalDomain AppleShowAllExtensions
 1  # ✓ Works correctly
@@ -57,6 +60,7 @@ $ defaults read NSGlobalDomain AppleShowAllExtensions
 ---
 
 ### 3. ✅ Apple Watch Unlock Removed
+
 **Issue**: Domain no longer exists in macOS 26.2
 **Change**: Removed setting entirely
 **File**: `inventories/group_vars/macs/defaults.yml`
@@ -69,6 +73,7 @@ $ defaults read NSGlobalDomain AppleShowAllExtensions
 ```
 
 **Verification**:
+
 ```bash
 $ defaults read com.apple.applicationaccess
 Domain com.apple.applicationaccess does not exist
@@ -79,6 +84,7 @@ Domain com.apple.applicationaccess does not exist
 ---
 
 ### 4. ✅ mysides Added to business_mac
+
 **Issue**: Tool only available on private_mac
 **Change**: Added `mysides` to business_mac Brewfile
 **File**: `files/brewfile/business_mac/Brewfile`
@@ -95,6 +101,7 @@ cask "mysides"
 ---
 
 ### 5. ✅ SSH Remote Login - Private Mac Only
+
 **Issue**: Setting tries to enable SSH on business Macs (blocked by policy)
 **Change**: Made SSH activation conditional on `private_mac` group
 **File**: `tasks/post/various-settings.yml`
@@ -165,6 +172,7 @@ Tested all 17 settings from `inventories/group_vars/macs/defaults.yml`:
 #### Critical Findings
 
 **Safari Settings (24 commands) - Domain Doesn't Exist**:
+
 ```bash
 $ defaults read com.apple.Safari
 Domain com.apple.Safari does not exist
@@ -173,6 +181,7 @@ Domain com.apple.Safari does not exist
 Safari has likely moved to a different preferences system in recent macOS versions. All 24 Safari-related settings in .macos will fail silently.
 
 **Mail Settings (9 commands) - Domain Doesn't Exist**:
+
 ```bash
 $ defaults read com.apple.mail
 Domain com.apple.mail does not exist
@@ -185,11 +194,13 @@ Mail preferences have also changed. All 9 Mail-related settings will not work.
 ## Manual Changes Discovered
 
 ### 1. Dock Tile Size
+
 **Ansible Expected**: 30
 **Actual Value**: 36
 **Action**: Updated Ansible to match manual preference
 
 ### 2. SSH Remote Login
+
 **Ansible Expected**: Enabled
 **Actual Value**: Disabled (on business_mac)
 **Action**: Made setting conditional on private_mac group
@@ -213,6 +224,7 @@ Mail preferences have also changed. All 9 Mail-related settings will not work.
 ### Immediate (Next Session)
 
 1. **Install mysides on business_mac**:
+
    ```bash
    brew install mysides
    ```
@@ -229,10 +241,12 @@ Mail preferences have also changed. All 9 Mail-related settings will not work.
 ### Medium Priority
 
 4. **Test .macos script on test Mac**:
+
    ```bash
    cd ~/development/github/tuxpeople/dotfiles
    ./.macos 2>&1 | tee /tmp/macos-script-output.txt
    ```
+
    Review output for errors and warnings.
 
 5. **Convert stable settings from .macos to Ansible**:
@@ -286,12 +300,14 @@ Mail preferences have also changed. All 9 Mail-related settings will not work.
 ### check-macos-settings.sh
 
 Tests all Ansible-managed settings:
+
 - Checks if domains/keys exist
 - Compares current vs. expected values
 - Validates required tools are installed
 - Exports full settings to file
 
 **Usage**:
+
 ```bash
 ./scripts/check-macos-settings.sh
 ```
@@ -299,12 +315,14 @@ Tests all Ansible-managed settings:
 ### analyze-macos-script.sh
 
 Analyzes .macos dotfile script:
+
 - Extracts all `defaults write` commands
 - Groups by domain
 - Tests if domains still exist
 - Identifies commented-out settings
 
 **Usage**:
+
 ```bash
 ./scripts/analyze-macos-script.sh
 ```

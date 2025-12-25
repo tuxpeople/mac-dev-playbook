@@ -10,6 +10,7 @@
 ### Aktuell im Playbook
 
 **Was passiert jetzt**:
+
 ```yaml
 # roles/ansible-mac-update/tasks/ssh.yaml
 - name: Update SSH Keys
@@ -20,6 +21,7 @@
 ```
 
 **Problem**:
+
 - SSH Keys werden aus iCloud kopiert
 - Keys liegen dann auf dem Filesystem
 - Duplikation (iCloud + lokales Filesystem + 1Password)
@@ -28,6 +30,7 @@
 ### Mit 1Password SSH Agent
 
 **Was möglich ist**:
+
 - SSH Keys nur in 1Password speichern
 - 1Password SSH Agent managed die Keys
 - Keine Keys auf dem Filesystem nötig
@@ -40,12 +43,14 @@
 ### Szenario 1: Neuer Mac (Initial Setup)
 
 **Ohne 1Password SSH Agent**:
+
 1. ❌ Manuell SSH Keys aus 1Password exportieren
 2. ❌ Keys nach `~/.ssh/` kopieren
 3. ❌ Permissions setzen
 4. ❌ In SSH Agent laden
 
 **Mit 1Password SSH Agent**:
+
 1. ✅ 1Password installieren & einloggen
 2. ✅ SSH Agent in 1Password aktivieren
 3. ✅ SSH Config updaten um 1Password zu nutzen
@@ -54,10 +59,12 @@
 ### Szenario 2: Daily Use / Updates
 
 **Ohne 1Password SSH Agent**:
+
 - ❌ Keys müssen synchronisiert bleiben (iCloud ↔ lokales Filesystem)
 - ❌ Update Playbook kopiert Keys bei jedem Run
 
 **Mit 1Password SSH Agent**:
+
 - ✅ Keys nur in 1Password
 - ✅ Kein Copy nötig
 - ✅ Update Playbook kann SSH Key Management überspringen
@@ -86,15 +93,18 @@ cat ~/.ssh/config | grep -A 5 "IdentityAgent"
 Du hast vermutlich:
 
 **SSH Keys in 1Password** (vermutlich):
+
 - GitHub Key
 - Server Keys
 - Deploy Keys
 
 **SSH Keys aktuell im Filesystem** (`~/.ssh/`):
+
 - Möglicherweise die gleichen?
 - Oder alte/redundante Keys?
 
 **SSH Keys in iCloud** (`~/iCloudDrive/Allgemein/dotfiles/ssh_keys`):
+
 - Backup?
 - Sync zwischen Macs?
 
@@ -107,16 +117,19 @@ Du hast vermutlich:
 **Konzept**: Alle SSH Keys nur in 1Password, nichts auf Filesystem
 
 **Vorteile**:
+
 - ✅ Maximale Security (Biometric Auth)
 - ✅ Keine Keys auf Disk
 - ✅ Automatisches Sync zwischen Macs via 1Password
 - ✅ Einfachste Lösung
 
 **Nachteile**:
+
 - ⚠️ Benötigt 1Password CLI für Ansible Automation
 - ⚠️ Initial Setup nötig auf jedem Mac
 
 **Ansible Changes**:
+
 ```yaml
 # SSH Key Copy Task wird ÜBERSPRUNGEN
 - name: Update SSH Keys
@@ -127,6 +140,7 @@ Du hast vermutlich:
 ```
 
 **SSH Config**:
+
 ```ssh
 # ~/.ssh/config
 Host *
@@ -141,11 +155,13 @@ Host *
 **Konzept**: 1Password für persönliche Keys, Filesystem für spezielle Keys
 
 **Use Case**:
+
 - Persönliche GitHub/GitLab Keys → 1Password
 - Server Deploy Keys → Filesystem (falls rotation nötig)
 - Legacy Keys → Filesystem
 
 **Ansible Changes**:
+
 ```yaml
 # Conditional SSH Key Copy
 - name: Check if we should use filesystem SSH keys
@@ -162,6 +178,7 @@ Host *
 ```
 
 **SSH Config**:
+
 ```ssh
 # ~/.ssh/config
 Host *
@@ -178,16 +195,19 @@ Host legacy-server.com
 ### Strategie C: **iCloud Backup, 1Password Primary** (BESTE BALANCE)
 
 **Konzept**:
+
 - 1Password SSH Agent für daily use
 - iCloud hat Backup der Keys (für Notfall)
 - Ansible kopiert Keys nur bei Initial Setup
 
 **Vorteile**:
+
 - ✅ 1Password Convenience im daily use
 - ✅ iCloud Backup falls 1Password Problem
 - ✅ Initial Setup automatisiert
 
 **Ansible Changes**:
+
 ```yaml
 # In group_vars:
 use_1password_ssh_agent: true  # Default
@@ -212,6 +232,7 @@ initial_setup_mode: false      # Wird zu true bei fresh setup
 ### 1. SSH Config Setup
 
 **Erstelle**: `files/ssh_config_1password`
+
 ```ssh
 # 1Password SSH Agent Configuration
 Host *
@@ -448,7 +469,7 @@ ssh-add -l 2>/dev/null || echo "Keine Keys im SSH Agent"
 
 Basierend auf: "Ich hätte 1Password inkl. SSH Agent"
 
-### Sofort:
+### Sofort
 
 1. **Prüfe** welche Keys du wo hast (Script oben)
 
@@ -462,9 +483,10 @@ Basierend auf: "Ich hätte 1Password inkl. SSH Agent"
    - Importiere sie zuerst in 1Password
    - Dann Strategie C implementieren
 
-### Mittelfristig:
+### Mittelfristig
 
 Nach erfolgreicher Umstellung:
+
 - Filesystem Keys können gelöscht werden (optional)
 - iCloud bleibt als Cold Backup
 - Daily Use: 100% 1Password
@@ -488,6 +510,7 @@ Nach erfolgreicher Umstellung:
 ## 📝 Nächster Schritt für dich
 
 **Bitte teste erst**:
+
 ```bash
 # Check ob 1Password SSH Agent läuft:
 echo $SSH_AUTH_SOCK

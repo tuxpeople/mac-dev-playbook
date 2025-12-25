@@ -17,6 +17,7 @@
 
 `init.sh` lädt während des Bootstrap-Prozesses Files aus iCloud Drive via `brctl download`.
 Dies geschieht basierend auf zwei Listen:
+
 - `filelist.txt`: 60 Dateien (SSH Keys, Scripts, Configs) - **VERALTET**
 - `folderlist.txt`: 1 Ordner (Open Umb.app)
 
@@ -25,6 +26,7 @@ Dies geschieht basierend auf zwei Listen:
 ## 📁 Datei-Kategorien
 
 ### 1. **Ansible Vault Credentials** (CRITICAL für Bootstrap)
+
 ```
 Library/Mobile Documents/.../bin/add_vault_password
 Library/Mobile Documents/.../bin/vault_password_file
@@ -33,11 +35,13 @@ Library/Mobile Documents/.../bin/vault_password_file
 **Zweck**: Ansible Vault Password für `inventories/group_vars/macs/secrets.yml`
 **Criticality**: ⚠️ **HIGH** - Ohne diese kann Ansible Playbook nicht secrets entschlüsseln
 **Alternative**:
+
 - Interaktiver Prompt: `ansible-playbook --ask-vault-pass`
 - macOS Keychain: `security find-generic-password`
 - 1Password: `op read "op://Private/Ansible Vault/password"`
 
 ### 2. **SSH Keys** (HIGH für Git/Deployment)
+
 ```
 Library/Mobile Documents/.../ssh_keys/id_rsa
 Library/Mobile Documents/.../ssh_keys/id_rsa.pub
@@ -53,15 +57,19 @@ Library/Mobile Documents/.../ssh_keys/id_rsa_t
 
 **Anzahl**: 10 Key-Pairs (20 Files)
 **Zweck**:
+
 - GitHub/GitLab Access (für private Repos)
 - SSH zu verschiedenen Systemen (Azure, Finstar, Monitoring, etc.)
 
 **Criticality**: 🟠 **MEDIUM-HIGH**
+
 - Bootstrap kann ohne laufen (Public Repos klonen funktioniert)
 - Aber: Private Repos, Deployment, Server-Access benötigen Keys
 
 **Alternativen**:
+
 1. **Ansible Vault**: SSH Keys in `secrets.yml` encrypted
+
    ```yaml
    ssh_keys:
      - name: id_rsa
@@ -72,6 +80,7 @@ Library/Mobile Documents/.../ssh_keys/id_rsa_t
    ```
 
 2. **1Password SSH Agent**:
+
    ```bash
    # ~/.ssh/config
    Host *
@@ -81,6 +90,7 @@ Library/Mobile Documents/.../ssh_keys/id_rsa_t
 3. **Separate Setup-Phase**: Keys manuell nach Bootstrap installieren
 
 ### 3. **SSH Config Files** (MEDIUM für Connectivity)
+
 ```
 Library/Mobile Documents/.../ssh_config/0_general.conf
 Library/Mobile Documents/.../ssh_config/10_privat.conf
@@ -98,15 +108,18 @@ Library/Mobile Documents/.../ssh_config/35_cust_certas.conf
 **Zweck**: SSH Host-Definitionen, Jump-Hosts, Aliases
 
 **Criticality**: 🟡 **MEDIUM**
+
 - Nicht Bootstrap-kritisch
 - Aber: Praktisch für sofortigen SSH-Access nach Setup
 
 **Alternatives**:
+
 - **Dotfiles Repo**: `.ssh/config` oder `.ssh/config.d/*.conf`
 - **Ansible Task**: Deploy von Templates
 - **Post-Bootstrap**: Manuell nach Bootstrap einrichten
 
 ### 4. **Utility Scripts** (LOW - Nice to Have)
+
 ```
 /Users/tdeutsch/.../bin/add_vault_password
 /Users/tdeutsch/.../bin/brewfile-commenter.sh
@@ -138,16 +151,19 @@ Library/Mobile Documents/.../ssh_config/35_cust_certas.conf
 **Criticality**: 🟢 **LOW** (außer `macupdate`!)
 
 **Besonderheit `macupdate`**:
+
 - Ist auch im Git-Repo: `scripts/macupdate`
 - Wird von iCloud UND Git bereitgestellt
 - Symlink-Setup: `~/iCloudDrive/Allgemein/bin/macupdate` → Repo
 
 **Alternative**:
+
 - Git-Repo enthält bereits `scripts/macupdate`
 - Symlink kann von Ansible erstellt werden
 - Andere Scripts: Post-Bootstrap oder eigenes Scripts-Repo
 
 ### 5. **Multimedia/Backgrounds** (LOW - Cosmetic)
+
 ```
 Library/Mobile Documents/.../Multimedia/Backgounds/Desktop/luca-micheli-422053-unsplash.jpg
 Library/Mobile Documents/.../Multimedia/Backgounds/Teams/Bildschirmfoto_2021-01-21 um 09.05.47.png
@@ -166,6 +182,7 @@ Library/Mobile Documents/.../Multimedia/Backgounds/Teams/f8osqei4hdg51.jpg
 **Alternative**: Post-Bootstrap manuell oder via Ansible task
 
 ### 6. **Kubectl Config** (MEDIUM für K8s Work)
+
 ```
 Library/Mobile Documents/.../kubectl/homelab.yaml
 ```
@@ -174,12 +191,15 @@ Library/Mobile Documents/.../kubectl/homelab.yaml
 **Zweck**: Kubernetes cluster config (homelab)
 
 **Criticality**: 🟡 **MEDIUM**
+
 - Nicht Bootstrap-kritisch
 - Aber: Wichtig für K8s-Arbeit
 
 **Alternative**:
+
 - Ansible Task generiert aus iCloud (bereits implementiert!)
 - Siehe: `roles/ansible-mac-update/tasks/kubectl.yaml:87`
+
   ```yaml
   - name: Regenerate kubectl config (atomic operation)
     ansible.builtin.shell: |
@@ -188,6 +208,7 @@ Library/Mobile Documents/.../kubectl/homelab.yaml
   ```
 
 ### 7. **Application** (LOW - Business Specific)
+
 ```
 Library/Mobile Documents/.../Allgemein/Open Umb.app
 ```
@@ -196,6 +217,7 @@ Library/Mobile Documents/.../Allgemein/Open Umb.app
 **Zweck**: UMB-spezifische App (Business Mac only)
 
 **Criticality**: 🟢 **LOW**
+
 - Nur für Business Mac relevant
 - Copy Task existiert: `tasks/post/business_mac-settings.yml:129`
 - Bereits mit iCloud-Check abgesichert (M7 fix!)
@@ -223,11 +245,13 @@ Library/Mobile Documents/.../Allgemein/Open Umb.app
 ### Problem 1: Bootstrap Chicken-Egg
 
 **Aktuell**:
+
 ```
 init.sh benötigt iCloud → lädt vault_password_file → entschlüsselt secrets.yml
 ```
 
 **Problem**: Was wenn iCloud nicht verfügbar?
+
 - Fresh Mac: iCloud noch nicht eingeloggt/synced
 - Netzwerk-Probleme
 - iCloud Drive deaktiviert
@@ -247,6 +271,7 @@ done
 ```
 
 **Problem**:
+
 - `brctl download` ist async
 - Files können Minuten brauchen zum Sync
 - Bei 64 Files = potentiell lange Wartezeit
@@ -259,6 +284,7 @@ brctl download ${FILE}
 ```
 
 **Problem**:
+
 - Kein Exit-Code Check
 - Keine Timeout-Handling
 - Kein Fallback wenn File nicht existiert
@@ -266,6 +292,7 @@ brctl download ${FILE}
 ### Problem 4: Sensitive Data Exposure
 
 **SSH Private Keys in iCloud**:
+
 - iCloud ist Cloud Storage (End-to-End encrypted, aber dennoch Cloud)
 - Best Practice: Private Keys nur lokal oder in dediziertem Secret Manager
 - 10 verschiedene Keys = 10 verschiedene Access-Points
@@ -277,10 +304,12 @@ brctl download ${FILE}
 ### Option 1: Status Quo (Minimal Changes)
 
 **Keep**:
+
 - iCloud-Dependency für init.sh
 - Aber: Besseres Error-Handling & Timeout
 
 **Improvements**:
+
 ```bash
 # init.sh: Robusteres brctl download
 download_from_icloud() {
@@ -319,6 +348,7 @@ fi
 **Migrate**: Ansible Vault Password zu 1Password
 
 **Setup**:
+
 ```bash
 # 1. Vault Password in 1Password speichern
 op item create \
@@ -355,11 +385,13 @@ rm -f /tmp/.ansible_vault_pass
 ```
 
 **Pro**:
+
 - Kein iCloud für kritischen Credential
 - 1Password ist bereits installiert (via Homebrew in playbook)
 - Fallback: Interaktiver Prompt
 
 **Contra**:
+
 - User muss 1Password einrichten VOR Bootstrap
 - Oder: Passwort manuell eingeben
 
@@ -428,12 +460,14 @@ Host github.com
 ```
 
 **Pro**:
+
 - Keys bleiben in 1Password (sicher)
 - Automatische Key-Bereitstellung
 - Multi-Device Sync
 - No keys on disk!
 
 **Contra**:
+
 - Benötigt 1Password Desktop + Browser Extension
 - Setup vor Bootstrap
 
@@ -442,16 +476,19 @@ Host github.com
 ### Option 4: Hybrid Approach (Pragmatisch)
 
 **Kritisch (für Bootstrap)**: Ansible Vault oder 1Password
+
 - `vault_password_file` → 1Password oder interaktiver Prompt
 - `id_rsa_github` / `id_rsa_gitlab_umb` → Ansible Vault (nur diese 2!)
 
 **Nicht-Kritisch (Post-Bootstrap)**: iCloud bleibt
+
 - Andere SSH Keys → iCloud (werden nach Bootstrap geladen)
 - Utility Scripts → iCloud
 - Backgrounds → iCloud
 - SSH Configs → iCloud
 
 **init.sh Änderung**:
+
 ```bash
 # Nur kritische Files von iCloud laden
 CRITICAL_FILES=(
@@ -469,11 +506,13 @@ done
 ```
 
 **Pro**:
+
 - Bootstrap funktioniert ohne komplettes iCloud Sync
 - Kritische Credentials anders gemanaged
 - Flexibilität für nice-to-have Files
 
 **Contra**:
+
 - Komplexer
 - Zwei Secret-Management Systeme
 
@@ -523,6 +562,7 @@ ansible-playbook ... --vault-password-file="${VAULT_PASS_FILE}"
 ```
 
 **Pro**:
+
 - Kein Breaking Change (iCloud funktioniert weiter)
 - Aber: 1Password als primäre Alternative
 - Fallback: Interaktiv
@@ -534,6 +574,7 @@ ansible-playbook ... --vault-password-file="${VAULT_PASS_FILE}"
 **Evaluieren**: 1Password SSH Agent vs. Ansible Vault
 
 **Test 1Password SSH Agent**:
+
 ```bash
 # 1. Keys zu 1Password hinzufügen (via UI)
 # 2. SSH Agent aktivieren
@@ -542,10 +583,12 @@ ssh -T git@github.com
 ```
 
 Wenn erfolgreich:
+
 - **Pro**: Keine Keys auf Disk, automatisches Key-Management
 - **Contra**: 1Password-Dependency
 
 Wenn zu kompliziert:
+
 - **Fallback**: iCloud bleibt für SSH Keys (Status Quo)
 
 ---
@@ -553,10 +596,12 @@ Wenn zu kompliziert:
 ### Phase 3: Optional Cleanups
 
 **SSH Configs**:
+
 - Verschieben ins Dotfiles-Repo: `.ssh/config.d/*.conf`
 - Ansible-Task zum Symlinken
 
 **Utility Scripts**:
+
 - Eigenes Git-Repo? `github.com/tuxpeople/scripts`
 - Oder: Bleiben in iCloud (nicht kritisch)
 
@@ -564,9 +609,10 @@ Wenn zu kompliziert:
 
 ## 🎯 Next Steps
 
-### Sofort (Phase 1):
+### Sofort (Phase 1)
 
 1. **Ansible Vault Password in 1Password speichern**:
+
    ```bash
    # Aktuelles Password auslesen
    cat ~/Library/Mobile\ Documents/.../vault_password_file
@@ -585,7 +631,7 @@ Wenn zu kompliziert:
 
 ---
 
-### Optional (Phase 2+):
+### Optional (Phase 2+)
 
 4. **SSH Keys evaluieren**: 1Password SSH Agent testen
 5. **SSH Configs**: Ins Dotfiles-Repo migrieren
@@ -595,20 +641,23 @@ Wenn zu kompliziert:
 
 ## 📊 Impact Assessment
 
-### Wenn iCloud-Dependency reduziert wird:
+### Wenn iCloud-Dependency reduziert wird
 
 **Vorteile**:
+
 - ✅ Bootstrap funktioniert ohne vollständiges iCloud Sync
 - ✅ Schnellerer Bootstrap (keine 64 Files Download-Wait)
 - ✅ Bessere Security (Secrets in dediziertem Manager)
 - ✅ Portabilität (init.sh funktioniert auf Macs ohne iCloud)
 
 **Nachteile**:
+
 - ⚠️ Mehr Setup vor Bootstrap (1Password einrichten)
 - ⚠️ Komplexere Dokumentation
 - ⚠️ Migration-Aufwand für existierende Secrets
 
 **Kosten/Nutzen**:
+
 - **Quick Win** (Phase 1): 2-3 Stunden → Große Verbesserung
 - **Full Migration** (Phase 2+): 1-2 Tage → Moderate Verbesserung
 
@@ -616,9 +665,9 @@ Wenn zu kompliziert:
 
 ## 📚 Referenzen
 
-- 1Password CLI: https://developer.1password.com/docs/cli
-- 1Password SSH Agent: https://developer.1password.com/docs/ssh
-- Ansible Vault: https://docs.ansible.com/ansible/latest/vault_guide/vault.html
+- 1Password CLI: <https://developer.1password.com/docs/cli>
+- 1Password SSH Agent: <https://developer.1password.com/docs/ssh>
+- Ansible Vault: <https://docs.ansible.com/ansible/latest/vault_guide/vault.html>
 - brctl (iCloud): `man brctl` (macOS built-in)
 
 ---
@@ -628,6 +677,7 @@ Wenn zu kompliziert:
 ### Problem: Veraltete filelists
 
 Die `filelist.txt` und `folderlist.txt` werden manuell gepflegt und sind veraltet:
+
 - SSH Keys für alte Projekte/Kunden
 - Obsolete Scripts
 - Alte Host-Definitionen
@@ -731,6 +781,7 @@ done
 ```
 
 **Pro**:
+
 - Deklarativ statt imperativ
 - Idempotent
 - Fehler-Handling via Ansible
@@ -745,6 +796,7 @@ done
 ### 1. Audit aktueller SSH Keys
 
 **Aktion**:
+
 ```bash
 # Welche Keys werden wirklich genutzt?
 grep -r "IdentityFile" ~/.ssh/config ~/.ssh/config.d/
@@ -761,6 +813,7 @@ ls -la ~/Library/Mobile\ Documents/.../dotfiles/ssh_keys/
 ### 2. Minimale Critical Filelist
 
 **Neu** `dotfiles/filelists/critical-bootstrap.txt`:
+
 ```
 # Minimum files für erfolgreichen Bootstrap
 Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/vault_password_file
@@ -798,16 +851,18 @@ ansible-playbook plays/full.yml \
 
 ---
 
-## ✅ Aktuelle Situation: SSH Keys bereits in 1Password!
+## ✅ Aktuelle Situation: SSH Keys bereits in 1Password
 
 **Status**: User hat bereits alle SSH Keys in 1Password mit SSH Agent aktiviert
 
 **Impact**:
+
 - ✅ **Git Clone funktioniert**: 1Password SSH Agent stellt Keys automatisch bereit
 - ✅ **Kein iCloud für SSH Keys nötig**: init.sh muss KEINE Keys laden
 - ✅ **Secure by default**: Keys bleiben in 1Password, nie auf Disk
 
 **Was funktioniert bereits**:
+
 ```bash
 # Git clone mit SSH (1Password stellt Key automatisch bereit)
 git clone git@github.com:tuxpeople/mac-dev-playbook.git
@@ -821,6 +876,7 @@ git clone git@github.com:tuxpeople/mac-dev-playbook.git
 ```
 
 **Bootstrap-Reihenfolge (AKTUELL - Vereinfacht!)**: ✅
+
 ```
 1. Fresh Mac Setup
 2. Run init.sh
@@ -836,12 +892,14 @@ git clone git@github.com:tuxpeople/mac-dev-playbook.git
 ```
 
 **Automatischer Remote-Switch**:
+
 - Task: `tasks/post/dotfiles-remote-ssh.yml`
 - Prüft: Ist remote noch HTTPS?
 - Wechselt: Zu `git@github.com:tuxpeople/dotfiles.git`
 - Result: git push funktioniert sofort mit 1Password SSH Agent
 
 **Alte Reihenfolge (wenn SSH verwendet würde)**:
+
 ```
 1. Fresh Mac Setup
 2. Install 1Password (manuell)
@@ -854,6 +912,7 @@ git clone git@github.com:tuxpeople/mac-dev-playbook.git
 ```
 
 **Verbleibende iCloud-Dependency**:
+
 - ✅ ~~SSH Keys für Bootstrap~~ → **GELÖST via HTTPS Clone (public repo)**
 - ✅ ~~SSH Keys für Runtime~~ → **GELÖST via 1Password SSH Agent**
 - ⚠️ Vault Password → **Noch iCloud, aber Migration zu 1Password möglich**

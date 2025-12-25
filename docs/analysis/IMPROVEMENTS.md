@@ -16,10 +16,12 @@ Der Code Review hat **72 Probleme** in 4 Schweregraden identifiziert:
 - 🔵 **2 LOW**: Kleinigkeiten, Code-Hygiene
 
 **Update 2025-10-23**: Alle 8 CRITICAL Issues behoben in Commits:
+
 - `2f5b5d3`: Security fixes (C6, C7, C8)
 - `a80d2d8`: Critical bugs and security (C1, C3, C5, C10, C11)
 
 **Update 2025-10-24**: Alle 5 HIGH Issues behoben in Commits:
+
 - `f88ac7c`: env_path validation, package managers, shell safety (H1, H3, H5, H9, H10)
 - `ca50fb4`: sudo script security, kubectl backup (H14, H16)
 
@@ -38,10 +40,12 @@ Der Code Review hat **72 Probleme** in 4 Schweregraden identifiziert:
 **Status**: ✅ Fixed in commit `a80d2d8`
 
 **Betroffene Dateien**:
+
 - `plays/full.yml` (Zeile 26)
 - `plays/update.yml` (Zeile 28)
 
 **Problem**:
+
 ```yaml
 # AKTUELL (FALSCH):
 - name: Add temporary passwordless sudo permissions
@@ -54,11 +58,13 @@ Der Code Review hat **72 Probleme** in 4 Schweregraden identifiziert:
 ```
 
 **Warum kritisch**:
+
 - `mode: 0644` = jeder User kann die Datei lesen
 - Sudoers-Dateien sollten `0440` sein (root:wheel read-only)
 - Sicherheitsrisiko: Normale User sehen sudo-Konfiguration
 
 **Fix**:
+
 ```yaml
 # KORREKTUR:
 mode: 0440  # ✅ Nur root und wheel group können lesen
@@ -77,6 +83,7 @@ mode: 0440  # ✅ Nur root und wheel group können lesen
 **Betroffene Datei**: `tasks/post/_launchagents.yml` (Zeile 10)
 
 **Problem**:
+
 ```yaml
 # AKTUELL (FALSCH):
 - name: "Unload {{ agent }}"
@@ -86,11 +93,13 @@ mode: 0440  # ✅ Nur root und wheel group können lesen
 ```
 
 **Warum kritisch**:
+
 - Task wird ausgeführt wenn Agent **NICHT** existiert
 - `launchctl unload` schlägt fehl auf nicht-existente Datei
 - Dieser Bug macht den gesamten Task nutzlos
 
 **Fix**:
+
 ```yaml
 # KORREKTUR:
 - name: Check if {{ agent }} exists
@@ -119,6 +128,7 @@ mode: 0440  # ✅ Nur root und wheel group können lesen
 **Betroffene Datei**: `tasks/post/github.yml` (Zeile 22-23)
 
 **Problem**:
+
 ```yaml
 # AKTUELL (GEFÄHRLICH):
 - name: Clone my GitHub repositories
@@ -129,6 +139,7 @@ mode: 0440  # ✅ Nur root und wheel group können lesen
 ```
 
 **Warum kritisch**:
+
 - Token wird in Git remote URLs embedded
 - Token erscheint in Ansible logs (sichtbar im Output)
 - Token ist im `git remote -v` Output sichtbar
@@ -136,6 +147,7 @@ mode: 0440  # ✅ Nur root und wheel group können lesen
 - **Massive Sicherheitslücke**
 
 **Fix**:
+
 ```yaml
 # KORREKTUR:
 - name: Clone my GitHub repositories
@@ -167,6 +179,7 @@ mode: 0440  # ✅ Nur root und wheel group können lesen
 **Betroffene Datei**: `tasks/post/whereami.yml` (Zeile 21-25)
 
 **Problem**:
+
 ```yaml
 # AKTUELL (UNSICHER):
 - name: Configure whereami with key
@@ -178,11 +191,13 @@ mode: 0440  # ✅ Nur root und wheel group können lesen
 ```
 
 **Warum kritisch**:
+
 - API Key steht im Klartext im Dateisystem
 - `mode: 0750` macht Datei für Group lesbar
 - Keine `no_log` - Key erscheint in Ansible Logs
 
 **Fix**:
+
 ```yaml
 # KORREKTUR:
 - name: Configure whereami wrapper with key
@@ -206,6 +221,7 @@ fi
 ```
 
 **Alternative (besser)**: Environment Variable verwenden
+
 ```bash
 export OPENCAGE_API_KEY="xxx"  # In .bashrc/.zshrc
 ```
@@ -222,6 +238,7 @@ export OPENCAGE_API_KEY="xxx"  # In .bashrc/.zshrc
 **Betroffene Datei**: `roles/ansible-mac-update/tasks/ssh.yaml` (Zeile 18)
 
 **Problem**:
+
 ```yaml
 # AKTUELL (GEFÄHRLICH):
 - name: Regenerating ssh config
@@ -229,6 +246,7 @@ export OPENCAGE_API_KEY="xxx"  # In .bashrc/.zshrc
 ```
 
 **Warum kritisch**:
+
 - Löscht SSH config sofort ohne Backup
 - Complex shell command sollte Ansible Tasks sein
 - Wenn Loop fehlschlägt, ist config leer
@@ -236,6 +254,7 @@ export OPENCAGE_API_KEY="xxx"  # In .bashrc/.zshrc
 - `chmod 700` ist falsch für file (sollte 600 sein)
 
 **Fix**:
+
 ```yaml
 # KORREKTUR:
 - name: Backup current SSH config
@@ -273,17 +292,20 @@ export OPENCAGE_API_KEY="xxx"  # In .bashrc/.zshrc
 **Betroffene Datei**: `tasks/pre/install-rosetta2.yml` (Zeile 11)
 
 **Problem**:
+
 ```yaml
 # AKTUELL (BUG):
 when: rosetta_check.rc != '0'  # ❌ String '0' statt Integer 0
 ```
 
 **Warum kritisch**:
+
 - `.rc` ist Integer, `'0'` ist String
 - Type mismatch - Comparison immer true
 - Rosetta2 Installation wird versucht auch wenn bereits installiert
 
 **Fix**:
+
 ```yaml
 # KORREKTUR:
 when: rosetta_check.rc != 0  # ✅ Integer comparison
@@ -299,10 +321,12 @@ when: rosetta_check.rc != 0  # ✅ Integer comparison
 **Status**: ✅ Fixed in commit `a80d2d8`
 
 **Betroffene Dateien**:
+
 - `plays/full.yml`
 - `plays/update.yml`
 
 **Problem**:
+
 ```yaml
 # AKTUELL (UNSICHER):
 pre_tasks:
@@ -323,12 +347,14 @@ tasks:
 ```
 
 **Warum kritisch**:
+
 - Wenn **irgendein** Task fehlschlägt, wird Cleanup NICHT ausgeführt
 - User hat **permanent** passwordless sudo
 - Massive Sicherheitslücke
 - Mehrfache Playbook-Runs können duplicate entries erstellen
 
 **Fix**:
+
 ```yaml
 # KORREKTUR:
 - hosts: all
@@ -385,16 +411,19 @@ tasks:
 **Status**: ✅ Fixed in commit `f88ac7c`
 
 **Betroffene Dateien**:
+
 - `plays/full.yml` (Zeile 4)
 - `plays/update.yml` (Zeile 14)
 
 **Problem**:
+
 ```yaml
 environment:
   PATH: "{{env_path}}"  # Was wenn env_path undefined ist?
 ```
 
 **Fix**:
+
 ```yaml
 pre_tasks:
   - import_tasks: ../tasks/pre/additional-facts.yml  # Setzt env_path
@@ -418,6 +447,7 @@ pre_tasks:
 **Problem**: Composer, npm, pip, gem werden verwendet ohne zu prüfen ob installiert.
 
 **Fix**:
+
 ```yaml
 - name: Check if Composer is installed
   ansible.builtin.command:
@@ -448,6 +478,7 @@ pre_tasks:
 **Betroffene Datei**: `tasks/post/user-config.yml` (Zeile 7-11, 20-24)
 
 **Problem**:
+
 ```yaml
 # AKTUELL (RISKANT):
 - name: change user shell to homebrew-bash
@@ -459,10 +490,12 @@ pre_tasks:
 ```
 
 **Risiko**:
+
 - Wenn homebrew-bash nicht existiert → User kann sich nicht einloggen
 - Root shell ändern kann System unbrauchbar machen
 
 **Fix**:
+
 ```yaml
 - name: Check if homebrew bash exists and works
   block:
@@ -510,6 +543,7 @@ pre_tasks:
 **Betroffene Datei**: `tasks/post/various-settings.yml` (Zeile 126-128)
 
 **Problem**:
+
 ```yaml
 # AKTUELL (GEFÄHRLICH):
 - name: Fix Homedir Permissions
@@ -518,12 +552,14 @@ pre_tasks:
 ```
 
 **Warum gefährlich**:
+
 - Script liegt in user-modifiable Location (iCloudDrive)
 - Wird mit sudo ausgeführt
 - User könnte Script manipulieren
 - **Privilege Escalation Vektor**
 
 **Fix**:
+
 ```yaml
 - name: Verify and execute fix-perms script safely
   block:
@@ -560,6 +596,7 @@ pre_tasks:
 ```
 
 **Bessere Alternative**: Script ins Repository nehmen, nicht aus iCloud
+
 ```yaml
 # Kopiere verified script aus Repo
 - name: Deploy fix-perms script from repository
@@ -588,6 +625,7 @@ pre_tasks:
 **Betroffene Datei**: `roles/ansible-mac-update/tasks/kubectl.yaml` (Zeile 65-70)
 
 **Problem**:
+
 ```yaml
 # AKTUELL (DATENVERLUST):
 - name: Ensure kubeconfig exists
@@ -599,6 +637,7 @@ pre_tasks:
 ```
 
 **Fix**:
+
 ```yaml
 - name: Backup existing kubeconfig
   ansible.builtin.copy:
@@ -629,11 +668,13 @@ pre_tasks:
 **Betroffene Dateien**: Fast alle Task-Dateien
 
 **Problem**: Viele `shell` und `command` Tasks ohne `changed_when` führen zu:
+
 - Ungenauen Change-Reports
 - Playbook zeigt "changed" obwohl nichts geändert wurde
 - Handler werden unnötig getriggert
 
 **Pattern für Fix**:
+
 ```yaml
 # Für Read-Only Commands:
 - name: Get current value
@@ -655,6 +696,7 @@ pre_tasks:
 ```
 
 **Betroffene Tasks** (nicht vollständig):
+
 - `tasks/post/business_mac-settings.yml`: Lines 17, 26
 - `tasks/post/private_mac-settings.yml`: Line 2
 - `tasks/post/various-settings.yml`: Lines 47, 52, 61, 65, 70, 76, 92, 97, 101, 122
@@ -671,6 +713,7 @@ pre_tasks:
 **Betroffene Datei**: `tasks/post/business_mac-settings.yml` (Zeile 2-8)
 
 **Problem**:
+
 ```yaml
 - name: Copy Open UMB App
   ansible.builtin.copy:
@@ -679,10 +722,12 @@ pre_tasks:
 ```
 
 **Probleme**:
+
 - Keine Validierung ob iCloudDrive gemountet ist
 - Keine Fehlerbehandlung wenn App nicht existiert
 
 **Fix**:
+
 ```yaml
 - name: Check if iCloudDrive is mounted
   ansible.builtin.stat:
@@ -710,6 +755,7 @@ pre_tasks:
 **Betroffene Datei**: `tasks/post/vscode.yml` (Zeile 10-13)
 
 **Problem**:
+
 ```yaml
 # AKTUELL (FALSCH):
 - name: Creates settings directory
@@ -718,6 +764,7 @@ pre_tasks:
 ```
 
 **Fix**:
+
 ```yaml
 # KORREKTUR:
 - name: Creates settings directory
@@ -738,6 +785,7 @@ pre_tasks:
 **Problem**: Loop über krew plugins - wenn EINES fehlschlägt, bricht gesamter Playbook ab.
 
 **Fix**:
+
 ```yaml
 - name: Install or upgrade kubectl krew plugins
   ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew upgrade {{ item }} || {{ mybrewbindir }}/kubectl krew install {{ item }}"
@@ -770,12 +818,14 @@ pre_tasks:
 **Betroffene Datei**: `roles/munki_update/tasks/main.yml` (Zeile 15)
 
 **Problem**:
+
 ```yaml
 munki_updates_pending: "{{ munki_check.stdout is search('^\\\\s*\\\\+\\\\s+.+', multiline=True) }}"
 # 4 Backslashes = doppelt escaped
 ```
 
 **Fix**:
+
 ```yaml
 munki_updates_pending: "{{ munki_check.stdout is search('^\\s*\\+\\s+.+', multiline=True) }}"
 # 2 Backslashes = korrekt escaped
@@ -790,6 +840,7 @@ munki_updates_pending: "{{ munki_check.stdout is search('^\\s*\\+\\s+.+', multil
 **Betroffene Datei**: `tasks/pre/additional-facts.yml` (Zeile 28-29)
 
 **Problem**:
+
 ```yaml
 when: myhostname is match("ws.*") or myhostname is match("UMB.*")
 ```
@@ -822,11 +873,13 @@ Wenn Pattern anywhere: `when: myhostname is search("ws") or myhostname is search
 **Empfehlung**:
 
 1. **Vault-Datei erstellen**:
+
 ```bash
 ansible-vault create inventories/group_vars/macs/vault.yml
 ```
 
 2. **Secrets verschieben**:
+
 ```yaml
 # vault.yml (encrypted):
 vault_github_personal_token: "ghp_xxxxxxxxxxxx"
@@ -834,6 +887,7 @@ vault_opencage_api_key: "xxxxxxxxxxxxxxxx"
 ```
 
 3. **In general.yml/secrets.yml referenzieren**:
+
 ```yaml
 # general.yml (plaintext):
 github_personal_token: "{{ vault_github_personal_token }}"
@@ -841,12 +895,14 @@ OpenCageAPIKey: "{{ vault_opencage_api_key }}"
 ```
 
 4. **Vault Password File**:
+
 ```bash
 # .vault_pass (gitignored!)
 your_vault_password_here
 ```
 
 5. **ansible.cfg**:
+
 ```ini
 [defaults]
 vault_password_file = .vault_pass
@@ -858,7 +914,7 @@ vault_password_file = .vault_pass
 
 ## 📊 Prioritäten-Matrix
 
-### Woche 1 - Security & Critical Bugs:
+### Woche 1 - Security & Critical Bugs
 
 | ID | Issue | Zeit | Datei |
 |----|-------|------|-------|
@@ -875,7 +931,7 @@ vault_password_file = .vault_pass
 
 ---
 
-### Woche 2 - Reliability:
+### Woche 2 - Reliability
 
 | ID | Issue | Zeit | Datei |
 |----|-------|------|-------|
@@ -889,7 +945,7 @@ vault_password_file = .vault_pass
 
 ---
 
-### Sprint - Best Practices:
+### Sprint - Best Practices
 
 | Task | Zeit |
 |------|------|
@@ -907,7 +963,8 @@ vault_password_file = .vault_pass
 
 Trotz der vielen Issues - das Projekt hat viele **sehr gute** Aspekte:
 
-### Hervorragend:
+### Hervorragend
+
 - ✅ **munki_update role**: Exzellente check-mode Implementation mit skip-logic
 - ✅ **Modularisierung**: Saubere Trennung in roles, tasks, pre/post
 - ✅ **Inventory-Hierarchie**: Professional multi-Mac management
@@ -915,7 +972,8 @@ Trotz der vielen Issues - das Projekt hat viele **sehr gute** Aspekte:
 - ✅ **Tag-System**: Konsistent und sinnvoll eingesetzt
 - ✅ **Validate bei sudoers**: Verwendung von `validate` Parameter
 
-### Gut:
+### Gut
+
 - ✅ Block/rescue in einigen Roles (Microsoft update)
 - ✅ Loop control mit labels für Lesbarkeit
 - ✅ Conditional role inclusion
@@ -927,6 +985,7 @@ Trotz der vielen Issues - das Projekt hat viele **sehr gute** Aspekte:
 ## 🎯 Empfohlener Aktionsplan
 
 ### Phase 1: Security (Woche 1 - 2 Stunden)
+
 1. Fix C1/C3: Sudo file permissions
 2. Fix C11: Always block für sudo cleanup
 3. Fix C5: Launchagents logic
@@ -941,6 +1000,7 @@ Trotz der vielen Issues - das Projekt hat viele **sehr gute** Aspekte:
 ---
 
 ### Phase 2: Reliability (Woche 2 - 1 Stunde)
+
 1. Fix H1/H3: env_path validation
 2. Fix H5: Package manager checks
 3. Fix H9/H10: Shell change safety
@@ -952,6 +1012,7 @@ Trotz der vielen Issues - das Projekt hat viele **sehr gute** Aspekte:
 ---
 
 ### Phase 3: Quality (Sprint - 5 Stunden)
+
 1. Add changed_when everywhere
 2. Add error handling patterns
 3. Remove dead code
@@ -963,6 +1024,7 @@ Trotz der vielen Issues - das Projekt hat viele **sehr gute** Aspekte:
 ---
 
 ### Phase 4: Testing
+
 1. Test all fixes auf non-production Mac
 2. Create test plan
 3. Optional: Setup Molecule testing
@@ -973,6 +1035,7 @@ Trotz der vielen Issues - das Projekt hat viele **sehr gute** Aspekte:
 ## 📝 Quick Reference: Häufigste Patterns
 
 ### Pattern 1: Backup vor Änderung
+
 ```yaml
 - name: Backup existing file
   ansible.builtin.copy:
@@ -984,6 +1047,7 @@ Trotz der vielen Issues - das Projekt hat viele **sehr gute** Aspekte:
 ```
 
 ### Pattern 2: Idempotente Defaults Commands
+
 ```yaml
 - name: Get current value
   command: defaults read domain key
@@ -997,6 +1061,7 @@ Trotz der vielen Issues - das Projekt hat viele **sehr gute** Aspekte:
 ```
 
 ### Pattern 3: Safe Script Execution
+
 ```yaml
 - name: Verify script before execution
   block:
@@ -1015,6 +1080,7 @@ Trotz der vielen Issues - das Projekt hat viele **sehr gute** Aspekte:
 ```
 
 ### Pattern 4: Block/Always für Cleanup
+
 ```yaml
 - name: Operation with guaranteed cleanup
   block:

@@ -3,11 +3,13 @@
 ## Aktueller Status
 
 ### Root-Level (47 Dateien/Ordner)
+
 - **16 Markdown-Dateien** (zu viel!)
 - 2 Scripts: `init.sh`, `init_light.sh`
 - Diverse Ansible-Dateien (Playbooks, Config, etc.)
 
 ### Problem
+
 - Unübersichtlich: Zu viele Files im Root
 - Vermischt: Dokumentation zwischen Code
 - Upstream-Kompatibilität: Zusätzliche Dateien erschweren Merges
@@ -66,16 +68,19 @@ mac-dev-playbook/
 ### Phase 1: Dokumentation verschieben (Einfach, kein Funktionscode)
 
 **Vorteile:**
+
 - ✅ Sauberer Root
 - ✅ Bessere Organisation
 - ✅ Einfacher für neue Nutzer
 - ✅ Kein Impact auf Ansible
 
 **Risiken:**
+
 - ⚠️ Links in Dokumentation brechen
 - ⚠️ Externe Bookmarks brechen
 
 **Mitigation:**
+
 - Symlinks für wichtige Dateien (optional)
 - GitHub automatisches Redirect für alte URLs
 - Update alle internen Links
@@ -83,11 +88,13 @@ mac-dev-playbook/
 ### Phase 2: Scripts konsolidieren (Optional)
 
 **Aktuell:**
+
 - `init.sh` - Im Root
 - `init_light.sh` - Im Root
 - `scripts/macupdate` - Bereits in scripts/
 
 **Vorschlag:**
+
 ```bash
 # Option A: Alles nach scripts/
 scripts/
@@ -103,38 +110,43 @@ scripts/
 
 ## Upstream-Kompatibilität
 
-### Dateien die Upstream NICHT hat (sicher zu verschieben):
+### Dateien die Upstream NICHT hat (sicher zu verschieben)
 
 **Session-Docs:**
+
 - SESSION_STATUS.md
 - SESSION_SUMMARY.md
 - SECRETS_FIXES_APPLIED.md
 
 **Maintenance:**
+
 - DEPENDENCY_STRATEGY.md
 - RENOVATE_SETUP.md
 - DEPENDABOT_TO_RENOVATE_MIGRATION.md
 
 **Analysis:**
+
 - FORK_ANALYSIS.md
 - TODO_ANALYSIS.md
 - TODO_REPO_STRUCTURE.md
 
 **Guides:**
+
 - MACOS_DEFAULTS_GUIDE.md
 - 1PASSWORD_SSH_STRATEGY.md
 - MUNKI_IMPROVEMENTS.md
 
 **Scripts:**
+
 - `scripts/macupdate` (bereits verschoben)
 
-### Dateien die Upstream HAT (vorsichtig!):
+### Dateien die Upstream HAT (vorsichtig!)
 
 - `README.md` - NICHT verschieben (Upstream modifiziert diese)
 - `IMPROVEMENTS.md` - Prüfen ob Upstream-Äquivalent existiert
 - `full-mac-setup.md` - Prüfen ob Upstream-Äquivalent existiert
 
-### Upstream-Vergleich benötigt:
+### Upstream-Vergleich benötigt
 
 ```bash
 # Prüfe was Upstream im Root hat
@@ -161,7 +173,8 @@ git ls-tree -r --name-only upstream/master | grep "\.md$"
 
 ## Vorgeschlagene Aktion
 
-### Minimal (Quick Win):
+### Minimal (Quick Win)
+
 1. Erstelle `docs/` Unterordner-Struktur
 2. Verschiebe Session-Docs nach `docs/sessions/`
 3. Verschiebe Maintenance-Docs nach `docs/maintenance/`
@@ -170,7 +183,8 @@ git ls-tree -r --name-only upstream/master | grep "\.md$"
 **Aufwand:** ~15 Minuten
 **Impact:** Übersichtlicherer Root
 
-### Moderat (Empfohlen):
+### Moderat (Empfohlen)
+
 Minimal +
 5. Verschiebe Analysis-Docs nach `docs/analysis/`
 6. Verschiebe Guides nach `docs/guides/`
@@ -179,7 +193,8 @@ Minimal +
 **Aufwand:** ~30 Minuten
 **Impact:** Professionelle Struktur
 
-### Vollständig:
+### Vollständig
+
 Moderat +
 8. Verschiebe init*.sh nach `scripts/`
 9. Erstelle Symlinks für Backwards-Compatibility
@@ -195,12 +210,14 @@ Moderat +
 **Starte mit MODERAT:**
 
 Gründe:
+
 - ✅ Großer Mehrwert bei moderatem Aufwand
 - ✅ Keine Breaking Changes (init.sh bleibt im Root)
 - ✅ Bessere Maintainability
 - ✅ Upstream-Merges einfacher
 
 **NICHT empfohlen jetzt:**
+
 - ❌ Große Refactorings (z.B. init.sh verschieben)
 - ❌ Änderungen an Upstream-Dateien (README.md)
 

@@ -67,7 +67,6 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - Oder kann es entfernt werden?
   - **Kontext**: Optional aufgerufen am Ende von macupdate
 
-
 ## In Arbeit
 
 _(Items die gerade bearbeitet werden)_

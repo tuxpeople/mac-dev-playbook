@@ -1,0 +1,65 @@
+---
+# Pre-commit hooks for mac-dev-playbook
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+# See https://pre-commit.com for more information
+
+repos:
+  # YAML Linting
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        # Only block on errors, not warnings (-d relaxed allows some flexibility)
+        args: [-d, 'relaxed']
+        types: [yaml]
+
+  # Ansible Linting (optional - only runs if ansible-lint is installed)
+  # Install: pip install ansible-lint
+  - repo: local
+    hooks:
+      - id: ansible-lint
+        name: Ansible-lint (optional)
+        entry: >-
+          bash -c 'command -v ansible-lint >/dev/null 2>&1 &&
+          ansible-lint --offline ||
+          echo "ansible-lint not installed, skipping"'
+        language: system
+        files: \.(yaml|yml)$
+        exclude: ^\.github/|^requirements\.yml$|^\.yamllint$
+        pass_filenames: false
+
+  # Shell Script Linting
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+        # Only fail on errors (not warnings): -S error
+        args: [-x, -S, error]
+        files: \.(sh|bash)$
+        exclude: ^scripts/(compare-macos-defaults|export-macos-defaults)\.sh$
+
+  # Markdown Linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.43.0
+    hooks:
+      - id: markdownlint
+        args: [--fix]
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^files/
+      - id: end-of-file-fixer
+        exclude: ^files/
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+        exclude: ^inventories/host_vars/.*\.yml$  # Exclude Ansible Vault files
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: mixed-line-ending
+        args: [--fix=lf]

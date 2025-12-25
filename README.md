@@ -23,6 +23,7 @@ For setting up a brand new Mac, use the bootstrap script:
 **Before running**: Create `inventories/host_vars/<hostname>.yml` for your Mac. See [docs/NEW_MAC_SETUP.md](docs/NEW_MAC_SETUP.md) for complete setup instructions.
 
 The bootstrap script will:
+
 - Install Xcode Command Line Tools
 - Set up Python environment (pyenv + virtualenv)
 - Install Ansible and dependencies
@@ -65,7 +66,9 @@ You can use this playbook to manage other Macs as well; the playbook doesn't eve
 
 > You can also enable remote login on the command line:
 >
->     sudo systemsetup -setremotelogin on
+> ```bash
+> sudo systemsetup -setremotelogin on
+> ```
 
 Then edit `inventories/macs.list` in this repository and add your Mac to the appropriate group:
 
@@ -170,6 +173,7 @@ This fork manages packages through **Brewfiles** organized by Mac group:
 - **Private Macs**: `files/brewfile/private_mac/Brewfile`
 
 Each Brewfile contains:
+
 - Homebrew packages (CLI tools)
 - Homebrew casks (GUI applications)
 - Mac App Store apps (via `mas`)
@@ -179,6 +183,7 @@ Each Brewfile contains:
 ### Dotfiles
 
 Dotfiles from [tuxpeople/dotfiles](https://github.com/tuxpeople/dotfiles) are installed into the current user's home directory. This includes:
+
 - Shell configuration (.bashrc, .zshrc)
 - Git configuration
 - macOS settings (.macos)
@@ -189,6 +194,7 @@ You can disable dotfiles management by setting `configure_dotfiles: false` in yo
 ### Additional Configuration
 
 The playbook also configures:
+
 - macOS system settings (Dock, Finder, etc.)
 - Development tools (kubectl, Node.js via nvm, Python via pyenv)
 - Application preferences (VSCode, iTerm2, etc.)
@@ -201,12 +207,14 @@ See [CLAUDE.md](CLAUDE.md) for complete documentation.
 Complete step-by-step instructions for setting up a brand new Mac:
 
 **[docs/NEW_MAC_SETUP.md](docs/NEW_MAC_SETUP.md)** - Comprehensive guide covering:
+
 - Prerequisites (what you need before running init.sh)
 - Bootstrap process (init.sh)
 - Post-setup verification
 - Troubleshooting
 
 **[docs/WORKFLOWS.md](docs/WORKFLOWS.md)** - When to use which script:
+
 - `init.sh` - Fresh Mac setup (once per Mac)
 - `macapply` - Apply configuration changes
 - `macupdate` - Daily/weekly maintenance
@@ -214,6 +222,7 @@ Complete step-by-step instructions for setting up a brand new Mac:
 ## Testing the Playbook
 
 This fork includes CI/CD testing via GitHub Actions. The CI pipeline runs:
+
 - `yamllint` - YAML syntax and formatting validation
 - `ansible-lint` - Ansible best practices validation
 - `shellcheck` - Shell script analysis
@@ -221,8 +230,8 @@ This fork includes CI/CD testing via GitHub Actions. The CI pipeline runs:
 
 You can also run macOS inside a VM for testing changes before applying to production Macs. Recommended virtualization tools:
 
-  - [UTM](https://mac.getutm.app) - Free, macOS native
-  - [Tart](https://github.com/cirruslabs/tart) - CLI-based VM management
+- [UTM](https://mac.getutm.app) - Free, macOS native
+- [Tart](https://github.com/cirruslabs/tart) - CLI-based VM management
 
 **Before committing changes**, run the lint tools locally:
 
@@ -243,6 +252,7 @@ This repository follows a **layered documentation approach**:
 ### Technical Documentation (This Repository)
 
 **For setup, usage, and technical details:**
+
 - **[README.md](README.md)** (this file) - Quick start and basic usage
 - **[CLAUDE.md](CLAUDE.md)** - Complete technical reference for AI assistants
 - **[DOCUMENTATION_STRATEGY.md](DOCUMENTATION_STRATEGY.md)** - Documentation architecture
@@ -255,13 +265,15 @@ This repository follows a **layered documentation approach**:
 Located in Obsidian Vault: `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Personal/📚 Wissen/🏠 Persönlich/🎨 Hobbys/Homelab/Clients/macOS/`
 
 **Key documents:**
+
 - **README.md** - macOS Management Overview & Homelab Integration
 - **Ansible-Playbooks.md** - What each playbook does (conceptual)
-- **Application-Management.md** - App lifecycle philosophy  
+- **Application-Management.md** - App lifecycle philosophy
 - **Configuration-Profiles.md** - macOS Settings & Dotfiles (why)
 - **Business-vs-Private.md** - Conceptual differences between Business & Private Macs
 
 **Also see:**
+
 - **Homelab/Decisions/** - Decision Records (e.g., "Why Ansible for Mac Management")
 - **Homelab/README.md** - Homelab Hub (main overview)
 
@@ -276,38 +288,45 @@ Located in Obsidian Vault: `~/Library/Mobile Documents/iCloud~md~obsidian/Docume
 This fork has significantly diverged from the original geerlingguy/mac-dev-playbook with the following major changes:
 
 ### Multi-Mac Management
+
 - **Hierarchical Inventory System**: Manage multiple Macs (business/private) with shared and specific configurations
 - **Group Variables**: `inventories/group_vars/macs/`, `business_mac/`, `private_mac/`
 - **Host Variables**: Per-host configuration in `inventories/host_vars/`
 
 ### Custom Workflows
+
 - **`macupdate`** (`scripts/macupdate`): Daily maintenance script (updates packages, system, dotfiles)
 - **`macapply`** (`scripts/macapply`): Apply configuration changes (runs `plays/full.yml` with tags)
 - **`init.sh`**: Bootstrap script for fresh Mac setup
 
 ### Enhanced Playbooks
+
 - **`plays/full.yml`**: Complete provisioning with temporary passwordless sudo, validation, pre-tasks
 - **`plays/update.yml`**: Focused update playbook for daily maintenance
 - **Pre-Tasks**: Rosetta2 installation, cleanup tasks, SSH setup, validation
 - **Post-Tasks**: 15+ post-provision tasks (K8s, GPG, VSCode, iTerm2, etc.)
 
 ### Custom Roles
+
 - **`ansible-mac-update`**: macOS software updates, Homebrew updates, Microsoft updates, kubectl
 - **`munki_update`**: Munki package management
 - **`morgangraphics.nvm`**: Node.js version management
 
 ### Package Management
+
 - **Brewfiles in Ansible Repo**: Moved from dotfiles to `files/brewfile/business_mac/` and `private_mac/`
 - **No MAS Integration**: Mac App Store apps managed via Homebrew casks instead
 - **Centralized Python Version**: `.python-version` file for consistent Python versioning
 
 ### Improved Documentation
+
 - **Comprehensive Docs**: `docs/WORKFLOWS.md`, `docs/NEW_MAC_SETUP.md`, `docs/PYTHON_VERSION_MANAGEMENT.md`
 - **Analysis Documents**: `docs/analysis/REPOSITORY_REVIEW.md` and others
 - **Session Tracking**: `docs/sessions/` for development history
 - **CLAUDE.md**: AI assistant context with complete technical reference
 
 ### Key Benefits
+
 - **Manage multiple Macs from single repository**
 - **Separate business/private configurations**
 - **Daily update workflow** (`macupdate`)
@@ -315,6 +334,7 @@ This fork has significantly diverged from the original geerlingguy/mac-dev-playb
 - **Extensive documentation and decision records**
 
 **Divergence Stats** (as of 2025-12-22):
+
 - **289 commits ahead** of upstream
 - **137 files changed**, 17,000+ lines added
 - **Last sync**: June 26, 2024 ([358f663](https://github.com/geerlingguy/mac-dev-playbook/commit/358f663))

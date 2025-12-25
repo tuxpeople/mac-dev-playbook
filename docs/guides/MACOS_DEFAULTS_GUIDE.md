@@ -9,6 +9,7 @@ Dieses Dokument erklärt wie du herausfinden kannst, welche macOS Einstellungen 
 ## Problem
 
 Du hast vermutlich Einstellungen auf deinem Mac konfiguriert die nicht in deinem Playbook erfasst sind:
+
 - System Preferences Änderungen
 - Finder Einstellungen
 - Dock Konfiguration
@@ -24,6 +25,7 @@ Diese Einstellungen gehen verloren bei einem neuen Mac Setup.
 Exportiert alle wichtigen macOS defaults Einstellungen.
 
 **Verwendung**:
+
 ```bash
 cd ~/development/github/tuxpeople/mac-dev-playbook
 
@@ -35,6 +37,7 @@ cd ~/development/github/tuxpeople/mac-dev-playbook
 ```
 
 **Output**: Ein Shell-Script mit allen `defaults write` Commands:
+
 ```bash
 #!/usr/bin/env bash
 # macOS Defaults Configuration
@@ -47,6 +50,7 @@ defaults write com.apple.dock tilesize -int 48
 ```
 
 **Domains die exportiert werden**:
+
 - `NSGlobalDomain` - Globale System-Einstellungen
 - `com.apple.dock` - Dock Einstellungen
 - `com.apple.finder` - Finder Einstellungen
@@ -61,6 +65,7 @@ defaults write com.apple.dock tilesize -int 48
 Vergleicht aktuelle Einstellungen mit einem Baseline (fresh system oder früherem Zustand).
 
 **Erste Verwendung - Baseline erstellen**:
+
 ```bash
 ./scripts/compare-macos-defaults.sh
 
@@ -71,6 +76,7 @@ Vergleicht aktuelle Einstellungen mit einem Baseline (fresh system oder frühere
 ```
 
 **Spätere Verwendung - Änderungen finden**:
+
 ```bash
 # Nachdem du Einstellungen geändert hast:
 ./scripts/compare-macos-defaults.sh
@@ -119,6 +125,7 @@ cd ~/development/github/tuxpeople/mac-dev-playbook
 ### Schritt 4: Review & Integration
 
 **Review** `~/Desktop/my-settings.sh`:
+
 ```bash
 # Öffne in Editor
 code ~/Desktop/my-settings.sh
@@ -129,12 +136,14 @@ grep -i "finder" ~/Desktop/my-settings.sh
 ```
 
 **Entferne** unwichtige oder temporäre Settings:
+
 - Session-spezifische Daten
 - Kürzlich verwendete Dateien
 - Cache-Werte
 - Sehr lange/binäre Werte
 
 **Wichtige Settings identifizieren**:
+
 ```bash
 # Finder
 grep "com.apple.finder" ~/Desktop/my-settings.sh
@@ -158,12 +167,14 @@ Du hast mehrere Optionen:
 Wenn du bereits ein dotfiles Repository hast:
 
 1. **Kopiere relevante Settings** in dein dotfiles `.macos` script:
+
    ```bash
    # In deinem dotfiles repo (z.B. ~/development/github/tuxpeople/dotfiles)
    vim .macos
    ```
 
 2. **Füge neue defaults hinzu**:
+
    ```bash
    ###############################################################################
    # Finder                                                                      #
@@ -193,11 +204,13 @@ Wenn du bereits ein dotfiles Repository hast:
 Für System-Einstellungen die nicht User-spezifisch sind:
 
 1. **Öffne** `tasks/osx.yml`:
+
    ```bash
    vim tasks/osx.yml
    ```
 
 2. **Füge neue Tasks hinzu**:
+
    ```yaml
    # Disable natural scrolling
    - name: Disable natural scrolling
@@ -223,6 +236,7 @@ Für System-Einstellungen die nicht User-spezifisch sind:
 Für spezifische Applikationen:
 
 1. **Erstelle neue Task-Datei** (z.B. `tasks/post/my-settings.yml`):
+
    ```yaml
    ---
    # Custom macOS Settings
@@ -273,6 +287,7 @@ Für spezifische Applikationen:
    ```
 
 2. **Registriere in** `inventories/group_vars/macs/post.yml`:
+
    ```yaml
    post_provision_tasks:
      - "{{ playbook_dir }}/tasks/post/*.yml"
@@ -296,11 +311,13 @@ Für spezifische Applikationen:
 ```
 
 **Vorteile**:
+
 - ✅ Idempotent (ändert nur wenn nötig)
 - ✅ Proper change detection
 - ✅ Type-safe
 
 **Installation** (falls nicht vorhanden):
+
 ```bash
 ansible-galaxy collection install community.general
 ```
@@ -324,11 +341,13 @@ ansible-galaxy collection install community.general
 ## Nützliche Befehle
 
 ### Alle Domains auflisten
+
 ```bash
 defaults domains
 ```
 
 ### Spezifische Domain lesen
+
 ```bash
 defaults read com.apple.dock
 defaults read com.apple.finder
@@ -336,12 +355,14 @@ defaults read NSGlobalDomain
 ```
 
 ### Spezifischen Key lesen
+
 ```bash
 defaults read com.apple.dock autohide
 defaults read com.apple.finder ShowPathbar
 ```
 
 ### Suchen nach spezifischen Einstellungen
+
 ```bash
 # Finde alle Settings mit "pathbar"
 defaults find pathbar
@@ -351,6 +372,7 @@ defaults find keyboard
 ```
 
 ### Aktuellen Wert eines Keys finden
+
 ```bash
 # Finder: Show Path Bar
 defaults read com.apple.finder ShowPathbar
@@ -363,6 +385,7 @@ defaults read NSGlobalDomain KeyRepeat
 ```
 
 ### Änderungen in Echtzeit beobachten
+
 ```bash
 # Terminal 1: Watch defaults
 watch -n 1 'defaults read com.apple.dock | head -20'
@@ -532,6 +555,7 @@ watch -n 1 'defaults read com.apple.dock | head -20'
 ### Test auf Test-User Account
 
 1. **Erstelle Test-User**:
+
    ```bash
    # System Preferences → Users & Groups → Add User
    # Oder via command:
@@ -549,11 +573,13 @@ watch -n 1 'defaults read com.apple.dock | head -20'
 2. **Login als testuser**
 
 3. **Run playbook**:
+
    ```bash
    ansible-playbook plays/full.yml -i inventories -l $(hostname) --connection=local
    ```
 
 4. **Verify settings**:
+
    ```bash
    defaults read com.apple.finder ShowPathbar
    # Should output: 1
@@ -566,6 +592,7 @@ watch -n 1 'defaults read com.apple.dock | head -20'
 ### Aktuell in deinem Playbook
 
 **tasks/osx.yml** wird ausgeführt via:
+
 ```yaml
 # plays/full.yml oder main.yml
 - import_tasks: tasks/osx.yml
@@ -574,6 +601,7 @@ watch -n 1 'defaults read com.apple.dock | head -20'
 ```
 
 **Konfiguriert** via:
+
 ```yaml
 # inventories/group_vars/macs/general.yml
 osx_script: "{{myhomedir}}/.macos --no-restart"
@@ -584,12 +612,14 @@ Das bedeutet: Du hast bereits ein `.macos` script in deinem dotfiles repo!
 ### Empfohlene Erweiterung
 
 1. **Überprüfe** dein dotfiles repo:
+
    ```bash
    cat ~/development/github/tuxpeople/dotfiles/.macos
    # oder wo immer dein dotfiles repo liegt
    ```
 
 2. **Füge neue Settings hinzu** zu `.macos`:
+
    ```bash
    # Am Ende von .macos hinzufügen:
 
@@ -607,6 +637,7 @@ Das bedeutet: Du hast bereits ein `.macos` script in deinem dotfiles repo!
    ```
 
 3. **Commit & Push** dotfiles:
+
    ```bash
    cd ~/development/github/tuxpeople/dotfiles
    git add .macos
@@ -621,6 +652,7 @@ Das bedeutet: Du hast bereits ein `.macos` script in deinem dotfiles repo!
 ## Zusammenfassung
 
 1. **Export aktuelle Settings**:
+
    ```bash
    ./scripts/export-macos-defaults.sh ~/Desktop/my-settings.sh
    ```
@@ -651,6 +683,7 @@ Das bedeutet: Du hast bereits ein `.macos` script in deinem dotfiles repo!
 **Problem**: Nach Playbook run sind Settings nicht aktiv.
 
 **Lösung**: Restart betroffene App:
+
 ```bash
 killall Finder
 killall Dock
@@ -658,6 +691,7 @@ killall SystemUIServer
 ```
 
 Oder in Ansible:
+
 ```yaml
 - name: Restart Dock
   command: killall Dock
@@ -672,6 +706,7 @@ Oder in Ansible:
 **Ursache**: Settings wurden nicht im richtigen Kontext geschrieben (user vs. system).
 
 **Lösung**: Prüfe `become` flag:
+
 ```yaml
 # User settings (die meisten)
 - osx_defaults:
@@ -697,6 +732,7 @@ Oder in Ansible:
 **Ursache**: App muss neu gestartet werden oder cached den Wert.
 
 **Lösung**:
+
 ```bash
 # Force reload
 killall cfprefsd

@@ -20,14 +20,16 @@ Successfully migrated **89 macOS settings** from `.macos` shell script to Ansibl
 
 ## The Journey: From Start to Finish
 
-### Starting Point:
+### Starting Point
+
 - **Ansible defaults.yml**: 12 settings (61 lines)
 - **.macos script**: 228 `defaults write` commands (952 total lines)
   - 51 commented out (disabled/obsolete)
   - 33 broken (Safari + Mail domains don't exist)
   - 144 active settings
 
-### Final Result:
+### Final Result
+
 - **Ansible defaults.yml**: 91 settings (458 lines)
 - **.macos script**: 41 `defaults write` commands (767 total lines)
   - 0 commented out ✅
@@ -39,6 +41,7 @@ Successfully migrated **89 macOS settings** from `.macos` shell script to Ansibl
 ## Migration Breakdown
 
 ### Phase 1: High-Priority System Settings
+
 **71 settings migrated** to Ansible
 
 | Domain | Count | Type |
@@ -54,6 +57,7 @@ Successfully migrated **89 macOS settings** from `.macos` shell script to Ansibl
 ---
 
 ### Phase 2: App-Specific Stable Settings
+
 **18 settings migrated** to Ansible (17 new, 1 duplicate)
 
 | Domain | Count | Type |
@@ -73,6 +77,7 @@ Successfully migrated **89 macOS settings** from `.macos` shell script to Ansibl
 ### Cleanup Operations
 
 #### Operation 1: Remove Broken Settings
+
 **46 lines removed** (Safari + Mail - domains don't exist in macOS 26.2)
 
 - Safari: 24 settings
@@ -84,6 +89,7 @@ Successfully migrated **89 macOS settings** from `.macos` shell script to Ansibl
 ---
 
 #### Operation 2: Remove Commented Settings
+
 **51 lines removed** (previously disabled)
 
 - NSGlobalDomain: ~15 settings
@@ -96,6 +102,7 @@ Successfully migrated **89 macOS settings** from `.macos` shell script to Ansibl
 ---
 
 #### Operation 3: Remove Migrated Settings
+
 **89 lines removed** (now in Ansible)
 
 All Phase 1 + Phase 2 settings removed from .macos to eliminate duplication.
@@ -107,6 +114,7 @@ All Phase 1 + Phase 2 settings removed from .macos to eliminate duplication.
 ## What Remains in .macos (41 defaults write)
 
 ### Third-Party Applications (9 settings)
+
 **Should stay in .macos** - External apps, frequent updates
 
 - Google Chrome: 4 settings
@@ -118,6 +126,7 @@ All Phase 1 + Phase 2 settings removed from .macos to eliminate duplication.
 ---
 
 ### System-Specific Settings (32 settings)
+
 **Should stay in .macos** - Hardware-specific or complex
 
 - **Trackpad/Mouse Drivers** (4): Hardware-specific input device settings
@@ -128,6 +137,7 @@ All Phase 1 + Phase 2 settings removed from .macos to eliminate duplication.
 - **Various System** (16): Spotlight, Dashboard, QuickTime, Bluetooth, etc.
 
 **Rationale**:
+
 - Hardware-specific (trackpad settings vary by Mac model)
 - Less critical for standardization
 - Complex system integrations
@@ -137,6 +147,7 @@ All Phase 1 + Phase 2 settings removed from .macos to eliminate duplication.
 ### Non-Defaults Commands Still in .macos
 
 **System Management** (~40 commands):
+
 - `sudo nvram`: 1 (boot sound)
 - `sudo pmset`: 7 (power management)
 - `sudo systemsetup`: 2 (timezone, restart freeze)
@@ -154,11 +165,13 @@ All Phase 1 + Phase 2 settings removed from .macos to eliminate duplication.
 ### Modified Files
 
 **1. inventories/group_vars/macs/defaults.yml**
+
 - Before: 12 settings (61 lines)
 - After: 91 settings (458 lines)
 - Change: +79 settings (+397 lines)
 
 **2. ~/development/github/tuxpeople/dotfiles/.macos**
+
 - Before: 228 defaults write (952 total lines)
 - After: 41 defaults write (767 total lines)
 - Change: -187 defaults write (-185 total lines, -19%)
@@ -168,26 +181,31 @@ All Phase 1 + Phase 2 settings removed from .macos to eliminate duplication.
 ### Created Tools
 
 **1. convert-macos-to-ansible.py**
+
 - Automated conversion from `defaults write` to Ansible YAML
 - Handles Phase 1 domains (system-level)
 - Type detection and mapping
 
 **2. convert-phase2-to-ansible.py**
+
 - Automated conversion for Phase 2 domains (app-specific)
 - Same conversion logic as Phase 1
 
 **3. merge-settings.py**
+
 - Duplicate detection by (domain, key) pairs
 - Preserves existing settings order
 - Statistics generation
 
 **4. remove-migrated-from-macos.py**
+
 - Removes migrated settings from .macos
 - Preserves non-defaults commands
 - Keeps third-party app settings
 - Detailed statistics
 
 **5. cleanup-macos.py**
+
 - Removes commented settings
 - Removes broken domain settings (Safari/Mail)
 
@@ -196,20 +214,25 @@ All Phase 1 + Phase 2 settings removed from .macos to eliminate duplication.
 ### Created Documentation
 
 **1. MACOS_MIGRATION_COMPLETED_2025-12-24.md**
+
 - Full Phase 1 documentation
 - Tools, process, statistics
 
 **2. FINAL_MIGRATION_STATS_2025-12-24.md** (this file)
+
 - Complete Option 3 statistics
 - Final state documentation
 
 **3. MACOS_TO_ANSIBLE_MIGRATION.md**
+
 - Migration plan (reference)
 
 **4. COMMENTED_MACOS_SETTINGS.md**
+
 - 51 commented settings documented
 
 **5. BROKEN_DOMAIN_SETTINGS.md**
+
 - 33 Safari/Mail settings documented
 
 ---
@@ -236,37 +259,44 @@ All Phase 1 + Phase 2 settings removed from .macos to eliminate duplication.
 ## Benefits Achieved
 
 ### 1. **Centralization** ✅
+
 - 91 system-level settings managed by Ansible
 - Version controlled in git
 - Single source of truth
 
 ### 2. **Idempotency** ✅
+
 - Re-running playbook only changes what's different
 - No cumulative changes or drift
 - Consistent state across Macs
 
 ### 3. **Documentation** ✅
+
 - Each setting has descriptive `name` field
 - All removed settings fully documented
 - Migration process documented
 
 ### 4. **Organization** ✅
+
 - Settings grouped by domain
 - Structured YAML format
 - Easy to review and modify
 
 ### 5. **Cleaner Codebase** ✅
+
 - .macos reduced by 19% (185 lines)
 - Zero broken settings
 - Zero commented code
 - Clear separation: Ansible = system, .macos = apps
 
 ### 6. **Maintainability** ✅
+
 - 91 settings now testable via Ansible
 - Changes tracked in git history
 - Rollback capability via version control
 
 ### 7. **Automation** ✅
+
 - Created reusable conversion tools
 - Future migrations simplified
 - Duplicate detection automated
@@ -275,7 +305,7 @@ All Phase 1 + Phase 2 settings removed from .macos to eliminate duplication.
 
 ## Statistics Summary
 
-### Migration Numbers:
+### Migration Numbers
 
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
@@ -287,7 +317,7 @@ All Phase 1 + Phase 2 settings removed from .macos to eliminate duplication.
 | **Commented Settings** | 51 | 0 | -51 (cleaned) |
 | **Duplicated Settings** | 0 | 0 | 0 (none) |
 
-### Settings Flow:
+### Settings Flow
 
 ```
 Original 228 defaults write commands:
@@ -322,7 +352,8 @@ Original 228 defaults write commands:
 
 ## Next Steps (Optional)
 
-### Immediate Testing:
+### Immediate Testing
+
 ```bash
 # Apply Ansible settings (91 settings)
 cd ~/development/github/tuxpeople/mac-dev-playbook
@@ -333,7 +364,8 @@ cd ~/development/github/tuxpeople/dotfiles
 ./.macos
 ```
 
-### Verification:
+### Verification
+
 ```bash
 # Check sample Ansible settings applied
 defaults read NSGlobalDomain AppleShowScrollBars
@@ -345,7 +377,8 @@ defaults read com.google.Chrome
 defaults read com.apple.universalaccess
 ```
 
-### Future Enhancements:
+### Future Enhancements
+
 1. Consider migrating remaining system-specific settings if they become stable
 2. Monitor macOS updates for setting changes
 3. Keep conversion tools up to date
@@ -371,6 +404,7 @@ defaults read com.apple.universalaccess
 **Risk Level**: ✅ **VERY LOW**
 
 **Mitigations Applied**:
+
 - ✅ Multiple backups created
 - ✅ All changes reversible
 - ✅ Comprehensive documentation
@@ -379,6 +413,7 @@ defaults read com.apple.universalaccess
 - ✅ Clean separation prevents conflicts
 
 **Rollback Available**:
+
 ```bash
 # Restore from backups if needed:
 cp ~/development/github/tuxpeople/dotfiles/.macos.backup-20251224-141724 \
@@ -407,21 +442,24 @@ cp inventories/group_vars/macs/defaults.yml.backup-20251224-141724 \
 
 ## Lessons Learned
 
-### What Worked Excellently:
+### What Worked Excellently
+
 1. ✅ Automated conversion saved ~2 hours of manual work
 2. ✅ Phased approach (Phase 1 → Phase 2 → Cleanup) was logical
 3. ✅ Duplicate detection prevented conflicts
 4. ✅ Comprehensive documentation before starting helped planning
 5. ✅ Tools are reusable for future macOS updates
 
-### Insights:
+### Insights
+
 1. 💡 Safari/Mail settings moved away from `defaults` system in macOS 26.2
 2. 💡 Third-party apps should stay in .macos (frequent updates)
 3. 💡 Hardware-specific settings (trackpad) better in .macos
 4. 💡 System-wide settings ideal for Ansible migration
 5. 💡 Commented code is usually commented for good reasons
 
-### Future Improvements:
+### Future Improvements
+
 1. Create validation tests for all Ansible settings
 2. Set up monitoring for deprecated settings in macOS updates
 3. Consider creating domain-specific defaults files
@@ -444,6 +482,7 @@ The mac-dev-playbook repository is now in an excellent state:
 - **Reusable tools** for future migrations
 
 The migration strategy proved highly effective:
+
 - System settings → Ansible (idempotent, version-controlled)
 - App settings → .macos (flexible, app-specific)
 - Perfect balance achieved

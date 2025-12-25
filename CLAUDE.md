@@ -24,17 +24,20 @@ Configuration cascades from general → group → host-specific, allowing shared
 ### Playbook Types
 
 **main.yml**: Simple full provisioning playbook for initial setup
+
 - Uses `default.config.yml` for configuration
 - Runs all standard roles (homebrew, mas, dotfiles, dock, etc.)
 - Suitable for fresh Mac setup
 
 **plays/full.yml**: Complete provisioning with advanced features
+
 - Sets up temporary passwordless sudo for automation
 - Installs Rosetta 2 for Apple Silicon Macs
 - Includes SSH key setup and additional pre-tasks
 - Runs post-provision tasks from `post_provision_tasks` glob
 
 **plays/update.yml**: Daily update/maintenance playbook
+
 - Focused on updates (brew, cask, Microsoft, kubectl, GPG)
 - Runs custom roles: `ansible-mac-update`, `munki_update`, `ansible-role-nvm`
 - Uses environment variable `env_path` for proper PATH setup
@@ -51,6 +54,7 @@ Located in `roles/`:
 ### External Dependencies
 
 Defined in `requirements.yml`:
+
 - `elliotweiser.osx-command-line-tools`: Ensures Xcode CLI tools are installed
 - `geerlingguy.dotfiles`: Manages dotfiles repository sync
 - `geerlingguy.mac` collection: Provides homebrew, mas, and dock roles
@@ -109,6 +113,7 @@ ln -sf ~/development/github/tuxpeople/mac-dev-playbook/scripts/macupdate \
 ```
 
 **Summary**:
+
 - `init.sh`: Once per Mac (fresh setup)
 - `macapply`: When you change configuration (brew.yml, dock.yml, etc.)
 - `macupdate`: Daily/weekly (updates packages and system)
@@ -208,16 +213,19 @@ The repository includes GitHub Actions CI (see `.github/workflows/` if present).
 This repository includes a three-tier font management system:
 
 **1. Common Fonts** (`files/fonts/common/`)
+
 - Installed on ALL Macs (business + private)
 - Committed to git (free/open-source fonts only)
 - Applied with: `./scripts/macapply --tags fonts`
 
 **2. Private Fonts** (`files/fonts/private/`)
+
 - Installed on private Macs only (odin, thor)
 - Committed to git (free/open-source fonts only)
 - Applied with: `./scripts/macapply --tags fonts`
 
 **3. Licensed Fonts** (`~/iCloudDrive/Allgemein/fonts/licensed/`)
+
 - Installed on private Macs only
 - NOT committed to git (in `.gitignore`)
 - Stored in iCloud Drive for syncing
@@ -234,6 +242,7 @@ This repository includes a three-tier font management system:
 This repository includes automated printer installation and configuration using CUPS/lpadmin.
 
 **Configuration Files**:
+
 - **inventories/group_vars/macs/printers.yml**: Base printer configuration for all Macs
 - **inventories/group_vars/business_mac/printers.yml**: Business-specific printers (extends base config)
 - **inventories/group_vars/private_mac/printers.yml**: Private-specific printers (if needed)
@@ -241,6 +250,7 @@ This repository includes automated printer installation and configuration using 
 **Task Implementation**: `tasks/post/printers.yml`
 
 **How It Works**:
+
 1. Printers are defined in the `printers` list in inventory group_vars
 2. Each printer configuration includes:
    - `name`: Printer name in CUPS
@@ -254,6 +264,7 @@ This repository includes automated printer installation and configuration using 
    - `options`: Dictionary of printer options (e.g., `CNDuplex: DuplexFront`)
 
 **Example Configuration**:
+
 ```yaml
 configure_printers: true
 
@@ -278,6 +289,7 @@ printers:
 ```
 
 **Application**:
+
 ```bash
 # Recommended: Run individual printer task
 ./scripts/macrun printers
@@ -290,12 +302,14 @@ printers:
 ```
 
 **Idempotency**:
+
 - Tasks are idempotent and only report changes when actual modifications occur
 - New printers are marked as "changed"
 - Existing printer updates, option changes, and enable/accept operations run without reporting changes (since CUPS commands don't indicate if changes were made)
 - Default printer is only changed if different from current default
 
 **Notes**:
+
 - Printers run during the 'post' tag phase via `tasks/post/printers.yml`
 - The task uses `lpadmin` for printer management and requires sudo
 - Use `./scripts/macrun printers` to avoid sudo issues when running tasks individually
@@ -320,11 +334,13 @@ When starting a new session, Claude should read these files:
 - **docs/analysis/REPOSITORY_REVIEW.md**: Comprehensive architecture review and recommendations (2025-12-22)
 
 **Key Documentation**:
+
 - **docs/WORKFLOWS.md**: Complete guide for all workflows (init, apply, update)
 - **docs/NEW_MAC_SETUP.md**: Step-by-step guide for setting up a new Mac
 - **CLAUDE.md** (this file): AI assistant context and repository overview
 
 **Purpose**:
+
 - `SESSION_STATUS.md`: Session-specific progress tracking
 - `TODO.md`: General tasks, ideas, maintenance items
 - `IMPROVEMENTS.md`: Technical debt and code quality improvements
@@ -348,11 +364,13 @@ shellcheck scripts/*.sh init*.sh tests/*.sh
 ```
 
 **Required for CI to pass:**
+
 - yamllint: No errors (warnings are acceptable)
 - ansible-lint: No errors
 - shellcheck: No errors
 
 **Common yamllint fixes:**
+
 ```bash
 # Add document start marker
 echo "---" | cat - file.yml > temp && mv temp file.yml
@@ -403,6 +421,7 @@ The init.sh bootstrap script has been significantly improved for fresh Mac setup
 **Impact**: Fresh Mac setups are now significantly more reliable and require less manual intervention.
 
 **See Also**:
+
 - **docs/NEW_MAC_SETUP.md**: Updated troubleshooting guide
 - **docs/PYTHON_VERSION_MANAGEMENT.md**: Requirements.txt strategy explained
 - **docs/sessions/SESSION_STATUS.md**: Session 4 details (2025-12-25)

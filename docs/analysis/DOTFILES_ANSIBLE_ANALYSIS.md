@@ -12,7 +12,8 @@
 
 **Genutzt durch Ansible via `geerlingguy.dotfiles` Role**
 
-#### Echte Dotfiles (User-Konfiguration):
+#### Echte Dotfiles (User-Konfiguration)
+
 - `.bashrc`, `.bash_profile`, `.bash_prompt` - Shell-Konfiguration
 - `.aliases`, `.exports`, `.functions` - Shell-Funktionen
 - `.gitconfig`, `.gitattributes`, `.gitignore` - Git-Konfiguration
@@ -23,7 +24,8 @@
 - `.ansible.cfg` - Ansible-User-Config
 - `.k9s/` - Kubernetes CLI config
 
-#### System-Konfiguration (sollte zu Ansible?):
+#### System-Konfiguration (sollte zu Ansible?)
+
 - **`.macos`** (952 Zeilen!) - macOS defaults/Systemeinstellungen
   - Aktuell: Wird von `tasks/osx.yml` ausgeführt
   - Variable: `osx_script: "{{myhomedir}}/.macos --no-restart"`
@@ -34,7 +36,8 @@
   - Aktuell: Genutzt via `homebrew_brewfile_dir: "{{dotfiles_repo_local_destination}}/machine/..."`
   - Problem: Ansible-managed Konfiguration liegt außerhalb des Ansible-Repos
 
-#### Veraltete/Fragliche Dateien:
+#### Veraltete/Fragliche Dateien
+
 - `.macos copy` - Duplikat?
 - `Brewfile copy` in business_mac/ - Duplikat?
 - `brew.sh` - Veraltete Homebrew-Installation (ruby -e curl)
@@ -48,6 +51,7 @@
 ### 1. `.macos` Script (952 Zeilen)
 
 **Aktueller Workflow**:
+
 ```
 1. geerlingguy.dotfiles Role klont Repo
 2. Symlinkt .macos nach ~/.macos
@@ -55,12 +59,14 @@
 ```
 
 **Probleme**:
+
 - **Nicht idempotent**: Shell-Script läuft jedes Mal komplett durch
 - **Keine Ansible-Vorteile**: Kein changed/ok reporting, keine conditionals
 - **Schwer wartbar**: 952 Zeilen Shell vs. strukturierte Ansible-Tasks
 - **Duplikation**: Viele defaults könnten mit `community.general.osx_defaults` gesetzt werden
 
 **Beispiel-Inhalt**:
+
 ```bash
 # Expand save panel by default
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
@@ -73,6 +79,7 @@ defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 ```
 
 **Bessere Lösung** (Ansible):
+
 ```yaml
 - name: Configure macOS defaults
   community.general.osx_defaults:
@@ -89,6 +96,7 @@ defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 ### 2. Brewfiles
 
 **Aktueller Workflow**:
+
 ```
 inventories/group_vars/business_mac/brew.yml:
   homebrew_brewfile_dir: "{{dotfiles_repo_local_destination}}/machine/business_mac/"
@@ -98,6 +106,7 @@ inventories/group_vars/private_mac/brew.yml:
 ```
 
 **Probleme**:
+
 - Brewfiles liegen außerhalb des Ansible-Repos
 - Änderungen an Packages = Änderungen in anderem Repo
 - Brewfile-Management nicht in Ansible-Versionskontrolle
@@ -105,6 +114,7 @@ inventories/group_vars/private_mac/brew.yml:
 **Alternative Strukturen**:
 
 **Option A**: Brewfiles ins Ansible-Repo
+
 ```
 mac-dev-playbook/
   inventories/
@@ -122,6 +132,7 @@ mac-dev-playbook/
 ```
 
 **Option B**: Ansible-managed Package-Listen statt Brewfiles
+
 ```yaml
 # inventories/group_vars/business_mac/brew.yml
 homebrew_installed_packages:
@@ -136,6 +147,7 @@ homebrew_cask_apps:
 ### 3. Bootstrap-Scripts
 
 **Im Dotfiles-Repo**:
+
 - `bootstrap.sh` - Symlinkt Dotfiles
 - `brew.sh` - Installiert Homebrew (VERALTET)
 - `all.sh` - Run all scripts
@@ -147,9 +159,10 @@ homebrew_cask_apps:
 
 ## 💡 Empfehlungen
 
-### Klare Trennung der Verantwortlichkeiten:
+### Klare Trennung der Verantwortlichkeiten
 
-#### ✅ Im Dotfiles-Repo bleibt:
+#### ✅ Im Dotfiles-Repo bleibt
+
 **Zweck**: User-spezifische Konfiguration (portabel, persönlich)
 
 - Shell-Config: `.bashrc`, `.bash_profile`, `.aliases`, `.functions`, `.exports`
@@ -158,7 +171,8 @@ homebrew_cask_apps:
 - Tool-Configs: `.tmux.conf`, `.curlrc`, `.wgetrc`, `.k9s/`
 - Terminal-Themes: `init/*.terminal`, `init/*.itermcolors`
 
-#### ➡️ Ins Ansible-Repo migrieren:
+#### ➡️ Ins Ansible-Repo migrieren
+
 **Zweck**: System-Provisionierung (Mac-spezifisch, Ansible-managed)
 
 1. **`.macos` → `tasks/macos-defaults.yml`**
@@ -171,7 +185,8 @@ homebrew_cask_apps:
    - Option B: In YAML-Listen konvertieren (empfohlen)
    - Vorteil: Eine Source of Truth, Ansible-Versionskontrolle
 
-#### 🗑️ Aus Dotfiles-Repo entfernen:
+#### 🗑️ Aus Dotfiles-Repo entfernen
+
 **Zweck**: Cleanup, Redundanz vermeiden
 
 - `.macos` (wird zu Ansible-Tasks)
@@ -188,6 +203,7 @@ homebrew_cask_apps:
 ### Phase 1: Brewfiles (Einfach, sofortige Verbesserung)
 
 **Option A - Brewfiles verschieben** (Schneller):
+
 ```bash
 # 1. Struktur erstellen
 mkdir -p files/brewfiles/{business_mac,private_mac}
@@ -206,6 +222,7 @@ homebrew_brewfile_dir: "../../../files/brewfiles/business_mac/"
 ```
 
 **Option B - In YAML konvertieren** (Besser langfristig):
+
 ```bash
 # 1. Brewfile parsen und in YAML umwandeln
 # 2. In group_vars/*/brew.yml integrieren
@@ -215,6 +232,7 @@ homebrew_brewfile_dir: "../../../files/brewfiles/business_mac/"
 ### Phase 2: .macos Script konvertieren (Aufwändig)
 
 **Vorgehen**:
+
 1. `.macos` in Kategorien einteilen (General UI/UX, Finder, Dock, etc.)
 2. Pro Kategorie eine Task-Datei erstellen (`tasks/macos/*.yml`)
 3. Shell-defaults in `osx_defaults` Module konvertieren
@@ -223,6 +241,7 @@ homebrew_brewfile_dir: "../../../files/brewfiles/business_mac/"
 6. `.macos` aus Dotfiles entfernen wenn komplett migriert
 
 **Beispiel-Kategorie**: `tasks/macos/general-ui.yml`
+
 ```yaml
 ---
 - name: Set sidebar icon size to medium
@@ -267,20 +286,26 @@ echo "*.lock.json" >> .gitignore
 ## ⚠️ Risiken & Mitigation
 
 ### Risiko 1: .macos Konvertierung komplex
+
 **Mitigation**:
+
 - Stufenweise Migration (Kategorie für Kategorie)
 - Test-Mac verwenden
 - `.macos` vorerst parallel laufen lassen
 - changed_when: false für Migration-Phase
 
 ### Risiko 2: Brewfiles haben spezielle Syntax
+
 **Mitigation**:
+
 - Erst kopieren (Option A), später konvertieren
 - Brewfile-Format gut dokumentiert
 - Ansible Homebrew-Role unterstützt Brewfiles
 
 ### Risiko 3: Dotfiles-Repo wird von mehreren Systemen genutzt?
+
 **Mitigation**:
+
 - Prüfen: Wird Dotfiles-Repo auch auf Linux/anderen Macs genutzt?
 - Falls ja: .macos bleibt, aber wird nicht von Ansible gemanaged
 
@@ -298,9 +323,9 @@ echo "*.lock.json" >> .gitignore
 
 ## 📚 Referenzen
 
-- geerlingguy.dotfiles Role: https://github.com/geerlingguy/ansible-role-dotfiles
-- community.general.osx_defaults: https://docs.ansible.com/ansible/latest/collections/community/general/osx_defaults_module.html
-- Homebrew Brewfile: https://github.com/Homebrew/homebrew-bundle
+- geerlingguy.dotfiles Role: <https://github.com/geerlingguy/ansible-role-dotfiles>
+- community.general.osx_defaults: <https://docs.ansible.com/ansible/latest/collections/community/general/osx_defaults_module.html>
+- Homebrew Brewfile: <https://github.com/Homebrew/homebrew-bundle>
 
 ---
 

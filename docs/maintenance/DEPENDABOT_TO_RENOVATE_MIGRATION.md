@@ -8,6 +8,7 @@
 ## Problem Identified
 
 **Dependabot** and **Renovate** were both active on this repository:
+
 - Both tried to manage Python packages (requirements.txt)
 - Both tried to manage GitHub Actions
 - They blocked each other from creating PRs
@@ -15,6 +16,7 @@
 - **Since then**: No updates from either tool
 
 **Evidence**:
+
 ```bash
 gh pr list --state all --label dependencies --limit 5
 # Shows only Dependabot PRs, no Renovate PRs
@@ -25,12 +27,14 @@ gh pr list --state all --label dependencies --limit 5
 ## Solution: Disable Dependabot for Python + GitHub Actions
 
 **Changed `.github/dependabot.yml`**:
+
 - ❌ Removed: `package-ecosystem: pip`
 - ❌ Removed: `package-ecosystem: github-actions`
 - ✅ Kept: `package-ecosystem: docker` (if needed)
 - ✅ Kept: `package-ecosystem: bundler` (if needed)
 
 **Reason**: Renovate has superior features for this repo:
+
 - Auto-merge with granular rules
 - Ansible Galaxy support (`requirements.yml`)
 - Dependency dashboard
@@ -43,6 +47,7 @@ gh pr list --state all --label dependencies --limit 5
 ### Immediate (After Merge)
 
 **Renovate will detect outdated dependencies**:
+
 ```
 Current (outdated):
 - cryptography==44.0.1  → 46.0.3 available
@@ -51,6 +56,7 @@ Current (outdated):
 ```
 
 **Renovate will create PRs**:
+
 1. One PR per dependency (or grouped by config)
 2. Labels: `dependencies`
 3. CI runs automatically
@@ -59,11 +65,13 @@ Current (outdated):
 ### Timeline
 
 **Monday before 6am** (next scheduled run):
+
 - Renovate scans requirements.txt
 - Creates PRs for all outdated packages
 - Expect 3-5 PRs initially
 
 **First Week**:
+
 - **Patch updates**: Auto-merged (e.g., cryptography 44.0.1 → 44.0.3)
 - **Minor updates**: Auto-merged for safe packages
 - **Major updates**: Manual review (Ansible 10→12)
@@ -73,6 +81,7 @@ Current (outdated):
 ## Migration Checklist
 
 ### Pre-Migration (Done)
+
 - [x] Created renovate.json with auto-merge rules
 - [x] Added requirements-check CI job
 - [x] Documented in RENOVATE_SETUP.md
@@ -81,6 +90,7 @@ Current (outdated):
 ### Post-Migration (Required)
 
 - [ ] **Enable GitHub auto-merge** in Settings:
+
   ```
   Settings → General → Pull Requests
   ✅ Allow auto-merge
@@ -99,6 +109,7 @@ Current (outdated):
   - Test auto-merge works
 
 - [ ] **Manually update to latest** (optional, to catch up):
+
   ```bash
   # Update to versions we manually installed
   # (Already in requirements.txt from commit 6af2974)
@@ -135,17 +146,20 @@ Based on current requirements.txt:
 If Renovate causes issues:
 
 1. **Re-enable Dependabot**:
+
    ```bash
    git revert <this-commit>
    ```
 
 2. **Disable Renovate**:
+
    ```bash
    # In renovate.json:
    "enabled": false
    ```
 
 3. **Close all Renovate PRs**:
+
    ```bash
    gh pr list --label dependencies --json number --jq '.[].number' | \
    xargs -I {} gh pr close {}
@@ -158,6 +172,7 @@ If Renovate causes issues:
 ### Dependency Dashboard
 
 GitHub Issues tab should have:
+
 - **"Dependency Dashboard"** issue (auto-created by Renovate)
 - Shows all pending updates
 - Lists any errors/warnings
@@ -165,6 +180,7 @@ GitHub Issues tab should have:
 ### Check Renovate Logs
 
 In each Renovate PR:
+
 - Check PR description for details
 - Look for "Automerge: Enabled" or "Automerge: Disabled"
 - Review changelog/release notes links
@@ -172,6 +188,7 @@ In each Renovate PR:
 ### Weekly Review
 
 Every Monday (after 6am):
+
 - Check new Renovate PRs
 - Review any manual-review-required PRs (Ansible, major versions)
 - Verify auto-merged PRs didn't break anything
@@ -181,12 +198,14 @@ Every Monday (after 6am):
 ## Benefits of Migration
 
 ### Before (Dependabot)
+
 - ❌ No auto-merge for Python packages
 - ❌ No Ansible Galaxy support
 - ❌ All PRs require manual merge
 - ❌ Stopped working (conflict with Renovate)
 
 ### After (Renovate)
+
 - ✅ Auto-merge patch updates (~15 min)
 - ✅ Auto-merge safe minor updates
 - ✅ Manages Ansible roles/collections
@@ -201,15 +220,17 @@ Every Monday (after 6am):
 ### Renovate Not Creating PRs
 
 **Check**:
+
 1. Is Renovate installed on the repo?
    - GitHub Settings → Integrations → Renovate
 2. Is renovate.json valid?
    - Check for syntax errors
-   - Validate at: https://docs.renovatebot.com/config-validation
+   - Validate at: <https://docs.renovatebot.com/config-validation>
 3. Are dependencies outdated?
    - Check manually: `pip list --outdated`
 
 **Force Renovate to run**:
+
 - Close and reopen Dependency Dashboard issue
 - Wait for next scheduled run (Monday 6am)
 - Or: Push a commit (triggers Renovate check)
@@ -217,12 +238,14 @@ Every Monday (after 6am):
 ### Auto-Merge Not Working
 
 **Check**:
+
 1. GitHub auto-merge enabled? (Settings)
 2. Required checks configured?
 3. All CI tests passing?
 4. Branch protection rules allow auto-merge?
 
 **Debug**:
+
 - Check Renovate PR description
 - Look for "Automerge: Disabled" message
 - Review CI test results

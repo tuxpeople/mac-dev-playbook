@@ -20,7 +20,7 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 **After**: 74 settings (373 lines)
 **Added**: 62 new settings
 
-#### Settings by Domain:
+#### Settings by Domain
 
 | Domain | Count | Description |
 |--------|-------|-------------|
@@ -41,7 +41,7 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 **After**: 856 lines
 **Removed**: 96 lines (10% reduction)
 
-#### Removed Lines Breakdown:
+#### Removed Lines Breakdown
 
 | Category | Lines Removed | Reason |
 |----------|---------------|--------|
@@ -54,7 +54,8 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 
 ## Files Changed
 
-### Modified:
+### Modified
+
 1. **inventories/group_vars/macs/defaults.yml**
    - 12 → 74 settings (+62)
    - 61 → 373 lines (+312)
@@ -63,7 +64,8 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
    - 952 → 856 lines (-96)
    - Removed all broken/commented settings
 
-### Created:
+### Created
+
 1. **scripts/convert-macos-to-ansible.py** - Automated conversion tool
 2. **scripts/merge-settings.py** - Duplicate detection and merging
 3. **scripts/cleanup-macos.py** - Automated cleanup tool
@@ -71,7 +73,8 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 5. **docs/analysis/COMMENTED_MACOS_SETTINGS.md** - Documentation of removed commented settings
 6. **docs/analysis/BROKEN_DOMAIN_SETTINGS.md** - Documentation of removed Safari/Mail settings
 
-### Backup Files Created:
+### Backup Files Created
+
 - `.macos.backup-20251224-141724`
 - `defaults.yml.backup-20251224-141724`
 
@@ -79,7 +82,8 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 
 ## New Settings in Ansible (62 total)
 
-### NSGlobalDomain (24 new):
+### NSGlobalDomain (24 new)
+
 - Sidebar icon size
 - Always show scrollbars
 - Toolbar title rollover delay
@@ -97,7 +101,8 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 - Enable WebKit developer extras
 - And more...
 
-### com.apple.dock (20 new):
+### com.apple.dock (20 new)
+
 - Minimize windows into application icon
 - Enable spring loading for all Dock items
 - Spring loading delay
@@ -115,7 +120,8 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 - Hot corners (all 4 corners with modifiers)
 - And more...
 
-### com.apple.finder (12 new):
+### com.apple.finder (12 new)
+
 - Show mounted servers on desktop
 - Disable file extension change warning
 - Avoid creating .DS_Store files on network/USB volumes
@@ -129,11 +135,13 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 - Increase icon size
 - New Finder windows show home directory
 
-### com.apple.screensaver (2 new):
+### com.apple.screensaver (2 new)
+
 - Ask for password after screensaver
 - Password delay
 
-### com.apple.screencapture (3 new):
+### com.apple.screencapture (3 new)
+
 - Screenshot file type (PNG)
 - Disable screenshot shadow
 - Screenshot save location
@@ -143,14 +151,18 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 ## Migration Strategy Used
 
 ### Phase 1: High-Priority Settings (Completed)
+
 ✅ System-level settings migrated to Ansible:
+
 - NSGlobalDomain (25 settings)
 - Finder (19 settings)
 - Dock (23 settings)
 - Screen (6 settings)
 
 ### Phase 2: Medium-Priority (Not yet migrated)
+
 ⏳ App-specific but stable settings (left in .macos for now):
+
 - Activity Monitor (5 settings)
 - DiskUtility (2 settings)
 - TextEdit (2 additional settings beyond the 1 already in Ansible)
@@ -159,7 +171,9 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 **Reason**: These can be migrated later if desired. Kept in .macos for now.
 
 ### Phase 3: Low-Priority (Kept in .macos)
+
 ✅ User app settings remain in .macos:
+
 - Chrome (8 settings)
 - iTerm2 (1 setting)
 - Other third-party apps
@@ -171,9 +185,11 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 ## Tools Created
 
 ### 1. convert-macos-to-ansible.py
+
 **Purpose**: Automatically convert `defaults write` commands to Ansible YAML format
 
 **Features**:
+
 - Parses .macos script
 - Extracts non-commented defaults write commands
 - Filters out broken domains (Safari, Mail)
@@ -181,6 +197,7 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 - Handles types: bool, int, string, float
 
 **Usage**:
+
 ```bash
 ./scripts/convert-macos-to-ansible.py > /tmp/converted.yml
 ```
@@ -188,9 +205,11 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 ---
 
 ### 2. merge-settings.py
+
 **Purpose**: Merge converted settings with existing defaults.yml, avoiding duplicates
 
 **Features**:
+
 - Loads existing defaults.yml
 - Compares by (domain, key) pairs
 - Removes duplicates
@@ -198,6 +217,7 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 - Generates statistics
 
 **Usage**:
+
 ```bash
 ./scripts/merge-settings.py
 ```
@@ -207,9 +227,11 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 ---
 
 ### 3. cleanup-macos.py
+
 **Purpose**: Remove commented and broken settings from .macos
 
 **Features**:
+
 - Removes commented `defaults write` commands
 - Removes Safari settings (domain doesn't exist)
 - Removes Mail settings (domain doesn't exist)
@@ -217,6 +239,7 @@ Successfully migrated 62 working macOS settings from `.macos` shell script to An
 - Creates backup before modifying
 
 **Usage**:
+
 ```bash
 ./scripts/cleanup-macos.py
 mv ~/.macos.cleaned ~/.macos
@@ -227,43 +250,53 @@ mv ~/.macos.cleaned ~/.macos
 ## Benefits Achieved
 
 ### 1. **Idempotency** ✅
+
 Ansible ensures settings are consistently applied across all Macs. Re-running playbook only changes what's different.
 
 ### 2. **Versionability** ✅
+
 All settings tracked in git with full history. Easy to see what changed and when.
 
 ### 3. **Documentation** ✅
+
 Each setting has a descriptive `name` field explaining its purpose.
 
 ### 4. **Organization** ✅
+
 Settings grouped by domain in structured YAML format.
 
 ### 5. **Testability** ✅
+
 Can test on one Mac before rolling out to all Macs.
 
 ### 6. **Cleaner .macos** ✅
+
 Removed 10% of broken/obsolete code. Script now only contains working settings.
 
 ### 7. **Centralization** ✅
+
 System-level settings managed by Ansible (infrastructure as code).
 
 ---
 
 ## Statistics
 
-### Before Migration:
+### Before Migration
+
 - **Ansible**: 12 settings
 - **.macos**: 228 `defaults write` commands (952 total lines)
 - **Broken settings**: 33 (Safari + Mail)
 - **Commented settings**: 51
 
-### After Migration:
+### After Migration
+
 - **Ansible**: 74 settings (+617% increase)
 - **.macos**: 132 `defaults write` commands (856 total lines)
 - **Broken settings**: 0 (all removed)
 - **Commented settings**: 0 (all removed)
 
-### Coverage:
+### Coverage
+
 - **Migrated to Ansible**: 62 high-priority settings
 - **Removed as broken**: 33 settings (documented)
 - **Removed as commented**: 51 settings (documented)
@@ -273,8 +306,10 @@ System-level settings managed by Ansible (infrastructure as code).
 
 ## Next Steps
 
-### Immediate (Optional):
+### Immediate (Optional)
+
 1. **Test on current Mac**:
+
    ```bash
    # Apply Ansible settings
    cd ~/development/github/tuxpeople/mac-dev-playbook
@@ -286,6 +321,7 @@ System-level settings managed by Ansible (infrastructure as code).
    ```
 
 2. **Verify settings applied**:
+
    ```bash
    # Check a few settings
    defaults read NSGlobalDomain AppleShowScrollBars
@@ -293,7 +329,8 @@ System-level settings managed by Ansible (infrastructure as code).
    defaults read com.apple.screencapture type
    ```
 
-### Later (If Desired):
+### Later (If Desired)
+
 1. **Migrate Phase 2 settings** (Activity Monitor, TextEdit, Terminal, DiskUtility)
    - 13 additional settings
    - Use same conversion scripts
@@ -310,19 +347,22 @@ System-level settings managed by Ansible (infrastructure as code).
 
 ## Lessons Learned
 
-### What Went Well:
+### What Went Well
+
 1. ✅ Automated conversion saved hours of manual work
 2. ✅ Duplicate detection prevented conflicts
 3. ✅ Comprehensive documentation before migration helped planning
 4. ✅ Backups created before any changes
 5. ✅ Scripts are reusable for future migrations
 
-### Challenges:
+### Challenges
+
 1. ⚠️ Safari/Mail domains changed in macOS 26.2 (no longer `defaults`-based)
 2. ⚠️ Automatic name generation from keys needs manual review/improvement
 3. ⚠️ Some settings have complex types (arrays, dicts) - not all converted
 
-### Future Improvements:
+### Future Improvements
+
 1. Improve automatic name generation (camelCase → readable names)
 2. Add support for complex types (arrays, dicts)
 3. Create validation script to test all settings work
@@ -365,6 +405,7 @@ All broken/removed settings are fully documented:
 **Risk**: ✅ LOW
 
 **Mitigations**:
+
 - ✅ Backups created before any changes
 - ✅ All removed settings documented
 - ✅ Changes can be reverted easily
@@ -372,6 +413,7 @@ All broken/removed settings are fully documented:
 - ✅ Settings are additive (won't break existing setup)
 
 **Rollback Plan**:
+
 ```bash
 # If needed, restore from backups:
 cp ~/development/github/tuxpeople/dotfiles/.macos.backup-20251224-141724 \
@@ -413,6 +455,7 @@ All criteria met:
 ## Conclusion
 
 Migration successfully completed with:
+
 - **74 settings** now managed by Ansible (vs. 12 before)
 - **856-line** cleaned .macos script (vs. 952 before)
 - **Zero** broken settings remaining
@@ -420,6 +463,7 @@ Migration successfully completed with:
 - **Reusable tools** for future migrations
 
 The repository is now in a much better state:
+
 - More settings under version control
 - Cleaner codebase
 - Better documentation

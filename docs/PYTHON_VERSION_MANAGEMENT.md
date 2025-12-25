@@ -24,6 +24,7 @@ python_versions_to_keep:
 ```
 
 **Issues:**
+
 - When upgrading Python, must update multiple files
 - Easy to forget a location
 - Comments created circular references
@@ -37,6 +38,7 @@ python_versions_to_keep:
 ```
 
 **Benefits:**
+
 - One file to update when changing Python version
 - Standard convention (used by pyenv, asdf, etc.)
 - Clear, simple, no circular references
@@ -51,6 +53,7 @@ python_versions_to_keep:
 ```
 
 Contains just the version number:
+
 ```
 3.11.8
 ```
@@ -71,6 +74,7 @@ fi
 ```
 
 **Features:**
+
 - Automatically detects repository location
 - Reads version from `.python-version`
 - Fallback to hardcoded version if file missing
@@ -94,6 +98,7 @@ python_versions_to_keep:
 ## Upgrading Python Version
 
 ### Old Way (Multiple Files)
+
 ```bash
 # 1. Update scripts/macupdate
 vim scripts/macupdate  # Change line 5
@@ -106,6 +111,7 @@ vim inventories/group_vars/macs/general.yml  # Change line 26
 ```
 
 ### New Way (Single File)
+
 ```bash
 # 1. Update .python-version
 echo "3.12.9" > .python-version
@@ -165,6 +171,7 @@ python --version  # Will use version from .python-version (if pyenv active)
 ### Other Tools
 
 Many Python version managers support `.python-version`:
+
 - pyenv ✅
 - asdf ✅
 - rtx/mise ✅
@@ -212,6 +219,7 @@ Add an Ansible task to warn if versions don't match:
 ### The Problem
 
 Different Python versions support different package versions:
+
 - Python 3.9: Can only install ansible 9.x (ansible 10+ requires Python 3.10+)
 - Python 3.11+: Can install ansible 12.x or newer
 
@@ -220,6 +228,7 @@ But we use the same `requirements.txt` for both!
 ### The Solution: Flexible Version Ranges
 
 **requirements.txt**:
+
 ```txt
 ansible>=9.0
 bcrypt>=4.0
@@ -228,6 +237,7 @@ cryptography>=41.0
 ```
 
 **How it works**:
+
 1. **init.sh** (fresh Mac with System Python 3.9):
    - Runs: `pip install --requirement requirements.txt`
    - pip sees: `ansible>=9.0`
@@ -243,6 +253,7 @@ cryptography>=41.0
 ### Why This Works
 
 pip is smart about Python version compatibility:
+
 - Packages declare their Python requirements in metadata
 - pip automatically filters out incompatible versions
 - Same requirements.txt → different installations based on Python version
@@ -250,25 +261,31 @@ pip is smart about Python version compatibility:
 ### Alternative Approaches (Not Used)
 
 **Option A: Fixed versions**
+
 ```txt
 ansible==9.0.0  # Too restrictive
 ```
+
 - ❌ Locks everyone to old version
 - ❌ No security updates
 
 **Option B: Separate files**
+
 ```txt
 requirements.txt       # For init.sh (Python 3.9)
 requirements-dev.txt   # For macupdate (Python 3.11+)
 ```
+
 - ❌ More maintenance
 - ❌ Duplication
 - ❌ Easy to forget updating both
 
 **Option C: Upper bounds**
+
 ```txt
 ansible>=9.0,<13.0  # Previously used
 ```
+
 - ⚠️ Needs manual updates when new versions release
 - ⚠️ May block compatible versions unnecessarily
 
@@ -279,6 +296,7 @@ ansible>=9.0  # ✅ Best approach
 ```
 
 **Benefits**:
+
 - ✅ Automatic compatibility with all Python versions
 - ✅ Single source of truth
 - ✅ Always gets latest compatible version

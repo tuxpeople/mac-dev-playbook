@@ -24,6 +24,7 @@ Das Repository enthält **3 Bootstrap/Update Scripts** mit unterschiedlichen Zwe
 
 **Zweck**: Komplettes Setup eines frischen Macs
 **Aufruf**: Via curl von GitHub (kein lokales Checkout nötig)
+
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
 ```
@@ -31,6 +32,7 @@ Das Repository enthält **3 Bootstrap/Update Scripts** mit unterschiedlichen Zwe
 **Funktionen**:
 
 #### Phase 1: Prerequisites (Zeilen 26-40)
+
 ```bash
 - Fragt: "Are you logged into Mac Appstore?"
 - Fragt: Hostname eingeben
@@ -39,11 +41,13 @@ Das Repository enthält **3 Bootstrap/Update Scripts** mit unterschiedlichen Zwe
 ```
 
 **Besonderheit**: Sudo keep-alive loop läuft im Hintergrund
+
 ```bash
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 ```
 
 #### Phase 2: Repository & iCloud Files (Zeilen 42-79)
+
 ```bash
 1. Klont Repo nach /tmp/git
 2. Lädt iCloud-Dateien herunter (brctl download):
@@ -55,13 +59,16 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 ```
 
 **Problem**: Hartcodierte Python-Version!
+
 ```bash
 /Library/Developer/CommandLineTools/usr/bin/pip3.8 install --upgrade pip
 /Library/Developer/CommandLineTools/usr/bin/pip3.8 install --user --requirement /tmp/git/requirements.txt
 ```
+
 → Python 3.8 ist veraltet, macOS hat mittlerweile Python 3.9+
 
 #### Phase 3: Ansible Setup (Zeilen 80-89)
+
 ```bash
 - pip3.8 install --requirement requirements.txt
 - ansible-galaxy install -r requirements.yml
@@ -69,6 +76,7 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 ```
 
 #### Phase 4: System Configuration (Zeilen 91-98)
+
 ```bash
 - Kopiert limit.maxfiles.plist nach /Library/LaunchDaemons
 - Kopiert limit.maxproc.plist nach /Library/LaunchDaemons
@@ -78,6 +86,7 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 **Zweck**: Erhöht max open files/processes (wichtig für Docker, etc.)
 
 #### Phase 5: Hostname Setup (Zeilen 107-114)
+
 ```bash
 sudo scutil --set HostName ${newhostname}
 sudo scutil --set LocalHostName ${newhostname}
@@ -86,6 +95,7 @@ sudo dscacheutil -flushcache
 ```
 
 #### Phase 6: Ansible Full Playbook (Zeilen 116-121)
+
 ```bash
 ansible-playbook plays/full.yml \
   -i inventories \
@@ -95,6 +105,7 @@ ansible-playbook plays/full.yml \
 ```
 
 **Kommentierter Code** (Zeilen 100-105):
+
 ```bash
 # echo "Getting Brewfile"
 # if [[ $(hostname) == ws* ]]; then
@@ -103,6 +114,7 @@ ansible-playbook plays/full.yml \
 #   curl -sfL https://raw.githubusercontent.com/tuxpeople/dotfiles/master/machine/private/Brewfile > files/Brewfile
 # fi
 ```
+
 → **Obsoleter Code**: Brewfiles werden jetzt via Inventory gemanaged
 
 ---
@@ -111,11 +123,13 @@ ansible-playbook plays/full.yml \
 
 **Zweck**: Schnelles Setup wenn Mac bereits teilweise konfiguriert
 **Aufruf**: Lokal im Repo-Directory
+
 ```bash
 ./init_light.sh
 ```
 
 **Funktionen** (nur 7 Zeilen!):
+
 ```bash
 1. pip3 install --requirement requirements.txt
 2. PATH anpassen für Python user packages
@@ -123,6 +137,7 @@ ansible-playbook plays/full.yml \
 ```
 
 **Use Case**:
+
 - Mac hat bereits Python, pip, git
 - Repo ist bereits geklont
 - Nur Ansible-Dependencies müssen installiert werden
@@ -135,13 +150,15 @@ ansible-playbook plays/full.yml \
 
 **Zweck**: Regelmäßige System-Updates und Wartung
 **Aufruf**: Symlinked nach ~/iCloudDrive/Allgemein/bin/macupdate
+
 ```bash
 macupdate
 ```
 
 **Funktionen**:
 
-#### Moderne Features:
+#### Moderne Features
+
 ```bash
 - set -euo pipefail (fail-safe)
 - Proper logging mit Timestamps und Farben
@@ -151,12 +168,14 @@ macupdate
 ```
 
 #### Phase 1: Tool Installation (Zeilen 60-82)
+
 ```bash
 - Prüft Homebrew
 - Installiert: pyenv, pyenv-virtualenv, mise
 ```
 
 #### Phase 2: Python Setup (Zeilen 84-133)
+
 ```bash
 - Setup pyenv (mit eval "$(pyenv init -)")
 - Installiert Python 3.11.8 (konfigurierbar!)
@@ -165,11 +184,13 @@ macupdate
 ```
 
 **Vorteil**: Python-Version ist Variable!
+
 ```bash
 PYTHON_VERSION="${PYTHON_VERSION:-3.11.8}"
 ```
 
 #### Phase 3: Repository Update (Zeilen 147-170)
+
 ```bash
 - cd ins Repo
 - Prüft uncommitted changes → stash
@@ -177,6 +198,7 @@ PYTHON_VERSION="${PYTHON_VERSION:-3.11.8}"
 ```
 
 #### Phase 4: Dependencies (Zeilen 172-202)
+
 ```bash
 - pip install --upgrade pip
 - pip install --requirement requirements.txt
@@ -184,6 +206,7 @@ PYTHON_VERSION="${PYTHON_VERSION:-3.11.8}"
 ```
 
 #### Phase 5: Ansible Run (Zeilen 204-226)
+
 ```bash
 ansible-playbook plays/update.yml \
   -i inventories \
@@ -194,6 +217,7 @@ ansible-playbook plays/update.yml \
 **Wichtig**: Führt `plays/update.yml` aus (nicht `plays/full.yml`!)
 
 #### Phase 6: Post-Playbook Tasks (Zeilen 228-248)
+
 ```bash
 - Spotify Quarantine Fix (bekanntes Homebrew-Problem)
 - CMDB Update (optional, wenn Script in iCloud vorhanden)
@@ -234,6 +258,7 @@ ansible-playbook plays/update.yml \
 #### init_light.sh vs macupdate
 
 `init_light.sh` ist praktisch **obsolet** durch `macupdate`:
+
 - Gleiche Basis-Funktionalität
 - Aber macupdate hat: pyenv, virtualenv, error handling, logging
 - init_light.sh ist nur nützlich wenn pyenv NICHT gewünscht
@@ -245,36 +270,44 @@ ansible-playbook plays/update.yml \
 ### init.sh Probleme
 
 #### 1. Hartcodierte Python-Version (CRITICAL)
+
 ```bash
 /Library/Developer/CommandLineTools/usr/bin/pip3.8 install ...
 ```
+
 **Problem**:
+
 - Python 3.8 ist EOL (End of Life)
 - macOS Sonoma/Sequoia haben Python 3.9+
 - Script schlägt fehl auf neueren Macs
 
 **Fix**: Verwende `python3` statt `pip3.8`
+
 ```bash
 /Library/Developer/CommandLineTools/usr/bin/python3 -m pip install ...
 ```
 
 #### 2. iCloud Dependency (HIGH)
+
 ```bash
 # Zeilen 50-76: Lädt iCloud-Dateien via brctl
 for FILE in Library/Mobile\ Documents/com~apple~CloudDocs/...
 ```
 
 **Problem**:
+
 - iCloud muss eingeloggt und synced sein
 - Filelists müssen existieren und aktuell sein
 - Nicht testbar ohne iCloud-Account
 - Nicht portabel auf andere User
 
 **Fragen**:
+
 - Was steht in filelist.txt? Welche Files sind kritisch?
 - Könnte man diese Files anders bereitstellen? (Git LFS, Ansible Vault, 1Password)
 
 #### 3. Obsoleter kommentierter Code
+
 ```bash
 # echo "Getting Brewfile"
 # if [[ $(hostname) == ws* ]]; then ...
@@ -283,16 +316,19 @@ for FILE in Library/Mobile\ Documents/com~apple~CloudDocs/...
 **Fix**: Löschen, wird nicht mehr verwendet
 
 #### 4. Keine Fehlerbehandlung
+
 ```bash
 git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git || exit 1
 ```
 
 Gut, aber:
+
 - Kein cleanup bei Fehler
 - /tmp/git könnte bereits existieren
 - Kein Rollback bei Ansible-Fehler
 
 #### 5. set -e ist auskommentiert
+
 ```bash
 # set -e
 ```
@@ -304,26 +340,32 @@ Gut, aber:
 ### init_light.sh Probleme
 
 #### 1. Keine Python-Version spezifiziert
+
 ```bash
 pip3 install --requirement requirements.txt
 ```
+
 → Nutzt system `pip3`, könnte verschiedene Python-Versionen sein
 
 #### 2. Kein Error Handling
+
 Kein `set -e`, keine Checks, außer `|| exit 1`
 
 #### 3. PATH wird nur temporär gesetzt
+
 ```bash
 PATH="/usr/local/bin:$(python3 -m site --user-base)/bin:$PATH"
 export PATH
 ```
+
 → Nur für dieses Script, nicht persistent
 
 ---
 
-### macupdate - Bereits gut!
+### macupdate - Bereits gut
 
 **Stärken**:
+
 - Modernes Bash (set -euo pipefail)
 - Proper error handling und logging
 - Konfigurierbar (PYTHON_VERSION, REPO_DIR)
@@ -331,10 +373,13 @@ export PATH
 - Symlink-Auflösung
 
 **Minimale Verbesserungen**:
+
 1. **Deprecated CLI Tools Check**: Zeile 139 prüft nur Python-Binary
+
    ```bash
    if [ ! -f "/Library/Developer/CommandLineTools/usr/bin/python3" ]; then
    ```
+
    → Besser: `xcode-select -p` verwenden
 
 2. **Python Version Mismatch**: PYTHON_VERSION ist 3.11.8, aber init.sh nutzt 3.8
@@ -347,7 +392,9 @@ export PATH
 ### Option 1: Modernisiere init.sh (Minimal Invasive)
 
 **Fixes**:
+
 1. **Ersetze hartcodierte Python-Version**:
+
    ```bash
    # Alt:
    /Library/Developer/CommandLineTools/usr/bin/pip3.8 install ...
@@ -358,6 +405,7 @@ export PATH
    ```
 
 2. **Aktiviere set -e**:
+
    ```bash
    set -euo pipefail
    ```
@@ -382,6 +430,7 @@ scripts/bootstrap --mode=update  # Alias für macupdate
 ```
 
 **Struktur**:
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -417,12 +466,14 @@ esac
 ```
 
 **Vorteile**:
+
 - Ein Script zu warten statt drei
 - Gemeinsame Funktionen (logging, error handling)
 - Konsistente Python-Version über alle Modes
 - Moderne Bash-Practices überall
 
 **Nachteile**:
+
 - Breaking Change für existierende curl-Aufruf
 - Migration nötig
 
@@ -431,11 +482,13 @@ esac
 ### Option 3: Status Quo mit Dokumentation (Pragmatisch)
 
 **Keep**:
+
 - `init.sh`: Für Bootstrap via curl (mit Fixes)
 - `init_light.sh`: Deprecaten oder löschen (redundant zu macupdate ohne --update)
 - `scripts/macupdate`: Für Daily Updates (bereits perfekt)
 
 **Dokumentation**:
+
 ```markdown
 # Bootstrap & Update Scripts
 
@@ -450,11 +503,13 @@ scripts/macupdate  # or via symlink: macupdate
 ```
 
 **Pro**:
+
 - Minimaler Aufwand
 - Keine Breaking Changes
 - init.sh bleibt curl-bar
 
 **Contra**:
+
 - Drei Scripts zu warten
 - Inkonsistente Python-Versionen
 - init_light.sh redundant
@@ -466,6 +521,7 @@ scripts/macupdate  # or via symlink: macupdate
 ### Phase 1: Sofort (Quick Wins)
 
 1. **init.sh fixes**:
+
    ```bash
    - Ersetze pip3.8 → python3 -m pip
    - Aktiviere set -e
@@ -473,6 +529,7 @@ scripts/macupdate  # or via symlink: macupdate
    ```
 
 2. **init_light.sh**:
+
    ```bash
    - Deprecate mit Warnung: "Use scripts/macupdate instead"
    - Oder: Mache es zu Wrapper für macupdate
@@ -499,6 +556,7 @@ scripts/macupdate  # or via symlink: macupdate
 **Fragen zu klären**:
 
 1. **Was steht in den Filelists?**
+
    ```bash
    cat ~/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt
    cat ~/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt
@@ -554,9 +612,9 @@ scripts/macupdate  # or via symlink: macupdate
 
 ## 📚 Referenzen
 
-- Apple Command Line Tools: https://developer.apple.com/download/all/
-- pyenv best practices: https://github.com/pyenv/pyenv#readme
-- Bash strict mode: http://redsymbol.net/articles/unofficial-bash-strict-mode/
+- Apple Command Line Tools: <https://developer.apple.com/download/all/>
+- pyenv best practices: <https://github.com/pyenv/pyenv#readme>
+- Bash strict mode: <http://redsymbol.net/articles/unofficial-bash-strict-mode/>
 - iCloud brctl: `man brctl` (macOS utility für iCloud Drive control)
 
 ---

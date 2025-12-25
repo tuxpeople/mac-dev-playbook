@@ -8,6 +8,7 @@
 ## Overview
 
 **Current State**:
+
 - .macos script: 952 lines
 - 228 `defaults write` commands total
 - 51 commented out (documented in COMMENTED_MACOS_SETTINGS.md)
@@ -15,6 +16,7 @@
 - **182 working settings** to evaluate for migration
 
 **Target State**:
+
 - System-level settings → Ansible (defaults.yml)
 - App-specific stable settings → Ansible (optional)
 - User app settings (Chrome, iTerm2) → Stay in .macos
@@ -31,10 +33,12 @@
 ### Categories
 
 #### 1. NSGlobalDomain (25 settings)
+
 **Currently in Ansible**: 1 (AppleShowAllExtensions)
 **To migrate**: 24
 
 **Examples**:
+
 ```bash
 # Sidebar icon size
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
@@ -50,6 +54,7 @@ defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 ```
 
 **Ansible format**:
+
 ```yaml
 - domain: NSGlobalDomain
   key: NSTableViewDefaultSizeMode
@@ -61,10 +66,12 @@ defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 ---
 
 #### 2. Finder (19 settings)
+
 **Currently in Ansible**: 7 (Desktop icons, hidden files, status bar, path bar)
 **To migrate**: 12
 
 **Examples**:
+
 ```bash
 # Show icons for hard drives, servers, and removable media on the desktop
 defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
@@ -85,10 +92,12 @@ defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
 ---
 
 #### 3. Dock (22 settings)
+
 **Currently in Ansible**: 3 (tilesize, orientation, autohide)
 **To migrate**: 19
 
 **Examples**:
+
 ```bash
 # Minimize windows into their application's icon
 defaults write com.apple.dock minimize-to-application -bool true
@@ -106,10 +115,12 @@ defaults write com.apple.dock show-recents -bool false
 ---
 
 #### 4. Screen Settings (5 settings)
+
 **Currently in Ansible**: 1 (screensaver idleTime)
 **To migrate**: 4
 
 **Examples**:
+
 ```bash
 # Screenshot format
 defaults write com.apple.screencapture type -string "png"
@@ -132,6 +143,7 @@ defaults write com.apple.screencapture location -string "${HOME}/Screenshots"
 ### Categories
 
 #### 1. Activity Monitor (5 settings)
+
 ```bash
 # Show all processes
 defaults write com.apple.ActivityMonitor ShowCategory -int 0
@@ -141,6 +153,7 @@ defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
 ```
 
 #### 2. TextEdit (3 settings)
+
 **Currently in Ansible**: 1 (RichText)
 **To migrate**: 2
 
@@ -154,12 +167,14 @@ defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4
 ```
 
 #### 3. Terminal (3 settings)
+
 ```bash
 # Only use UTF-8 in Terminal.app
 defaults write com.apple.terminal StringEncodings -array 4
 ```
 
 #### 4. DiskUtility (2 settings)
+
 ```bash
 # Enable debug menu
 defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
@@ -194,9 +209,11 @@ defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
 **Action**: Remove documented broken/commented settings
 
 ### Step 1: Remove Commented Settings (51 lines)
+
 **Source**: COMMENTED_MACOS_SETTINGS.md
 
 **Lines to remove**:
+
 - Lines 21, 24, 34, 44 (NSGlobalDomain commented settings)
 - Lines 68, 74, 80 (More NSGlobalDomain)
 - Lines 131, 150-151 (Input devices)
@@ -205,6 +222,7 @@ defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
 - And more...
 
 **Method**:
+
 ```bash
 # Create backup first
 cp ~/.macos ~/.macos.backup-$(date +%Y%m%d)
@@ -215,13 +233,16 @@ cp ~/.macos ~/.macos.backup-$(date +%Y%m%d)
 ---
 
 ### Step 2: Remove Broken Domain Settings (46 lines)
+
 **Source**: BROKEN_DOMAIN_SETTINGS.md
 
 **Lines to remove**:
+
 - Lines 460-544 (Safari - domain doesn't exist)
 - Lines 549-567 (Mail - domain doesn't exist)
 
 **Method**:
+
 ```bash
 # Remove Safari section
 sed -i.bak '/### Safari ###/,/### Mail ###/d' ~/.macos
@@ -234,6 +255,7 @@ sed -i.bak '/### Safari ###/,/### Mail ###/d' ~/.macos
 ## Implementation Steps
 
 ### Prep
+
 ```bash
 # 1. Backup .macos
 cp ~/development/github/tuxpeople/dotfiles/.macos \
@@ -245,6 +267,7 @@ cp inventories/group_vars/macs/defaults.yml \
 ```
 
 ### Phase 1: Migrate High-Priority Settings
+
 ```bash
 # Extract working settings from .macos
 # Convert to Ansible YAML format
@@ -253,6 +276,7 @@ cp inventories/group_vars/macs/defaults.yml \
 ```
 
 ### Phase 2: Cleanup .macos
+
 ```bash
 # Remove commented lines
 # Remove broken Safari/Mail settings
@@ -260,6 +284,7 @@ cp inventories/group_vars/macs/defaults.yml \
 ```
 
 ### Phase 3: Verify
+
 ```bash
 # Run Ansible to apply new settings
 ./scripts/macapply --tags osx
@@ -273,12 +298,14 @@ cd ~/development/github/tuxpeople/dotfiles
 
 ## Migration Template
 
-### From .macos:
+### From .macos
+
 ```bash
 defaults write com.apple.dock show-recents -bool false
 ```
 
-### To Ansible (defaults.yml):
+### To Ansible (defaults.yml)
+
 ```yaml
 - domain: com.apple.dock
   key: show-recents
@@ -287,7 +314,8 @@ defaults write com.apple.dock show-recents -bool false
   value: 'false'
 ```
 
-### Conversion Rules:
+### Conversion Rules
+
 - `-bool true` → `type: bool`, `value: 'true'`
 - `-bool false` → `type: bool`, `value: 'false'`
 - `-int 2` → `type: int`, `value: '2'`
@@ -299,7 +327,8 @@ defaults write com.apple.dock show-recents -bool false
 
 ## Benefits
 
-### After Migration:
+### After Migration
+
 1. **Idempotent**: Ansible ensures settings are applied consistently
 2. **Versionable**: Settings tracked in git with history
 3. **Testable**: Can test on one Mac before rolling out
@@ -307,7 +336,8 @@ defaults write com.apple.dock show-recents -bool false
 5. **Grouped**: Settings organized by domain in defaults.yml
 6. **Cleaner .macos**: Only app-specific settings remain
 
-### Statistics:
+### Statistics
+
 - **Before**: 952 lines in .macos, 17 settings in Ansible
 - **After**: ~600 lines in .macos, ~90 settings in Ansible
 - **Reduction**: ~37% smaller .macos script
@@ -318,6 +348,7 @@ defaults write com.apple.dock show-recents -bool false
 ## Next Steps
 
 **Immediate**:
+
 1. ✅ Backup both files
 2. 🔄 Start with Phase 1 - migrate high-priority settings (71)
 3. ⏳ Test on current Mac
@@ -331,6 +362,7 @@ defaults write com.apple.dock show-recents -bool false
 ---
 
 **Estimated Time**:
+
 - Phase 1 (migration): 2-3 hours
 - Cleanup: 30 minutes
 - Testing: 30 minutes

@@ -17,6 +17,7 @@ Successfully moved Brewfiles from the dotfiles repository to the mac-dev-playboo
 ### 1. File Structure
 
 **Before**:
+
 ```
 ~/development/github/tuxpeople/dotfiles/
   machine/
@@ -35,6 +36,7 @@ Successfully moved Brewfiles from the dotfiles repository to the mac-dev-playboo
 ```
 
 **After**:
+
 ```
 ~/development/github/tuxpeople/mac-dev-playbook/
   files/
@@ -54,6 +56,7 @@ Successfully moved Brewfiles from the dotfiles repository to the mac-dev-playboo
 ### 2. Configuration Updates
 
 **inventories/group_vars/business_mac/brew.yml**:
+
 ```yaml
 # OLD:
 homebrew_brewfile_dir: "{{dotfiles_repo_local_destination}}/machine/business_mac/"
@@ -63,6 +66,7 @@ homebrew_brewfile_dir: "{{ playbook_dir }}/files/brewfile/business_mac"
 ```
 
 **inventories/group_vars/private_mac/brew.yml**:
+
 ```yaml
 # OLD:
 homebrew_brewfile_dir: "{{dotfiles_repo_local_destination}}/machine/private_mac/"
@@ -74,6 +78,7 @@ homebrew_brewfile_dir: "{{ playbook_dir }}/files/brewfile/private_mac"
 ### 3. Bug Fixes
 
 **plays/full.yml** - Fixed vars syntax error:
+
 ```yaml
 # WRONG (was list, should be dict):
 vars:
@@ -111,6 +116,7 @@ vars:
 **Solution**: Moved Brewfiles from `group_vars/` to `files/brewfile/`
 
 **Key Learning**:
+
 - `group_vars/` is ONLY for YAML variable files
 - Non-YAML files (Brewfiles, scripts, etc.) must go in `files/` or elsewhere
 - This is why the original location in dotfiles repo worked (wasn't in group_vars)
@@ -118,11 +124,13 @@ vars:
 ## Testing
 
 ### Dry Run Test
+
 ```bash
 ./scripts/macapply --tags homebrew --check --diff
 ```
 
 **Result**: ✅ Success
+
 ```
 PLAY [all] *************************************************
 TASK [Install Homebrew packages] **************************
@@ -133,6 +141,7 @@ UMB-L3VWMGM77F: ok=1 changed=0 unreachable=0 failed=0
 ```
 
 ### Production Run
+
 ```bash
 ./scripts/macapply --tags homebrew
 ```
@@ -152,11 +161,13 @@ UMB-L3VWMGM77F: ok=1 changed=0 unreachable=0 failed=0
 ### Immediate (User Action Required)
 
 1. **Test the migration** (if not done yet):
+
    ```bash
    ./scripts/macapply --tags homebrew
    ```
 
 2. **Clean up dotfiles repo**:
+
    ```bash
    cd ~/development/github/tuxpeople/dotfiles
    git rm machine/business_mac/Brewfile
@@ -166,6 +177,7 @@ UMB-L3VWMGM77F: ok=1 changed=0 unreachable=0 failed=0
    ```
 
 3. **Commit changes in mac-dev-playbook**:
+
    ```bash
    cd ~/development/github/tuxpeople/mac-dev-playbook
    git add files/brewfile/
@@ -181,35 +193,41 @@ UMB-L3VWMGM77F: ok=1 changed=0 unreachable=0 failed=0
 ### Future (From TODO.md)
 
 **Phase 2**: Convert `.macos` script to Ansible tasks
+
 - 952 lines of shell script
 - Should become `community.general.osx_defaults` tasks
 - Makes macOS settings more transparent and manageable
 
 **Phase 3**: Clean up dotfiles repo
+
 - Remove duplicates
 - Keep only true dotfiles (shell, git, vim configs)
 
 ## Files Created/Modified
 
 ### New Files
+
 - `files/brewfile/business_mac/Brewfile` (19KB)
 - `files/brewfile/private_mac/Brewfile` (17KB)
 - `docs/BREWFILE_MIGRATION.md` (migration guide)
 - `docs/sessions/2025-12-22_brewfile-migration.md` (this file)
 
 ### Modified Files
+
 - `inventories/group_vars/business_mac/brew.yml` (updated path)
 - `inventories/group_vars/private_mac/brew.yml` (updated path)
 - `plays/full.yml` (fixed vars syntax)
 - `docs/TODO.md` (marked Phase 1 as completed)
 
 ### Files to be Deleted (in dotfiles repo)
+
 - `machine/business_mac/Brewfile` (after verification)
 - `machine/private_mac/Brewfile` (after verification)
 
 ## New Workflow Example
 
 **Before** (two repos):
+
 ```bash
 # Edit Brewfile in dotfiles repo
 vim ~/development/github/tuxpeople/dotfiles/machine/business_mac/Brewfile
@@ -220,6 +238,7 @@ macapply --tags homebrew
 ```
 
 **After** (single repo):
+
 ```bash
 # Edit and apply in same repo
 cd ~/development/github/tuxpeople/mac-dev-playbook

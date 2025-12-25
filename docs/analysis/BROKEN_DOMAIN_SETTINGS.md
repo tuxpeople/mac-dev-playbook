@@ -22,6 +22,7 @@ These settings are **NOT commented out** in .macos, but they **will fail silentl
 defaults write com.apple.Safari UniversalSearchEnabled -bool false
 defaults write com.apple.Safari SuppressSearchSuggestions -bool true
 ```
+
 **Purpose**: Disable Spotlight suggestions in Safari search
 **Current Status**: ❌ Not working (domain doesn't exist)
 **Alternative**: Configure manually in Safari → Settings → Search
@@ -41,7 +42,9 @@ defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
 # Set Safari's home page to `about:blank` for faster loading
 defaults write com.apple.Safari HomePage -string "about:blank"
 ```
+
 **Purpose**:
+
 - Enable Tab navigation for links
 - Show full URLs (privacy/security)
 - Set blank homepage for speed
@@ -60,7 +63,9 @@ defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
 # Allow hitting the Backspace key to go to the previous page in history
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled -bool true
 ```
+
 **Purpose**:
+
 - Security: Prevent auto-opening downloaded files
 - Enable Backspace for navigation
 
@@ -86,7 +91,9 @@ defaults write com.apple.Safari IncludeDevelopMenu -bool true
 defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
 ```
+
 **Purpose**:
+
 - Enable debug/developer tools
 - Customize search behavior
 - Disable thumbnail cache
@@ -105,6 +112,7 @@ defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true
 # Disable auto-correct
 defaults write com.apple.Safari WebAutomaticSpellingCorrectionEnabled -bool false
 ```
+
 **Purpose**: Enable spellcheck but disable auto-correct
 **Current Status**: ❌ Not working
 **Alternative**: Safari → Settings → AutoFill/Search
@@ -126,7 +134,9 @@ defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebK
 defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
 ```
+
 **Purpose**:
+
 - Enable phishing protection
 - Disable Java (deprecated anyway)
 - Block JavaScript pop-ups
@@ -142,6 +152,7 @@ defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebK
 # Enable "Do Not Track"
 defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
 ```
+
 **Purpose**: Send Do Not Track header with requests
 **Current Status**: ❌ Not working
 **Note**: Do Not Track is deprecated web standard anyway
@@ -154,6 +165,7 @@ defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
 # Update extensions automatically
 defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
 ```
+
 **Purpose**: Auto-update Safari extensions
 **Current Status**: ❌ Not working
 **Alternative**: Safari → Settings → Extensions (auto-update is default anyway)
@@ -173,6 +185,7 @@ defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
 defaults write com.apple.mail DisableReplyAnimations -bool true
 defaults write com.apple.mail DisableSendAnimations -bool true
 ```
+
 **Purpose**: Disable animations when sending/replying to emails (faster)
 **Current Status**: ❌ Not working
 **Alternative**: None - animations cannot be disabled via preferences
@@ -185,6 +198,7 @@ defaults write com.apple.mail DisableSendAnimations -bool true
 # Copy email addresses as `foo@example.com` instead of `Foo Bar <foo@example.com>` in Mail.app
 defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
 ```
+
 **Purpose**: Copy only email address, not display name
 **Current Status**: ❌ Not working
 **Alternative**: None - must manually edit when pasting
@@ -197,6 +211,7 @@ defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
 # Add the keyboard shortcut ⌘ + Enter to send an email in Mail.app
 defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Send" "@\U21a9"
 ```
+
 **Purpose**: Add ⌘+Enter shortcut to send emails (like Gmail)
 **Current Status**: ❌ Not working
 **Alternative**: System Settings → Keyboard → Keyboard Shortcuts → App Shortcuts
@@ -211,6 +226,7 @@ defaults write com.apple.mail DraftsViewerAttributes -dict-add "DisplayInThreade
 defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortedDescending" -string "yes"
 defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortOrder" -string "received-date"
 ```
+
 **Purpose**: Configure email threading and sort order
 **Current Status**: ❌ Not working
 **Alternative**: Mail → View → Organize by Conversation / Sort By
@@ -223,6 +239,7 @@ defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortOrder" -stri
 # Disable inline attachments (just show the icons)
 defaults write com.apple.mail DisableInlineAttmentViewing -bool true
 ```
+
 **Purpose**: Show attachment icons instead of inline previews
 **Current Status**: ❌ Not working (also has typo: "Attachm**ent**")
 **Alternative**: None - inline attachments are default
@@ -235,6 +252,7 @@ defaults write com.apple.mail DisableInlineAttmentViewing -bool true
 # Disable automatic spell checking
 defaults write com.apple.mail SpellCheckingBehavior -string "NoSpellCheckingEnabled"
 ```
+
 **Purpose**: Disable spell checking in composed emails
 **Current Status**: ❌ Not working
 **Alternative**: Mail → Edit → Spelling and Grammar
@@ -279,12 +297,14 @@ defaults write com.apple.mail SpellCheckingBehavior -string "NoSpellCheckingEnab
    - Check if new domain exists (e.g., `com.apple.Safari.v2`)
 
 2. **Test Safari settings manually**:
+
    ```bash
    # Find Safari-related domains
    defaults domains | tr ',' '\n' | grep -i safari
    ```
 
 3. **Research new Mail preferences location**:
+
    ```bash
    # Find Mail-related domains
    defaults domains | tr ',' '\n' | grep -i mail
@@ -295,16 +315,19 @@ defaults write com.apple.mail SpellCheckingBehavior -string "NoSpellCheckingEnab
 ### Short-term Solutions
 
 **Option A: Remove broken settings**
+
 ```bash
 # Comment out or remove lines 460-544 (Safari)
 # Comment out or remove lines 549-567 (Mail)
 ```
+
 **Pros**: Clean up .macos script, reduce confusion
 **Cons**: Settings will need to be configured manually
 
 ---
 
 **Option B: Add compatibility check**
+
 ```bash
 # Add to .macos before Safari settings:
 if defaults read com.apple.Safari &> /dev/null; then
@@ -315,12 +338,14 @@ else
     echo "   Configure manually in Safari → Settings"
 fi
 ```
+
 **Pros**: Script won't fail silently, user gets feedback
 **Cons**: Still need to configure manually
 
 ---
 
 **Option C: Research and update**
+
 - Spend time finding new preference locations
 - Update .macos with working commands
 - Test on macOS 26.2
@@ -352,6 +377,7 @@ fi
 ## Testing Commands
 
 ### Check if Safari domain exists (different variations)
+
 ```bash
 defaults domains | tr ',' '\n' | grep -i safari
 ls ~/Library/Preferences/com.apple.Safari*
@@ -359,6 +385,7 @@ ls ~/Library/Safari/
 ```
 
 ### Check if Mail domain exists
+
 ```bash
 defaults domains | tr ',' '\n' | grep -i mail
 ls ~/Library/Preferences/com.apple.mail*
@@ -366,6 +393,7 @@ ls ~/Library/Mail/
 ```
 
 ### Find all preferences domains
+
 ```bash
 defaults domains | tr ',' '\n' | sort
 ```

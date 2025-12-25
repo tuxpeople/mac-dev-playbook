@@ -16,6 +16,7 @@
 Beim Setup des neuen Macs "saga" traten 5 kritische Probleme auf, die mit Workarounds umgangen wurden:
 
 **Die 3 Workaround-Commits**:
+
 - `64df66e` - Remove iCloud file download checks from init.sh
 - `1475007` - Remove version constraints from requirements
 - `df7b751` - Remove iCloud script check for add_vault_password
@@ -23,6 +24,7 @@ Beim Setup des neuen Macs "saga" traten 5 kritische Probleme auf, die mit Workar
 ### ✅ Alle 6 Probleme behoben
 
 **Problem 1: Xcode Installation stoppt Script**
+
 - **Ursache**: Nach Installation von CLI Tools gibt `xcode-select --install` Meldung dass Tools bereits installiert sind → Script beendet sich
 - **Fix**: init.sh:14-50
   - Prüft ob CLI Tools bereits installiert (`xcode-select -p`)
@@ -31,6 +33,7 @@ Beim Setup des neuen Macs "saga" traten 5 kritische Probleme auf, die mit Workar
 - **Status**: ✅ Behoben
 
 **Problem 2: /tmp/git bereits vorhanden**
+
 - **Ursache**: Bei Neustart des Scripts existiert `/tmp/git` bereits → `git clone` schlägt fehl
 - **Fix**: init.sh:80-84
   - Prüft ob `/tmp/git` existiert
@@ -39,6 +42,7 @@ Beim Setup des neuen Macs "saga" traten 5 kritische Probleme auf, die mit Workar
 - **Status**: ✅ Behoben
 
 **Problem 3: Ansible Version nicht gefunden**
+
 - **Ursache**: `ansible==12.2.0` benötigt Python >=3.12, System hat nur Python 3.9
 - **Workaround**: Alle Versionen aus requirements.txt entfernt
 - **Problem mit Workaround**: Installiert zu neue Version mit defekten Dependencies (ushlex mit Python 2 Syntax)
@@ -50,6 +54,7 @@ Beim Setup des neuen Macs "saga" traten 5 kritische Probleme auf, die mit Workar
 - **Status**: ✅ Behoben
 
 **Problem 4: Keychain Fehler**
+
 - **Ursache**: `add_vault_password` Script schreibt in Keychain → "item already exists" Fehler
 - **Workaround**: Script-Aufruf komplett entfernt
 - **Fix**: init.sh:204-220
@@ -60,12 +65,14 @@ Beim Setup des neuen Macs "saga" traten 5 kritische Probleme auf, die mit Workar
 - **Status**: ✅ Behoben
 
 **Problem 5: Python Syntax Error (ushlex)**
+
 - **Ursache**: Nach Entfernen der Versionen installierte pip eine Ansible-Version mit defekter Dependency (ushlex hat Python 2 Syntax)
 - **Fix**: Automatisch durch Problem 3 Fix gelöst
   - Ansible 9.x hat keine defekten Dependencies
 - **Status**: ✅ Behoben
 
 **Problem 6: iCloud Downloads (ursprünglicher Workaround)**
+
 - **Ursache**: Dateien in filelist.txt existieren nicht mehr → Endlosschleife
 - **Workaround**: Komplette iCloud-Download-Logik entfernt
 - **Fix**: init.sh:125-206
@@ -78,29 +85,35 @@ Beim Setup des neuen Macs "saga" traten 5 kritische Probleme auf, die mit Workar
 ### 📝 Dokumentation aktualisiert
 
 **docs/NEW_MAC_SETUP.md**:
+
 - Troubleshooting-Sektion erweitert mit allen 5 Problemen
 - Hinweis: "Automatic as of 2025-12-25"
 
 **docs/PYTHON_VERSION_MANAGEMENT.md**:
+
 - Neue Sektion: "Requirements.txt Strategy"
 - Erklärt warum dasselbe requirements.txt für Python 3.9 und 3.11+ funktioniert
 - Vergleicht Alternative Approaches
 
 **docs/sessions/SESSION_STATUS.md**:
+
 - Diese Session dokumentiert (Session 4)
 
 **CLAUDE.md**:
+
 - Hinweis auf init.sh Verbesserungen
 
 ### 📈 Impact
 
 **Für neue Mac-Setups**:
+
 - ✅ Robuster: Händelt Neustarts automatisch
 - ✅ Flexibler: Funktioniert mit verschiedenen Python-Versionen
 - ✅ Fehlertoleranter: Fährt bei nicht-kritischen Fehlern fort
 - ✅ Bessere UX: Klare Fehlermeldungen und Anweisungen
 
 **Für bestehende Macs**:
+
 - ✅ Neuere Ansible-Versionen mit pyenv Python möglich
 - ✅ Automatische Auswahl der besten Version via pip
 
@@ -152,11 +165,13 @@ d06a72e fix: add changed_when to kubectl and brew_cu role tasks (MEDIUM)
 **Entdecktes Problem**: SESSION_STATUS.md erwähnte C2, C4, C9 als "verbleibende CRITICAL Issues", aber diese Nummern existierten nie in IMPROVEMENTS.md.
 
 **Analyse**:
+
 - Original-Zählung: "11 CRITICAL Issues" → **Fehler!**
 - Tatsächliche Zahl: **8 CRITICAL Issues** (C1, C3, C5, C6, C7, C8, C10, C11)
 - C2, C4, C9: **Existierten nie** (Lücken aus initialer Umstrukturierung)
 
 **Korrekturen**:
+
 1. **IMPROVEMENTS.md**:
    - Issue count: 75 → 72
    - CRITICAL: "11" → "8 CRITICAL (ALLE BEHOBEN)"
@@ -174,28 +189,33 @@ d06a72e fix: add changed_when to kubectl and brew_cu role tasks (MEDIUM)
 #### 🔧 Alle 5 HIGH Issues behoben (Commits 5-6)
 
 **H1/H3 - env_path Validation** (`f88ac7c`):
+
 - Added `ansible.builtin.assert` to validate critical variables
 - Fails fast if env_path, mybrewbindir, or myhomedir undefined
 - Files: `plays/full.yml`, `plays/update.yml`
 
 **H5 - Package Manager Validation** (`f88ac7c`):
+
 - Added `which` checks for composer, npm, pip3, gem
 - Only runs package install if tool exists
 - File: `tasks/post/extra-packages.yml`
 
 **H9/H10 - Shell Change Safety** (`f88ac7c`):
+
 - Validates homebrew bash exists and is executable
 - Tests bash works before changing shell
 - Root shell change now opt-in via `change_root_shell` variable
 - File: `tasks/post/user-config.yml`
 
 **H14 - Sudo Script Security** (`ca50fb4`):
+
 - Validates fix-perms.sh ownership and permissions
 - Uses block/rescue for graceful failure
 - Prevents privilege escalation
 - File: `tasks/post/various-settings.yml`
 
 **H16 - Kubectl Config Backup** (`ca50fb4`):
+
 - Removes dangerous `state: absent`
 - Creates timestamped backup before regeneration
 - Uses atomic write (config.new → config)
@@ -204,6 +224,7 @@ d06a72e fix: add changed_when to kubectl and brew_cu role tasks (MEDIUM)
 #### 📊 MEDIUM Issues behoben (~13 Issues, Commits 8-9)
 
 **changed_when Fixes** (`719f84a`, `d06a72e`):
+
 - `tasks/post/various-settings.yml`: 11 tasks (Dock, PlistBuddy, chflags, SSH, mysides)
 - `tasks/post/business_mac-settings.yml`: DSBindTimeout
 - `tasks/post/private_mac-settings.yml`: NetBIOS hostname
@@ -213,12 +234,14 @@ d06a72e fix: add changed_when to kubectl and brew_cu role tasks (MEDIUM)
 - `roles/ansible-mac-update/tasks/kubectl.yaml`: 6 tasks (krew operations)
 
 **iCloud Validation (M7)** (`719f84a`):
+
 - Added stat check for iCloudDrive mount
 - Copy operations conditional on iCloud availability
 - Fixed app permissions: 0750 → 0755
 - Files: `business_mac-settings.yml`
 
 **Impact**:
+
 - Accurate change detection in playbook runs
 - No false "changed" reports for read-only operations
 - Graceful degradation when iCloud unavailable
@@ -234,12 +257,14 @@ d06a72e fix: add changed_when to kubectl and brew_cu role tasks (MEDIUM)
 **Jetzt**: ~30 Issues (0 CRITICAL + 0 HIGH + ~28 MEDIUM + 2 LOW)
 
 **Session 3 Achievements**:
+
 - ✅ 5 HIGH Issues behoben
 - ✅ ~13 MEDIUM Issues behoben (changed_when + validations)
 - ✅ Dokumentation korrigiert
 - ✅ TODO.md System eingerichtet
 
 **Gesamt seit Session 1**:
+
 - 8 CRITICAL Issues behoben ✅
 - 5 HIGH Issues behoben ✅ (ursprünglich 21, aber 16 waren Duplikate/nicht existent)
 - ~13 MEDIUM Issues behoben ✅
@@ -258,20 +283,24 @@ d06a72e fix: add changed_when to kubectl and brew_cu role tasks (MEDIUM)
 Da alle CRITICAL und HIGH Issues behoben sind, hier die empfohlenen nächsten Aufgaben:
 
 ### Option A: MEDIUM Issues angehen (Empfohlen)
+
 **Aufwand**: Variiert (2-5 Minuten pro Issue)
 **Impact**: Code Quality & Best Practices
 **Verbleibend**: 41 MEDIUM Issues
 **Kategorien**:
+
 - `changed_when` fehlt in vielen Tasks
 - Fehlende Idempotenz-Checks
 - Hardcoded Pfade
 - Deprecated Ansible Syntax
 
 ### Option B: Upstream Updates cherry-picken
+
 **Aufwand**: ~1 Stunde
 **Impact**: Neueste Bugfixes integriert
 
 ### Option C: Repository-Struktur optimieren
+
 **Aufwand**: ~2 Stunden
 **Impact**: Bessere Wartbarkeit
 
@@ -350,6 +379,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 ### 🏗️ Repository-Struktur verbessert
 
 #### Role-Migration zu Ansible Galaxy (fe176cc)
+
 - **ansible-role-nvm**: Von git submodule zu `morgangraphics.nvm` via Galaxy
 - **Vorteil**: Automatische Updates via Renovate möglich
 - **Verbleibende lokale Rollen**:
@@ -357,6 +387,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
   - `munki_update`: Custom role mit deutscher Doku
 
 #### Yamllint Code Quality (fe176cc)
+
 - **0 Fehler** (vorher: viele)
 - Nur noch Warnings (hauptsächlich `missing document start`, akzeptabel)
 - Custom Rollen werden jetzt gelintet
@@ -367,12 +398,14 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 ### 📦 Features implementiert
 
 #### 1. **macupdate Script ins Repo** (fcfdad7)
+
 - Vorher: Nur in iCloud (~/iCloudDrive/Allgemein/bin/macupdate)
 - Jetzt: Im Repo (scripts/macupdate)
 - Fixes: pyenv virtualenv-init, Typos, Error Handling
 - Benefits: Versioniert, dokumentiert, deployable
 
 #### 2. **Renovate Auto-Merge Setup** (b302248)
+
 - CI Job `requirements-check` erstellt
 - renovate.json mit intelligenten Auto-Merge Rules
 - Patch updates: Auto-merge
@@ -381,6 +414,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 - Schedule: Monday 6am (Europe/Zurich)
 
 #### 3. **Dependabot Migration** (466aaad)
+
 - Dependabot deaktiviert für pip + github-actions
 - Renovate übernimmt diese Dependencies
 - Konflikt aufgelöst (kein Update seit Feb 2025)
@@ -427,6 +461,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 ### Playbooks umstrukturiert
 
 **plays/full.yml & plays/update.yml**:
+
 - `block/rescue/always` Struktur für garantierten Sudo-Cleanup
 - Sudo permissions: 0644 → 0440
 - Roles als `include_role` statt direkte roles-Liste
@@ -434,6 +469,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 ### CI/CD erweitert
 
 **.github/workflows/ci.yml**:
+
 - Neuer Job: `requirements-check`
   - Installiert requirements.txt
   - Prüft Dependency-Konflikte
@@ -443,6 +479,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 ### Dependencies aktualisiert
 
 **requirements.txt**:
+
 - cryptography: 44.0.1 → 46.0.3
 - paramiko: 3.4.0 → 4.0.0
 
@@ -483,7 +520,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 
 ## 🚦 CI Status
 
-**Aktueller Run**: https://github.com/tuxpeople/mac-dev-playbook/actions/runs/18753004496
+**Aktueller Run**: <https://github.com/tuxpeople/mac-dev-playbook/actions/runs/18753004496>
 
 | Job | Status |
 |-----|--------|
@@ -501,6 +538,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 ### Sofort (GitHub Settings)
 
 - [ ] **Enable GitHub auto-merge**:
+
   ```
   Settings → General → Pull Requests
   ✅ Allow auto-merge
@@ -524,6 +562,7 @@ a80d2d8 fix: resolve critical security and logic bugs (C1, C3, C5, C10, C11)
 - [x] ~~Verbleibende CRITICAL Issues~~ → **ALLE BEHOBEN!** ✅
 - [ ] 21 HIGH Issues durchgehen (siehe IMPROVEMENTS.md)
 - [ ] Symlink für macupdate erstellen:
+
   ```bash
   ln -sf ~/development/github/tuxpeople/mac-dev-playbook/scripts/macupdate \
          ~/iCloudDrive/Allgemein/bin/macupdate
@@ -542,33 +581,40 @@ Die ursprüngliche Zählung von "11 CRITICAL" war ein Dokumentationsfehler - tat
 ## 💡 Empfehlungen für nächste Steps
 
 ### Option A: HIGH Issues angehen (Empfohlen)
+
 **Aufwand**: ~3-4 Stunden
 **Impact**: Verbesserte Zuverlässigkeit & Robustheit
 **Dateien**: Siehe IMPROVEMENTS.md - 21 HIGH Priority Issues
 
 ### Option B: Renovate testen & optimieren
+
 **Aufwand**: ~30 Minuten
 **Impact**: Verifizieren dass Auto-Merge funktioniert
 **Warten bis**: Nächster Montag (erste Renovate PRs)
 
 ### Option C: Upstream Updates cherry-picken
+
 **Aufwand**: ~1 Stunde
 **Impact**: Neueste Upstream-Bugfixes integriert
 **Tasks**:
+
 - MAS conditional fix (Issue #232)
 - Cowsay removal
 - dotfiles_repo_version
 
 **WICHTIG**: Nicht nur Upstream→Fork prüfen, sondern auch Fork→Upstream!
+
 - Alle lokalen Änderungen reviewen: Sind sie sinnvoll? Werden sie noch gebraucht?
 - Obsolete Features/Scripts identifizieren und entfernen
 - Upstream-Kompatibilität maximieren wo möglich
 
 ### Option D: Repository-Struktur & Organisation überprüfen
+
 **Aufwand**: ~2 Stunden
 **Impact**: Bessere Wartbarkeit, klarere Struktur
 **Fokus**: Primär eigene/lokale Änderungen (Upstream-Kompatibilität erhalten)
 **Tasks**:
+
 - Scripts identifizieren die in `scripts/` gehören
 - Prüfen ob Markdown-Dateien in `docs/` sollten
 - Obsolete Dateien identifizieren
@@ -579,14 +625,16 @@ Die ursprüngliche Zählung von "11 CRITICAL" war ein Dokumentationsfehler - tat
 
 ## 🎓 Lessons Learned
 
-### Was gut lief:
+### Was gut lief
+
 ✅ Strukturiertes Vorgehen (TodoWrite Tool)
 ✅ Fortschritt regelmäßig festgehalten
 ✅ Kritische Issues zuerst angegangen
 ✅ Gute Dokumentation erstellt
 ✅ CI-Tests erweitert
 
-### Was verbessert werden kann:
+### Was verbessert werden kann
+
 ⚠️ yamllint früher laufen lassen (vor Commit)
 ⚠️ Größere Refactorings in separaten Branches
 ⚠️ Renovate früher als Konflikt erkannt
@@ -621,54 +669,63 @@ Die ursprüngliche Zählung von "11 CRITICAL" war ein Dokumentationsfehler - tat
 
 ## 🎉 Session 2 - Finale Zusammenfassung
 
-### Haupt-Achievements:
+### Haupt-Achievements
 
 **1. Role-Migration & Yamllint Cleanup** ✅
+
 - ansible-role-nvm zu Ansible Galaxy migriert
 - Yamllint: 0 Errors erreicht (vorher: viele)
 - Custom Rollen werden jetzt gelintet
 
 **2. Homebrew Taps Cleanup** ✅
+
 - Automatische Erkennung & Entfernung deprecated taps
 - Task: `cleanup-deprecated-taps.yml`
 - Getestet & funktioniert
 
 **3. Macupdate Script Robustheit** ✅
+
 - Intelligente Python/Virtualenv Detection
 - Keine Prompts mehr bei Re-Run
 - Directory-basierte Checks (robust)
 
 **4. Pyenv Cleanup Task** ✅
+
 - Smart: Entfernt nur Versionen OHNE virtualenvs
 - Sicher: Behält alles in Benutzung
 - On-Demand via Tag: `--tags pyenv-cleanup`
 
 **5. Repository-Struktur Reorganisation** ✅
+
 - Root: 16→3 Markdown-Dateien
 - Neue docs/ Struktur mit 5 Kategorien
 - Professionell & übersichtlich
 
-### Statistik:
+### Statistik
+
 - **19 Commits** in Session 2
 - **~116k Tokens** verwendet (von 200k)
 - **5 Major Features** implementiert
 - **0 Breaking Changes**
 
-### Für nächste Session:
+### Für nächste Session
 
 **Priorität HIGH:**
+
 - [x] ~~CRITICAL Issues beheben~~ → **ALLE BEHOBEN!** ✅
 - [ ] 21 HIGH Issues durchgehen (siehe docs/analysis/IMPROVEMENTS.md)
 
 **Priorität MEDIUM:**
+
 - [ ] Renovate ersten Run monitoren (Montag 6am)
 - [ ] Upstream Updates cherry-picken
 
 **Wartung:**
+
 - [ ] Pyenv cleanup manuell ausführen (falls Speicher knapp)
 - [ ] CI verifizieren (sollte alles grün sein)
 
-### Wie weitermachen in Session 3:
+### Wie weitermachen in Session 3
 
 Sage einfach:
 > "Lies docs/sessions/SESSION_STATUS.md und mach weiter"
