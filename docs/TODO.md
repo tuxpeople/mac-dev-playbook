@@ -4,6 +4,27 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
 
 ## Zu erledigen
 
+- [ ] **LaunchAgents Tasks Review**
+  - **Problem**: Tasks in `tasks/post/_launchagents.yml` wurden lange nicht aktualisiert
+  - **Zu prüfen**:
+    - Welche LaunchAgents werden installiert?
+    - Sind alle noch relevant und funktionsfähig?
+    - Gibt es veraltete oder nicht mehr benötigte Agents?
+    - Konfiguration in `inventories/group_vars/macs/LaunchAgents.yml` reviewen
+  - **Ziel**: Aufräumen und auf aktuellen Stand bringen
+  - **Hinzugefügt**: 2025-12-25 (Session mit saga setup)
+
+- [ ] **Dock Items Review & Cleanup**
+  - **Problem**: Einige Apps in der Dock-Konfiguration existieren nicht mehr
+  - **Betroffen**: `inventories/group_vars/macs/dock.yml` (dockitems_persist)
+  - **Zu prüfen**:
+    - Welche Apps in dockitems_persist sind nicht mehr installiert?
+    - Welche neuen Apps sollten hinzugefügt werden?
+    - Sind die Pfade noch korrekt? (z.B. /Applications/ vs /System/Applications/)
+  - **Tasks**: `tasks/post/various-settings.yml` (dockutil)
+  - **Ziel**: Dock-Konfiguration aufräumen und aktualisieren
+  - **Hinzugefügt**: 2025-12-25 (Session mit saga setup)
+
 - [ ] **Externe Abhängigkeiten Review & Entkopplungsstrategie**
   - **Aktuelle Abhängigkeiten**:
     - **iCloud Drive**: Dotfiles (ssh_keys, ssh_config, bin-scripts), filelists, licensed fonts
