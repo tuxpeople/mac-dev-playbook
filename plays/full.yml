@@ -58,16 +58,17 @@
         state: directory
       become: true
 
+    - name: Add temporary passwordless sudo permissions
+      ansible.builtin.copy:
+        content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL"
+        dest: "/private/etc/sudoers.d/99_tmp_ansible"
+        validate: /usr/sbin/visudo -csf %s
+        mode: 0440
+      become: true
+
   tasks:
     - name: Main playbook execution with guaranteed sudo cleanup
       block:
-        - name: Add temporary passwordless sudo permissions
-          ansible.builtin.copy:
-            content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL"
-            dest: "/private/etc/sudoers.d/99_tmp_ansible"
-            validate: /usr/sbin/visudo -csf %s
-            mode: 0440
-          become: true
 
         - name: Install command line tools
           include_role:
