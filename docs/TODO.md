@@ -4,6 +4,24 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
 
 ## Zu erledigen
 
+- [ ] **Externe Abhängigkeiten Review & Entkopplungsstrategie**
+  - **Aktuelle Abhängigkeiten**:
+    - **iCloud Drive**: Dotfiles (ssh_keys, ssh_config, bin-scripts), filelists, licensed fonts
+    - **1Password**: Vault password, GitHub token, Hazel license, ghorg integration
+    - **macOS Keychain**: Vault password (lokal, nicht synced), SSH key passphrases
+  - **Fragen zu klären**:
+    - Welche Abhängigkeiten sind zwingend notwendig?
+    - Welche können optional/fallback gemacht werden?
+    - Was passiert wenn iCloud nicht verfügbar ist? (init.sh skip vs. fail)
+    - Sollte 1Password zwingend sein oder gibt es Alternativen?
+    - Keychain: Automatisierung möglich oder immer manuell?
+  - **Potentielle Verbesserungen**:
+    - iCloud: Timeouts und Fallbacks verbessern (bereits teilweise implementiert)
+    - 1Password: Dokumentieren was manuell gemacht werden muss wenn nicht verfügbar
+    - Secrets: Alternative Storage-Optionen evaluieren (z.B. nur Ansible Vault)
+    - Dotfiles: Kritische vs. optionale Files trennen
+  - **Ziel**: Setup robuster machen, weniger Single Points of Failure
+
 - [ ] **GitHub Repository Cloning: Ansible vs. ghorg**
   - **Problem**: Ansible-basiertes Repo-Cloning (tasks/post/github.yml) hat Nachteile:
     - Einige private Repos schlagen fehl (trotz Token)
