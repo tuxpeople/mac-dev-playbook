@@ -448,10 +448,6 @@ cask "bricklink-studio"
 cask "corelocationcli"
 # Universal database tool and SQL client
 cask "dbeaver-community"
-# Drivers for DisplayLink docks, adapters and monitors
-cask "displaylink"
-# Enables DisplayLink screens prior to login
-cask "displaylink-login-extension"
 # Online diagram software
 cask "drawio"
 # Finds duplicate files in a computer system
