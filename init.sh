@@ -91,35 +91,7 @@ fi
 if [[ "${sync_icloud}" == "y" || "${sync_icloud}" == "Y" ]]; then
   echo " - Downloading important files from iCloud"
   cd ~
-  IFS=$'\n'
-  for FILE in "Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt" "Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt"
-  do
-    while [ ! -f "${FILE}" ]
-    do
-      echo Checking for "${FILE}"
-      brctl download "${FILE}"
-      sleep 10
-    done
-  done
-  while IFS= read -r FILE
-  do
-    while [ ! -f "${FILE}" ]
-    do
-      echo Checking for "${FILE}"
-      brctl download "${FILE}"
-      sleep 10
-    done
-  done < "Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt"
-  while IFS= read -r DIR
-  do
-    while [ ! -d "${DIR}" ]
-    do
-      echo Checking for "${DIR}"
-      brctl download "${DIR}"
-      sleep 10
-    done
-  done < "Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt"
-  unset IFS
+
 
   if [ -f "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password" ]; then
     "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password"
