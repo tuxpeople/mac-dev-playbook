@@ -8,9 +8,12 @@ hazel_deploy_all_rules: true
 # Backup existing rules before deploying new ones
 hazel_backup_before_deploy: true
 
-# License source: use license file from 1Password attachment
-hazel_license_from_file: true
-hazel_license_from_1password: false  # Set to true if using 1Password lookup instead
+# Create monitored folders if they don't exist
+hazel_create_folders: true
+
+# Download license from 1Password if not present
+# Uses: op read "op://Privat/Hazel 6 license/Thomas Deutsch.hazellicense"
+configure_hazel_license: true
 
 # Folder mappings: Readable name → Actual path
 # Used to map rule files to their target folders

@@ -527,8 +527,6 @@ cask "vagrant"
 cask "visual-studio-code"
 # Multimedia player
 cask "vlc"
-# Video communication and virtual meeting platform
-cask "webex-meetings"
 # Network protocol analyzer
 cask "wireshark-app"
 # Application for configuring any YubiKey

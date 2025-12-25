@@ -18,13 +18,25 @@
       ignore_errors: yes
       become: false
 
-    # 2. ENSURE HAZEL DIRECTORY EXISTS
+    # 2. ENSURE DIRECTORIES EXIST
     - name: Ensure Hazel directory exists
       file:
         path: "{{ myhomedir }}/Library/Application Support/Hazel"
         state: directory
         mode: '0755'
       become: false
+
+    - name: Ensure monitored folders exist
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ hazel_folder_mappings | dict2items }}"
+      loop_control:
+        loop_var: item
+        label: "{{ item.key }}: {{ item.value }}"
+      become: false
+      when: hazel_create_folders | default(true)
 
     # 3. GET CURRENT VOLUME UUID (for file naming)
     - name: Get current volume UUID
@@ -61,21 +73,17 @@
       notify: restart_hazel
 
     # 5. DEPLOY LICENSE FILE
-    - name: Check if license file exists in repo
+    - name: Check if Hazel license already exists
       stat:
-        path: "{{ playbook_dir }}/../files/Hazel/license"
-      register: hazel_license_file
-      delegate_to: localhost
-      become: no
+        path: "{{ myhomedir }}/Library/Application Support/Hazel/license"
+      register: hazel_license_exists
+      become: false
 
-    - name: Deploy Hazel license file
-      copy:
-        src: "{{ playbook_dir }}/../files/Hazel/license"
-        dest: "{{ myhomedir }}/Library/Application Support/Hazel/license"
-        mode: '0644'
-      when: 
-        - hazel_license_from_file | default(false)
-        - hazel_license_file.stat.exists
+    - name: Download Hazel license from 1Password if missing
+      shell: op read "op://Privat/Hazel 6 license/Thomas Deutsch.hazellicense" > "{{ myhomedir }}/Library/Application Support/Hazel/license"
+      when:
+        - configure_hazel_license | default(true)
+        - not hazel_license_exists.stat.exists
       become: false
       notify: restart_hazel
 

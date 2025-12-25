@@ -32,17 +32,17 @@ cp ~/Library/Application\ Support/Hazel/*.hazelrules /path/to/repo/files/Hazel/h
 # Rename them to match folder names (Downloads.hazelrules, etc.)
 ```
 
-### 2. Get License File
+### 2. License File (Automatic)
 
-Download from 1Password:
-```bash
-# In 1Password, open "Hazel" item and download the license file attachment
-# Save as: files/Hazel/license
-```
+The Hazel license is automatically downloaded from 1Password during deployment if it doesn't already exist.
 
-Or via 1Password CLI:
-```bash
-op document get "Hazel License" --output files/Hazel/license
+**No manual action required!** The playbook will:
+1. Check if `~/Library/Application Support/Hazel/license` exists
+2. If not, download from 1Password: `op://Privat/Hazel 6 license/Thomas Deutsch.hazellicense`
+
+To disable automatic license download, set in `hazel.yml`:
+```yaml
+configure_hazel_license: false
 ```
 
 ### 3. Deploy to New Mac
