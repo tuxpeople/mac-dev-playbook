@@ -1,16 +1,65 @@
 ---
 
-- name: Install BBEdit cli tool
+- name: Check if BBEdit is installed
+  ansible.builtin.stat:
+    path: /Applications/BBEdit.app
+  register: bbedit_app
+  become: false
+
+- name: Check if BBEdit CLI helper exists
+  ansible.builtin.stat:
+    path: /Applications/BBEdit.app/Contents/Helpers/bbedit_tool
+  register: bbedit_tool
+  when: bbedit_app.stat.exists
+  become: false
+
+- name: Check if BBEdit CLI symlink already exists
+  ansible.builtin.stat:
+    path: "{{ myhomedir }}/bin/bbedit"
+  register: bbedit_symlink
+  when: bbedit_app.stat.exists
+  become: false
+
+- name: Remove quarantine attribute from BBEdit CLI tool
+  ansible.builtin.command:
+    cmd: xattr -d com.apple.quarantine /Applications/BBEdit.app/Contents/Helpers/bbedit_tool
+  become: false
+  when:
+    - bbedit_app.stat.exists
+    - bbedit_tool.stat.exists
+    - not (bbedit_symlink.stat.exists | default(false))
+  failed_when: false
+  changed_when: false
+
+- name: Install BBEdit CLI tool
   ansible.builtin.file:
     src: /Applications/BBEdit.app/Contents/Helpers/bbedit_tool
     dest: "{{ myhomedir }}/bin/bbedit"
-    mode: 0750
+    mode: '0750'
     state: link
+    force: true
   become: false
+  when:
+    - bbedit_app.stat.exists
+    - bbedit_tool.stat.exists
+    - not (bbedit_symlink.stat.exists | default(false) and bbedit_symlink.stat.islnk | default(false))
+
+- name: Warning if BBEdit not installed
+  ansible.builtin.debug:
+    msg: "⚠️  BBEdit not installed at /Applications/BBEdit.app - skipping BBEdit configuration"
+  when: not bbedit_app.stat.exists
+
+- name: Warning if BBEdit CLI tool not found
+  ansible.builtin.debug:
+    msg: "⚠️  BBEdit CLI tool not found - BBEdit may need to be run once to install command line tools"
+  when:
+    - bbedit_app.stat.exists
+    - not (bbedit_tool.stat.exists | default(false))
 
 - name: Install BBEdit color themes
   ansible.builtin.copy:
     src: ../files/bbedit/
     dest: "{{ myhomedir }}/Library/Containers/com.barebones.bbedit/Data/Library/Application Support/BBEdit/Color Schemes/"
-    mode: 0750
+    mode: '0750'
   become: false
+  when: bbedit_app.stat.exists
