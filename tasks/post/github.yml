@@ -2,6 +2,11 @@
 
 - name: Clone repositories
   block:
+    - name: Load GitHub token from 1Password
+      ansible.builtin.set_fact:
+        github_personal_token: "{{ lookup('community.general.onepassword', onepassword_github_token_ref) }}"
+      no_log: true  # Protect token in logs
+
     - name: Query GitHub API for my repositories
       ansible.builtin.uri:
         url: "https://api.github.com/search/repositories?q=user:{{ github_user }}+archived:false+fork:true"

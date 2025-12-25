@@ -88,11 +88,12 @@ Defined in `requirements.yml`:
 # NO vault password, iCloud sync, or 1Password login required for Phase 1
 ```
 
-**Phase 2 - Manual Setup (5-10 min):**
+**Phase 2 - Manual Setup (2-5 min):**
 
 1. Open 1Password and sign in
 2. Wait for iCloud Drive to sync (optional)
-3. Add vault password to keychain: `~/iCloudDrive/Allgemein/bin/add_vault_password`
+
+Vault password is automatically read from 1Password in Phase 3.
 
 **Phase 3 - Full Configuration (Automated):**
 

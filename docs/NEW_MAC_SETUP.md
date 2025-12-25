@@ -131,13 +131,7 @@ After Phase 1 completes, you'll see instructions for manual steps:
    - If you use iCloud for dotfiles/SSH keys, wait for sync to complete
    - Skip this if you don't use iCloud sync
 
-3. **Add vault password to macOS Keychain**:
-
-```bash
-~/iCloudDrive/Allgemein/bin/add_vault_password
-```
-
-This stores the Ansible Vault password in your keychain so Phase 3 can run without prompting.
+That's it! The Ansible Vault password will be automatically read from 1Password during Phase 3.
 
 ### Phase 3: Full Configuration (Automated) - macapply
 

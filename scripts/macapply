@@ -42,7 +42,6 @@ REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 # Configuration
 VENV_NAME="mac-dev-playbook-venv"
 HOSTNAME=$(hostname -s)
-VAULT_PASSWORD_FILE="${HOME}/iCloudDrive/Allgemein/bin/vault_password_file"
 
 # Parse command line arguments
 ANSIBLE_ARGS=()
@@ -138,13 +137,29 @@ echo ""
 # Change to repo directory
 cd "${REPO_DIR}" || exit 1
 
+# 1Password secret reference (keep synchronized with inventories/group_vars/macs/onepassword.yml)
+ONEPASSWORD_VAULT_REF="op://Private/ansible-vault-keys/mac-dev-playbook"
+
 # Determine vault password options
 VAULT_ARGS=()
-if [[ -f "${VAULT_PASSWORD_FILE}" ]]; then
-    log "Using vault password from: ${VAULT_PASSWORD_FILE}"
-    VAULT_ARGS+=("--vault-password-file=${VAULT_PASSWORD_FILE}")
+
+# Try to read from 1Password first
+if command -v op &>/dev/null; then
+    log "Reading vault password from 1Password..."
+    if VAULT_PASSWORD=$(op read "${ONEPASSWORD_VAULT_REF}" 2>/dev/null); then
+        log "✓ Vault password loaded from 1Password"
+        # Create temporary file for vault password (cleaned up automatically on script exit)
+        VAULT_TEMP_FILE=$(mktemp)
+        trap 'rm -f "${VAULT_TEMP_FILE}"' EXIT
+        echo "${VAULT_PASSWORD}" > "${VAULT_TEMP_FILE}"
+        VAULT_ARGS+=("--vault-password-file=${VAULT_TEMP_FILE}")
+    else
+        log_warn "Failed to read from 1Password (not logged in?)"
+        log "You will be prompted for vault password"
+        VAULT_ARGS+=("--ask-vault-pass")
+    fi
 else
-    log_warn "Vault password file not found"
+    log_warn "1Password CLI (op) not found"
     log "You will be prompted for vault password"
     VAULT_ARGS+=("--ask-vault-pass")
 fi

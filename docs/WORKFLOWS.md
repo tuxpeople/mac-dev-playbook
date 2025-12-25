@@ -88,13 +88,10 @@ This document explains the different workflows and when to use which script/play
 
 1. **Open 1Password** (installed in Phase 1) and **sign in**
 2. **Wait for iCloud Drive to sync** (optional, if you use iCloud)
-3. **Add vault password to keychain**:
 
-   ```bash
-   ~/iCloudDrive/Allgemein/bin/add_vault_password
-   ```
+That's it! Vault password will be automatically read from 1Password in Phase 3.
 
-**Duration**: 5-10 minutes
+**Duration**: 2-5 minutes
 
 ### Phase 3: Full Configuration (Automated)
 
