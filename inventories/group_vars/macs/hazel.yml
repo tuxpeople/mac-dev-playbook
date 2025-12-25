@@ -24,15 +24,48 @@ hazel_folder_mappings:
   iCloudDownloads: "{{ myhomedir }}/Library/Mobile Documents/com~apple~CloudDocs/Downloads"
   Desktop: "{{ myhomedir }}/Desktop"
 
-# Hazel Preferences (optional)
+# Hazel Preferences
 hazel_preferences:
+  # Updates
   - domain: com.noodlesoft.Hazel
     key: automaticallyUpdate
     type: bool
     value: true
-    
+
   - domain: com.noodlesoft.Hazel
     key: SUEnableAutomaticChecks
+    type: bool
+    value: true
+
+  # Trash Management
+  - domain: com.noodlesoft.Hazel
+    key: TrashPurgeOldFiles
+    type: bool
+    value: true
+
+  - domain: com.noodlesoft.Hazel
+    key: TrashMaximumFileAge
+    type: string
+    value: "1 mon"
+
+  - domain: com.noodlesoft.Hazel
+    key: TrashMaintainMaxSize
+    type: bool
+    value: true
+
+  - domain: com.noodlesoft.Hazel
+    key: TrashMaximumSize
+    type: string
+    value: "1 GB"
+
+  # App Sweep
+  - domain: com.noodlesoft.Hazel
+    key: TrashUninstallApps
+    type: bool
+    value: true
+
+  - domain: com.noodlesoft.Hazel
+    key: UninstallLogEnabled
     type: bool
     value: true
 

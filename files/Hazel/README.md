@@ -71,3 +71,17 @@ Configuration is in `inventories/group_vars/macs/hazel.yml`:
 - The volume UUID is automatically detected during deployment
 - Existing rules are backed up before deployment
 - Hazel is automatically restarted after deployment
+
+## Manual Steps Required
+
+### Full Disk Access (for Trash Management)
+
+The "Delete files from Trash" feature requires Full Disk Access, which **cannot be automated** due to macOS security restrictions.
+
+**Manual setup required:**
+1. Open **System Settings** → **Privacy & Security** → **Full Disk Access**
+2. Click **+** and add:
+   - `/Applications/Hazel.app`
+3. Restart Hazel
+
+Without Full Disk Access, Hazel can still run rules but cannot automatically delete files from Trash.
