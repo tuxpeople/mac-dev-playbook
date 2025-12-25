@@ -50,9 +50,5 @@
     msg: "⚠️  Homebrew bash not found or not working at {{ mybrewbindir }}/bash - skipping shell change"
   when: not homebrew_bash.stat.exists or bash_test.rc != 0
 
-- name: "Ensure homedir/bin exists"
-  ansible.builtin.file:
-    path: "{{ myhomedir }}/bin"
-    state: directory
-    owner: "{{ ansible_user }}"
-    mode: 0750
+# Note: ~/bin directory is already ensured in plays/full.yml pre_tasks
+# (needed for vault password script deployment - no need to create it again here)
