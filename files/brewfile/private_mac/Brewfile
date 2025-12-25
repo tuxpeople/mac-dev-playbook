@@ -1,5 +1,6 @@
 tap "1password/tap"
 tap "aquasecurity/trivy"
+tap "benwebber/tunnelblickctl"
 tap "buo/cask-upgrade"
 tap "carvel-dev/carvel"
 tap "devopyio/yamlfmt"
@@ -24,6 +25,8 @@ brew "age"
 brew "arping"
 # Text processor and publishing toolchain for AsciiDoc
 brew "asciidoctor"
+# Protocol definitions and daemon for D-Bus at-spi
+brew "at-spi2-core"
 # MPEG-4 command-line tool
 brew "atomicparsley"
 # Microsoft Azure CLI 2.0
@@ -48,8 +51,6 @@ brew "cilium-cli"
 brew "cloudflared"
 # Home for the Cluster Management API work, a subproject of sig-cluster-lifecycle
 brew "clusterctl"
-# OpenAI's coding agent that runs in your terminal
-cask "codex"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
 # Container Signing
@@ -58,6 +59,8 @@ brew "cosign"
 brew "cowsay"
 # Tool for interacting with remote images and registries
 brew "crane"
+# Cryptographic recipes and primitives for Python
+brew "cryptography"
 # Cluster ssh tool for Terminal.app
 brew "csshx"
 # Validate and define text-based and dynamic configuration
@@ -118,16 +121,18 @@ brew "gnu-sed"
 brew "gnu-tar"
 # Library for USB device access
 brew "libusb"
+# Passphrase entry dialog utilizing the Assuan protocol
+brew "pinentry"
 # GNU Privacy Guard (OpenPGP)
 brew "gnupg", link: false
 # Command-driven, interactive function plotting
 brew "gnuplot"
 # Open source programming language to build simple/reliable/efficient software
 brew "go"
-# Task is a task runner/build tool that aims to be simpler and easier to use
-brew "go-task"
 # Library access to GnuPG
 brew "gpgme"
+# Library to render SVG files using Cairo
+brew "librsvg"
 # Graph visualization software from AT&T and Bell Labs
 brew "graphviz"
 # GNU grep, egrep and fgrep
@@ -356,8 +361,6 @@ brew "subfinder"
 brew "sysdig"
 # Configuration helper for talos clusters
 brew "talhelper"
-# CLI for out-of-band management of Kubernetes nodes created by Talos
-brew "talosctl"
 # Command-line packet analyzer
 brew "tcpdump"
 # TCP/IP packet demultiplexer
@@ -390,8 +393,6 @@ brew "tmux"
 brew "trash"
 # Display directories as trees (with optional color/HTML output)
 brew "tree"
-# Vulnerability scanner for container images, file systems, and Git repos
-brew "trivy"
 # RTF to other formats converter
 brew "unrtf"
 # Extraction utility for .zip compressed archives
@@ -418,8 +419,6 @@ brew "whois"
 brew "wifi-password"
 # Tiny, wget-like FTP client for uploading files
 brew "wput"
-# Build, render, and create LEGO instructions
-cask "bricklink-studio"
 # Linter for YAML files
 brew "yamllint"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
@@ -474,8 +473,6 @@ cask "bambu-studio"
 cask "basictex"
 # Text, code, and markup editor
 cask "bbedit"
-# Build, render, and create LEGO instructions
-cask "bricklink-studio"
 # Open source, extensible AI agent that goes beyond code suggestions
 cask "block-goose"
 # Build, render, and create LEGO instructions
@@ -484,6 +481,8 @@ cask "bricklink-studio"
 cask "calibre"
 # Web debugging Proxy application
 cask "charles"
+# OpenAI's coding agent that runs in your terminal
+cask "codex"
 # Prints location information from CoreLocation
 cask "corelocationcli"
 # Universal database tool and SQL client
