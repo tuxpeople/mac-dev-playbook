@@ -363,3 +363,46 @@ sed -i '' 's/[[:space:]]*$//' file.yml
 # Add newline at end of file
 echo "" >> file.yml
 ```
+
+## Recent Improvements
+
+### init.sh Robustness (2025-12-25)
+
+The init.sh bootstrap script has been significantly improved for fresh Mac setups:
+
+**Problem Background**: During setup of new Mac "saga", 5 critical issues were encountered and initially fixed with workarounds. These have now been replaced with proper solutions.
+
+**Key Improvements**:
+
+1. **Restart-Resilient**: Script can be safely restarted if interrupted
+   - Detects already-installed Xcode Command Line Tools
+   - Automatically cleans up `/tmp/git` before cloning
+   - Provides clear instructions if manual restart needed
+
+2. **Python Version Flexibility**: Works with Python 3.9+ (System) and Python 3.11+ (pyenv)
+   - `requirements.txt` uses flexible version ranges (`ansible>=9.0`)
+   - pip automatically selects best version for available Python
+   - Same requirements file works for both init.sh and macupdate
+
+3. **Robust iCloud Downloads**: Handles missing files gracefully
+   - Checks if `brctl` command is available
+   - Timeouts prevent endless loops (60s for lists, 30s per file/folder)
+   - Continues setup even if some iCloud files are missing
+   - Clear warnings for skipped files
+
+4. **Better Error Handling**: Non-critical errors don't stop setup
+   - Keychain "already exists" errors are handled gracefully
+   - add_vault_password script failures logged as warnings
+   - Setup continues to completion when possible
+
+5. **Improved UX**: Clear feedback and error messages
+   - Step-by-step progress indicators
+   - Specific error messages with solutions
+   - Instructions for manual intervention when needed
+
+**Impact**: Fresh Mac setups are now significantly more reliable and require less manual intervention.
+
+**See Also**:
+- **docs/NEW_MAC_SETUP.md**: Updated troubleshooting guide
+- **docs/PYTHON_VERSION_MANAGEMENT.md**: Requirements.txt strategy explained
+- **docs/sessions/SESSION_STATUS.md**: Session 4 details (2025-12-25)

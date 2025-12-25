@@ -202,6 +202,101 @@ Add an Ansible task to warn if versions don't match:
 - `scripts/macupdate` - Reads from .python-version
 - `inventories/group_vars/macs/general.yml` - Documents the version
 - `scripts/init.sh` - Uses system Python (doesn't read .python-version)
+- `requirements.txt` - Python dependencies (shared across Python versions)
+
+## Requirements.txt Strategy
+
+**Updated**: 2025-12-25
+**Challenge**: Same requirements.txt file used by both init.sh (Python 3.9) and macupdate (Python 3.11+)
+
+### The Problem
+
+Different Python versions support different package versions:
+- Python 3.9: Can only install ansible 9.x (ansible 10+ requires Python 3.10+)
+- Python 3.11+: Can install ansible 12.x or newer
+
+But we use the same `requirements.txt` for both!
+
+### The Solution: Flexible Version Ranges
+
+**requirements.txt**:
+```txt
+ansible>=9.0
+bcrypt>=4.0
+cryptography>=41.0
+...
+```
+
+**How it works**:
+1. **init.sh** (fresh Mac with System Python 3.9):
+   - Runs: `pip install --requirement requirements.txt`
+   - pip sees: `ansible>=9.0`
+   - pip checks: Which versions work with Python 3.9?
+   - pip installs: **ansible 9.x** (latest 3.9-compatible)
+
+2. **macupdate** (established Mac with pyenv Python 3.11+):
+   - Runs: `pip install --requirement requirements.txt`
+   - pip sees: `ansible>=9.0`
+   - pip checks: Which versions work with Python 3.11?
+   - pip installs: **ansible 12.x or newer** (latest available)
+
+### Why This Works
+
+pip is smart about Python version compatibility:
+- Packages declare their Python requirements in metadata
+- pip automatically filters out incompatible versions
+- Same requirements.txt → different installations based on Python version
+
+### Alternative Approaches (Not Used)
+
+**Option A: Fixed versions**
+```txt
+ansible==9.0.0  # Too restrictive
+```
+- ❌ Locks everyone to old version
+- ❌ No security updates
+
+**Option B: Separate files**
+```txt
+requirements.txt       # For init.sh (Python 3.9)
+requirements-dev.txt   # For macupdate (Python 3.11+)
+```
+- ❌ More maintenance
+- ❌ Duplication
+- ❌ Easy to forget updating both
+
+**Option C: Upper bounds**
+```txt
+ansible>=9.0,<13.0  # Previously used
+```
+- ⚠️ Needs manual updates when new versions release
+- ⚠️ May block compatible versions unnecessarily
+
+### Current Strategy: Minimum Version Only
+
+```txt
+ansible>=9.0  # ✅ Best approach
+```
+
+**Benefits**:
+- ✅ Automatic compatibility with all Python versions
+- ✅ Single source of truth
+- ✅ Always gets latest compatible version
+- ✅ No manual upper bound updates needed
+- ✅ Works for fresh setups (Python 3.9) and established setups (Python 3.11+)
+
+### Testing Version Selection
+
+```bash
+# Python 3.9 (init.sh scenario)
+/Library/Developer/CommandLineTools/usr/bin/python3 -m pip install ansible>=9.0 --dry-run
+# Would install: ansible 9.x
+
+# Python 3.11+ (macupdate scenario)
+pyenv shell 3.11.8
+pip install ansible>=9.0 --dry-run
+# Would install: ansible 12.x or newer
+```
 
 ## See Also
 

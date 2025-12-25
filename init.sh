@@ -12,15 +12,41 @@ function step() {
 }
 
 function installcli() {
+  # Check if already installed
+  if xcode-select -p &>/dev/null; then
+    echo "✓ Command Line Tools already installed at: $(xcode-select -p)"
+    return 0
+  fi
+
   # https://gist.github.com/ChristopherA/a598762c3967a1f77e9ecb96b902b5db
-  echo "Update MacOS & Install Command Line Interface. If this fails, do it manually."
-  sudo /usr/sbin/softwareupdate -l
+  echo "Installing Command Line Tools..."
+  echo "This may require a restart of this script after installation completes."
+
   touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
   sudo /usr/sbin/softwareupdate -ia
   rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-  echo "Sleep 20"
-  sleep 20
-  xcode-select --install
+
+  # Try xcode-select --install as fallback
+  if ! xcode-select -p &>/dev/null; then
+    echo "Triggering GUI installation dialog..."
+    xcode-select --install 2>/dev/null || true
+    echo ""
+    echo "⚠️  Command Line Tools installation may require manual completion."
+    echo "   If a dialog appeared, click 'Install' and wait for completion."
+    echo "   Then re-run this script:"
+    echo "   /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)\""
+    echo ""
+    read -r -p "Press enter if installation is complete, or Ctrl+C to exit and restart later..."
+  fi
+
+  # Verify installation
+  if ! xcode-select -p &>/dev/null; then
+    echo "❌ ERROR: Command Line Tools installation failed or incomplete"
+    echo "   Please install manually and re-run this script"
+    exit 1
+  fi
+
+  echo "✓ Command Line Tools installed successfully"
 }
 
 step "Check prerequisites"
@@ -75,13 +101,21 @@ echo ""
 [ ! -d "/Library/Developer/CommandLineTools" ] && installcli
 
 step "Preparing system"
-echo " - Cloning Repo"
+echo " - Preparing repository"
+
+# Clean up existing /tmp/git if present (from previous run)
+if [ -d "/tmp/git" ]; then
+  echo "   Removing existing /tmp/git directory"
+  rm -rf /tmp/git
+fi
+
 if ! mkdir -p /tmp/git; then
   echo "❌ ERROR: Failed to create /tmp/git directory"
   echo "   Check permissions and disk space"
   exit 1
 fi
 
+echo " - Cloning Repo"
 if ! git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git; then
   echo "❌ ERROR: Failed to clone repository"
   echo "   Check internet connection and GitHub access"
@@ -92,6 +126,99 @@ if [[ "${sync_icloud}" == "y" || "${sync_icloud}" == "Y" ]]; then
   echo " - Downloading important files from iCloud"
   cd ~
 
+  # Check if brctl is available
+  if ! command -v brctl &>/dev/null; then
+    echo "⚠️  WARNING: brctl command not found"
+    echo "   iCloud file downloads will be skipped"
+    echo "   You may need to manually sync files from iCloud Drive"
+  else
+    # Download file and folder lists with timeout
+    FILELIST="Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/filelist.txt"
+    FOLDERLIST="Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/dotfiles/filelists/folderlist.txt"
+
+    echo "   Downloading file lists from iCloud..."
+    for LIST in "${FILELIST}" "${FOLDERLIST}"; do
+      if [[ ! -f "${LIST}" ]]; then
+        brctl download "${LIST}" 2>/dev/null || true
+        # Wait up to 60 seconds for file to appear
+        TIMEOUT=60
+        ELAPSED=0
+        while [[ ! -f "${LIST}" ]] && [[ ${ELAPSED} -lt ${TIMEOUT} ]]; do
+          sleep 5
+          ELAPSED=$((ELAPSED + 5))
+        done
+
+        if [[ ! -f "${LIST}" ]]; then
+          echo "⚠️  WARNING: Could not download ${LIST}"
+          echo "   Continuing without this list..."
+        fi
+      fi
+    done
+
+    # Download files from filelist.txt if available
+    if [[ -f "${FILELIST}" ]]; then
+      echo "   Downloading files from filelist..."
+      while IFS= read -r FILE; do
+        [[ -z "${FILE}" ]] && continue  # Skip empty lines
+        if [[ ! -f "${FILE}" ]]; then
+          brctl download "${FILE}" 2>/dev/null || true
+          # Wait up to 30 seconds per file
+          TIMEOUT=30
+          ELAPSED=0
+          while [[ ! -f "${FILE}" ]] && [[ ${ELAPSED} -lt ${TIMEOUT} ]]; do
+            sleep 5
+            ELAPSED=$((ELAPSED + 5))
+          done
+
+          if [[ ! -f "${FILE}" ]]; then
+            echo "⚠️  Could not download: ${FILE}"
+          fi
+        fi
+      done < "${FILELIST}"
+    fi
+
+    # Download folders from folderlist.txt if available
+    if [[ -f "${FOLDERLIST}" ]]; then
+      echo "   Downloading folders from folderlist..."
+      while IFS= read -r DIR; do
+        [[ -z "${DIR}" ]] && continue  # Skip empty lines
+        if [[ ! -d "${DIR}" ]]; then
+          brctl download "${DIR}" 2>/dev/null || true
+          # Wait up to 30 seconds per folder
+          TIMEOUT=30
+          ELAPSED=0
+          while [[ ! -d "${DIR}" ]] && [[ ${ELAPSED} -lt ${TIMEOUT} ]]; do
+            sleep 5
+            ELAPSED=$((ELAPSED + 5))
+          done
+
+          if [[ ! -d "${DIR}" ]]; then
+            echo "⚠️  Could not download: ${DIR}"
+          fi
+        fi
+      done < "${FOLDERLIST}"
+    fi
+
+    echo "✓ iCloud sync completed (some files may have been skipped)"
+
+    # Try to run add_vault_password script if available (stores password in keychain)
+    if [[ -f "${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password" ]]; then
+      echo "   Running add_vault_password script..."
+      # Capture output and filter out "already exists" messages
+      if OUTPUT=$("${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/add_vault_password" 2>&1); then
+        echo "✓ Vault password configured in keychain"
+      else
+        # Check if error was just "already exists"
+        if echo "${OUTPUT}" | grep -q "already exists in the keychain"; then
+          echo "✓ Vault password already configured in keychain"
+        else
+          echo "⚠️  WARNING: add_vault_password script encountered issues:"
+          echo "${OUTPUT}"
+          echo "   Continuing anyway..."
+        fi
+      fi
+    fi
+  fi
 else
   echo " - Skipping iCloud sync (you'll need to provide vault password manually)"
 fi

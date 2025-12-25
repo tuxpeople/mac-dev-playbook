@@ -1,3 +1,123 @@
+# Session Status - 2025-12-25 (Session 4)
+
+**Session Start**: Nach Commit `df7b751` (Remove iCloud script check for add_vault_password)
+**Session Focus**: Fix init.sh for fresh Mac setup (saga)
+
+---
+
+**Vorherige Session**: [Session 3](#session-3-summary) (2025-10-24)
+
+---
+
+## 📊 Session 4 Übersicht
+
+### Hintergrund: Neue Mac Setup Probleme
+
+Beim Setup des neuen Macs "saga" traten 5 kritische Probleme auf, die mit Workarounds umgangen wurden:
+
+**Die 3 Workaround-Commits**:
+- `64df66e` - Remove iCloud file download checks from init.sh
+- `1475007` - Remove version constraints from requirements
+- `df7b751` - Remove iCloud script check for add_vault_password
+
+### ✅ Alle 6 Probleme behoben
+
+**Problem 1: Xcode Installation stoppt Script**
+- **Ursache**: Nach Installation von CLI Tools gibt `xcode-select --install` Meldung dass Tools bereits installiert sind → Script beendet sich
+- **Fix**: init.sh:14-50
+  - Prüft ob CLI Tools bereits installiert (`xcode-select -p`)
+  - Gibt klare Anweisungen bei manueller Installation
+  - Ermöglicht Fortsetzung nach Neustart (idempotent)
+- **Status**: ✅ Behoben
+
+**Problem 2: /tmp/git bereits vorhanden**
+- **Ursache**: Bei Neustart des Scripts existiert `/tmp/git` bereits → `git clone` schlägt fehl
+- **Fix**: init.sh:80-84
+  - Prüft ob `/tmp/git` existiert
+  - Entfernt automatisch vor Clone
+  - Kein manueller Eingriff nötig
+- **Status**: ✅ Behoben
+
+**Problem 3: Ansible Version nicht gefunden**
+- **Ursache**: `ansible==12.2.0` benötigt Python >=3.12, System hat nur Python 3.9
+- **Workaround**: Alle Versionen aus requirements.txt entfernt
+- **Problem mit Workaround**: Installiert zu neue Version mit defekten Dependencies (ushlex mit Python 2 Syntax)
+- **Fix**: requirements.txt
+  - Flexible Version Ranges: `ansible>=9.0` (statt `==12.2.0` oder versionlos)
+  - pip wählt automatisch beste Version für Python-Version
+  - Python 3.9 → ansible 9.x
+  - Python 3.11+ → ansible 12.x+
+- **Status**: ✅ Behoben
+
+**Problem 4: Keychain Fehler**
+- **Ursache**: `add_vault_password` Script schreibt in Keychain → "item already exists" Fehler
+- **Workaround**: Script-Aufruf komplett entfernt
+- **Fix**: init.sh:204-220
+  - Script wird wieder aufgerufen
+  - "already exists" Fehler wird gefiltert und als Success behandelt
+  - Andere Fehler werden als Warning angezeigt
+  - Setup fährt fort
+- **Status**: ✅ Behoben
+
+**Problem 5: Python Syntax Error (ushlex)**
+- **Ursache**: Nach Entfernen der Versionen installierte pip eine Ansible-Version mit defekter Dependency (ushlex hat Python 2 Syntax)
+- **Fix**: Automatisch durch Problem 3 Fix gelöst
+  - Ansible 9.x hat keine defekten Dependencies
+- **Status**: ✅ Behoben
+
+**Problem 6: iCloud Downloads (ursprünglicher Workaround)**
+- **Ursache**: Dateien in filelist.txt existieren nicht mehr → Endlosschleife
+- **Workaround**: Komplette iCloud-Download-Logik entfernt
+- **Fix**: init.sh:125-206
+  - Prüft ob `brctl` verfügbar ist
+  - Timeouts: 60s für Listen, 30s pro Datei/Ordner
+  - Warnung bei fehlenden Dateien, aber fährt fort
+  - Keine Endlosschleifen mehr
+- **Status**: ✅ Behoben
+
+### 📝 Dokumentation aktualisiert
+
+**docs/NEW_MAC_SETUP.md**:
+- Troubleshooting-Sektion erweitert mit allen 5 Problemen
+- Hinweis: "Automatic as of 2025-12-25"
+
+**docs/PYTHON_VERSION_MANAGEMENT.md**:
+- Neue Sektion: "Requirements.txt Strategy"
+- Erklärt warum dasselbe requirements.txt für Python 3.9 und 3.11+ funktioniert
+- Vergleicht Alternative Approaches
+
+**docs/sessions/SESSION_STATUS.md**:
+- Diese Session dokumentiert (Session 4)
+
+**CLAUDE.md**:
+- Hinweis auf init.sh Verbesserungen
+
+### 📈 Impact
+
+**Für neue Mac-Setups**:
+- ✅ Robuster: Händelt Neustarts automatisch
+- ✅ Flexibler: Funktioniert mit verschiedenen Python-Versionen
+- ✅ Fehlertoleranter: Fährt bei nicht-kritischen Fehlern fort
+- ✅ Bessere UX: Klare Fehlermeldungen und Anweisungen
+
+**Für bestehende Macs**:
+- ✅ Neuere Ansible-Versionen mit pyenv Python möglich
+- ✅ Automatische Auswahl der besten Version via pip
+
+---
+
+## 💡 Nächste Schritte
+
+- Test auf neuem Mac "saga"
+- Wenn erfolgreich: Workaround-Commits können in git history bleiben (zeigen den Entwicklungsprozess)
+- Weitere MEDIUM Issues angehen (siehe Session 3)
+
+---
+
+**Vorherige Session**: [Session 3](#session-3-summary) (2025-10-24)
+
+---
+
 # Session Status - 2025-10-24 (Session 3)
 
 **Session Start**: Nach Commit `c79fa7a` (Session 2 finalized)

@@ -141,6 +141,49 @@ Solution:
 - Verify the vault password is correct
 - Re-encrypt the password in the host_vars file if needed
 
+**Error: "Command Line Tools installation stops the script"**
+
+After installing Xcode Command Line Tools, the script may exit.
+
+Solution (Automatic as of 2025-12-25):
+- The script now automatically detects if tools are already installed
+- If installation is needed, it provides clear instructions to restart
+- Simply re-run the init.sh command to continue from where it stopped
+
+**Error: "Repository directory already exists" (/tmp/git)**
+
+When restarting the script, git clone fails because /tmp/git already exists.
+
+Solution (Automatic as of 2025-12-25):
+- The script now automatically cleans up /tmp/git before cloning
+- No manual intervention needed
+
+**Error: "No matching distribution found for ansible==X.X.X"**
+
+Python version incompatibility with fixed Ansible version.
+
+Solution (Automatic as of 2025-12-25):
+- requirements.txt now uses flexible version ranges (ansible>=9.0)
+- pip automatically selects the best version for your Python version
+- Works with Python 3.9+ (System Python) and Python 3.11+ (pyenv)
+
+**Error: "Keychain item already exists"**
+
+During iCloud sync, you see: "SecKeychainItemCreateFromContent: item already exists"
+
+Solution (Automatic as of 2025-12-25):
+- Script now gracefully handles "already exists" errors
+- Non-critical keychain errors are logged as warnings
+- Setup continues without interruption
+
+**Error: "SyntaxError: Missing parentheses in call to 'print'"**
+
+Python 2 syntax error in dependencies (ushlex package).
+
+Solution (Automatic as of 2025-12-25):
+- Fixed by using ansible>=9.0 with compatible dependencies
+- No longer installs packages with Python 2 syntax
+
 ## After Setup
 
 ### Verify the Installation
