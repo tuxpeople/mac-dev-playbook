@@ -1,6 +1,5 @@
 tap "1password/tap"
 tap "aquasecurity/trivy"
-tap "benwebber/tunnelblickctl"
 tap "buo/cask-upgrade"
 tap "carvel-dev/carvel"
 tap "devopyio/yamlfmt"
@@ -413,8 +412,6 @@ brew "yq"
 brew "yt-dlp"
 # Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues
 brew "aquasecurity/trivy/trivy"
-# Command-line interface for Tunnelblick
-brew "benwebber/tunnelblickctl/tunnelblickctl"
 # Imgpkg
 brew "carvel-dev/carvel/imgpkg"
 # Formats yaml files.
@@ -448,7 +445,7 @@ cask "1password-cli"
 # Apple TV Aerial screensaver
 cask "aerial"
 # Electronics prototyping platform
-cask "arduino"
+cask "arduino-ide"
 # Tool to flash OS images to SD cards & USB drives
 cask "balenaetcher"
 # 3D model slicing software for 3D printers, maintained by Bambu Lab
@@ -520,7 +517,7 @@ cask "royal-tsx"
 # Tool for sending personal documents to Kindles from Macs
 cask "send-to-kindle"
 # MySQL/MariaDB database management platform
-cask "sequel-pro"
+cask "sequel-ace"
 # Team communication and collaboration software
 cask "slack"
 # Music streaming service
@@ -533,8 +530,6 @@ cask "tailscale-app"
 cask "teamviewer"
 # Manage the data on children's Ravensburger tip toi audio pen
 cask "tiptoi-manager"
-# Free and open-source OpenVPN client
-cask "tunnelblick"
 # Tool to install Linux/BSD distributions to a partition or USB drive
 cask "unetbootin"
 # Development environment
@@ -546,16 +541,16 @@ cask "vlc"
 # Network protocol analyzer
 cask "wireshark-app"
 mas "1Password for Safari", id: 1569813296
-mas "Affinity Designer", id: 824171161
-mas "Affinity Photo", id: 824183456
-mas "Affinity Publisher", id: 881418622
+# mas "Affinity Designer", id: 824171161
+# mas "Affinity Photo", id: 824183456
+# mas "Affinity Publisher", id: 881418622
 mas "Agenda", id: 1287445660
 mas "Apple Configurator", id: 1037126344
 mas "Bear", id: 1091189122
 mas "Calendars", id: 608834326
 mas "DaisyDisk", id: 411643860
-mas "ForkLift", id: 412448059
-mas "FruitJuice", id: 671736912
+# mas "ForkLift", id: 412448059
+# mas "FruitJuice", id: 671736912
 mas "Goodnotes", id: 1444383602
 mas "iMovie", id: 408981434
 mas "Irvue", id: 1039633667
@@ -575,7 +570,7 @@ mas "SQLPro for SQLite", id: 586001240
 mas "Swift Playground", id: 1496833156
 mas "Termius", id: 1176074088
 mas "Todoist", id: 585829637
-mas "Unibox", id: 702816521
+# mas "Unibox", id: 702816521
 mas "VMware Remote Console", id: 1230249825
 mas "WireGuard", id: 1451685025
 vscode "4ops.terraform"
@@ -605,7 +600,7 @@ vscode "golang.go"
 vscode "hashicorp.terraform"
 vscode "irarainey.applicationregistrations"
 vscode "irongeek.vscode-env"
-vscode "joaompinto.vscode-graphviz"
+# vscode "joaompinto.vscode-graphviz"
 vscode "kennylong.kubernetes-yaml-formatter"
 vscode "lunuan.kubernetes-templates"
 vscode "mechatroner.rainbow-csv"
@@ -664,10 +659,7 @@ vscode "tfsec.tfsec"
 vscode "timonwong.shellcheck"
 vscode "usernamehw.errorlens"
 vscode "vscode-icons-team.vscode-icons"
-vscode "will-stone.in-any-case"
+# vscode "will-stone.in-any-case"
 vscode "yzane.markdown-pdf"
 vscode "yzdann.k8s-snippets"
 vscode "yzhang.markdown-all-in-one"
-go "golang.org/x/tools/gopls"
-go "github.com/IzakMarais/reporter/cmd/grafana-reporter"
-go "honnef.co/go/tools/cmd/staticcheck"
