@@ -8,7 +8,7 @@ ansible_user: tdeutsch
 # Sudo password (encrypted with ansible-vault)
 # Generate with:
 #   ansible-vault encrypt_string \
-#     --vault-password-file=~/iCloudDrive/Allgemein/bin/vault_password_file \
+#     --vault-password-file=~/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/vault_password_file  \
 #     'your-sudo-password' \
 #     --name 'ansible_become_pass'
 #
@@ -16,8 +16,8 @@ ansible_user: tdeutsch
 #   ansible-vault encrypt_string --ask-vault-pass 'your-sudo-password' --name 'ansible_become_pass'
 #
 ansible_become_pass: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          PASTE_YOUR_ENCRYPTED_PASSWORD_HERE
+  $ANSIBLE_VAULT;1.1;AES256
+  PASTE_YOUR_ENCRYPTED_PASSWORD_HERE
 
 # Optional: Use 1Password for sudo password instead of vault
 # Uncomment if you prefer 1Password (requires 1Password CLI installed)

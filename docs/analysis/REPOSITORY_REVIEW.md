@@ -20,6 +20,7 @@ However, the repository shows signs of **organic growth** with multiple approach
 ## ✅ What Works Really Well
 
 ### 1. Inventory Hierarchy
+
 ```
 macs/
   ├── business_mac/
@@ -37,6 +38,7 @@ macs/
 ```
 
 **Why this is good**:
+
 - Clear separation of concerns
 - Configuration inheritance (macs → group → host)
 - Scales well when adding new machines
@@ -45,6 +47,7 @@ macs/
 ### 2. Playbook Separation
 
 **plays/update.yml**: Daily maintenance
+
 - Homebrew updates
 - Mac software updates
 - Microsoft updates
@@ -52,12 +55,14 @@ macs/
 - Targeted, fast
 
 **plays/full.yml**: Complete provisioning
+
 - Full system setup
 - Dotfiles installation
 - All roles and tasks
 - Comprehensive
 
 **Why this is good**:
+
 - Different use cases, different playbooks
 - update.yml runs in ~5 minutes
 - full.yml only needed once or rarely
@@ -69,6 +74,7 @@ macs/
 **roles/ansible-role-nvm/**: Node.js management
 
 **Why this is good**:
+
 - You understand when standard roles aren't enough
 - Custom logic is encapsulated
 - Reusable across hosts
@@ -88,6 +94,7 @@ macs/
 With guaranteed cleanup in `always:` block.
 
 **Why this is good**:
+
 - No password prompts during long playbook runs
 - Automatically cleaned up even on failure
 - Secure (validates sudoers syntax, restricted to user)
@@ -100,6 +107,7 @@ With guaranteed cleanup in `always:` block.
 - Session tracking
 
 **Why this is good**:
+
 - Helps future you understand decisions
 - Helps Claude Code understand context
 - Shows thoughtful approach
@@ -112,11 +120,11 @@ With guaranteed cleanup in `always:` block.
 
 **Current State**: 3 scripts with different approaches
 
-| Script | Python Setup | Purpose | Status |
-|--------|-------------|---------|--------|
-| `init.sh` | System Python + pip user | Fresh Mac bootstrap | Active |
-| `init_light.sh` | System Python + pip | Minimal setup | Deprecated |
-| `macupdate` | pyenv + virtualenv | Daily updates | Active, modern |
+| Script          | Python Setup             | Purpose             | Status         |
+| --------------- | ------------------------ | ------------------- | -------------- |
+| `init.sh`       | System Python + pip user | Fresh Mac bootstrap | Active         |
+| `init_light.sh` | System Python + pip      | Minimal setup       | Deprecated     |
+| `macupdate`     | pyenv + virtualenv       | Daily updates       | Active, modern |
 
 **The Problem**:
 
@@ -136,6 +144,7 @@ pip install --requirement requirements.txt
 ```
 
 **Why this is problematic**:
+
 - System Python can change with macOS updates (3.9 → 3.11 → 3.12)
 - User pip installs can conflict with system packages
 - Not reproducible (different Python versions on different macOS versions)
@@ -147,6 +156,7 @@ pip install --requirement requirements.txt
 **Recommendation**:
 
 **Option A: Consolidate into one shared setup**
+
 ```bash
 # scripts/lib/python-env.sh (new shared library)
 setup_python_environment() {
@@ -168,6 +178,7 @@ update_ansible_deps
 ```
 
 **Option B: Make init.sh a wrapper around macupdate**
+
 ```bash
 # init.sh becomes:
 #!/bin/bash
@@ -197,6 +208,7 @@ done
 ```
 
 **The Problems**:
+
 1. **Hardcoded paths**: Specific to your iCloud folder structure
 2. **Black box**: What's in `filelist.txt`? What's in `add_vault_password`?
 3. **Fragile**: Infinite loops if iCloud doesn't sync
@@ -206,12 +218,14 @@ done
 **Effort to Fix**: Low (partially done)
 
 **Current Improvement** (just implemented):
+
 - Made iCloud sync optional (y/N prompt)
 - Falls back to `--ask-vault-pass` if skipped
 
 **Further Recommendation**:
 
 **Replace** `add_vault_password` script **with**:
+
 ```bash
 # Standard location for vault password
 VAULT_PASSWORD_FILE="${HOME}/.ansible-vault-password"
@@ -221,13 +235,16 @@ export ANSIBLE_VAULT_PASSWORD_FILE="${HOME}/.ansible-vault-password"
 ```
 
 **Document** what files are actually needed:
+
 ```markdown
 # Required files for setup:
+
 - ~/.ansible-vault-password (or prompt for it)
 - SSH keys (can be generated, not required from iCloud)
 - GPG keys (can be generated, not required from iCloud)
 
 # Optional files from iCloud:
+
 - Personal dotfiles not in git
 - Additional scripts
 ```
@@ -244,6 +261,7 @@ homebrew_brewfile_dir: "{{dotfiles_repo_local_destination}}/machine/business_mac
 ```
 
 **The Problem**:
+
 - Brewfiles are not dotfiles (they're package manifests)
 - Only used by Ansible, not standalone
 - Requires understanding two repositories to manage packages
@@ -258,6 +276,7 @@ Probably historical - Brewfiles existed before Ansible adoption
 **Recommendation**:
 
 Move Brewfiles to Ansible repository:
+
 ```bash
 # Old location
 ~/development/github/tuxpeople/dotfiles/machine/business_mac/Brewfile
@@ -269,12 +288,14 @@ files/brewfile/business_mac.Brewfile
 ```
 
 Update configuration:
+
 ```yaml
 # inventories/group_vars/business_mac/brew.yml
 homebrew_brewfile_dir: "{{ playbook_dir }}/inventories/group_vars/business_mac"
 ```
 
 **Benefits**:
+
 - Single repository for Mac configuration
 - Clear ownership (Ansible manages packages)
 - Easier to review changes (git diff shows package changes)
@@ -304,6 +325,7 @@ ansible_become_pass: !vault |
 ```
 
 **The Problem**:
+
 - Two systems for the same thing (sudo password)
 - 1Password requires CLI + authentication
 - Vault requires vault password file
@@ -318,6 +340,7 @@ ansible_become_pass: !vault |
 **Pick one primary approach:**
 
 **Option A: Vault-First (Simpler)**
+
 ```yaml
 # All hosts have ansible_become_pass in vault
 # Pros:
@@ -332,6 +355,7 @@ ansible_become_pass: !vault |
 ```
 
 **Option B: 1Password-First (Modern)**
+
 ```yaml
 # All hosts use onepassword_sudo_item
 # Vault only as fallback
@@ -349,20 +373,24 @@ ansible_become_pass: !vault |
 ```
 
 **My recommendation**: **Vault-First**
+
 - Already working for all hosts
 - Simpler (fewer moving parts)
 - More portable (works on any machine with vault password)
 - 1Password can be added later for convenience, but Vault is always there
 
 **Document the decision**:
+
 ```markdown
 # Secrets Management Strategy
 
 **Primary**: Ansible Vault for host_vars
+
 - All hosts MUST have ansible_become_pass encrypted in host_vars
-- Vault password stored in ~/iCloudDrive/Allgemein/bin/vault_password_file (or prompt)
+- Vault password stored in ~/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/vault_password_file (or prompt)
 
 **Optional**: 1Password for convenience
+
 - Can override with onepassword_sudo_item if preferred
 - Requires 1Password CLI configured
 - Falls back to Vault if not available
@@ -383,6 +411,7 @@ ansible_become_pass: !vault |
 ```
 
 **The Questions**:
+
 - Why is this disabled?
 - Is there a known issue with the mas role?
 - Is it no longer needed?
@@ -394,6 +423,7 @@ ansible_become_pass: !vault |
 **Recommendation**:
 
 **Document the reason**:
+
 ```yaml
 # MAS Integration disabled because:
 # - mas CLI has authentication issues on modern macOS (requires manual login)
@@ -408,6 +438,7 @@ ansible_become_pass: !vault |
 ```
 
 **Or investigate and fix**:
+
 - Test if mas CLI works on current macOS
 - Document any workarounds needed
 - Re-enable if working
@@ -428,6 +459,7 @@ python_versions_to_keep:
 ```
 
 **The Problem**:
+
 - When Python 3.11.8 is EOL, must update multiple files
 - No central version management
 - Comments point to each other (circular reference)
@@ -438,6 +470,7 @@ python_versions_to_keep:
 **Recommendation**:
 
 **Centralize version**:
+
 ```yaml
 # inventories/group_vars/macs/general.yml
 mac_dev_playbook_python_version: "3.11.8"
@@ -453,6 +486,7 @@ PYTHON_VERSION=$(grep mac_dev_playbook_python_version inventories/group_vars/mac
 ```
 
 **Or use a .python-version file** (standard pyenv approach):
+
 ```bash
 # .python-version
 3.11.8
@@ -485,6 +519,7 @@ PYTHON_VERSION=$(cat "${REPO_DIR}/.python-version")
 ```
 
 **The Problem**:
+
 - Hard to know where to look for information
 - Some docs have overlapping content
 - Analysis docs don't always lead to actions
@@ -496,6 +531,7 @@ PYTHON_VERSION=$(cat "${REPO_DIR}/.python-version")
 **Recommendation**:
 
 **Reorganize as**:
+
 ```
 ├── README.md                    # Quick start, links to docs/
 ├── CLAUDE.md                    # AI assistant context (keep as is)
@@ -511,6 +547,7 @@ PYTHON_VERSION=$(cat "${REPO_DIR}/.python-version")
 ```
 
 **Move TODOs to GitHub Issues**:
+
 - Better tracking (can close, label, milestone)
 - Can link to PRs
 - Can assign to yourself
@@ -527,6 +564,7 @@ PYTHON_VERSION=$(cat "${REPO_DIR}/.python-version")
 **Why**: Different Python setups between init.sh and macupdate will cause issues
 
 **Action**:
+
 1. Extract shared Python setup to `scripts/lib/python-env.sh`
 2. Update init.sh to use pyenv + virtualenv (like macupdate)
 3. Test on a VM or test Mac
@@ -542,6 +580,7 @@ PYTHON_VERSION=$(cat "${REPO_DIR}/.python-version")
 **Why**: Aligns with TODO.md:23, clarifies ownership, simplifies workflow
 
 **Action**:
+
 1. Create `inventories/group_vars/business_mac/Brewfile`
 2. Move from dotfiles repo
 3. Update `homebrew_brewfile_dir` config
@@ -559,6 +598,7 @@ PYTHON_VERSION=$(cat "${REPO_DIR}/.python-version")
 **Why**: Clarifies when to use Vault vs. 1Password
 
 **Action**:
+
 1. Create `docs/SECRETS_MANAGEMENT.md`
 2. Document current approach (Vault-first)
 3. Document 1Password as optional enhancement
@@ -574,6 +614,7 @@ PYTHON_VERSION=$(cat "${REPO_DIR}/.python-version")
 **Why**: More portable, easier to understand
 
 **Action**:
+
 1. Document what files are actually needed from iCloud
 2. Provide alternatives (e.g., `~/.ansible-vault-password`)
 3. Consider removing filelists entirely
@@ -589,6 +630,7 @@ PYTHON_VERSION=$(cat "${REPO_DIR}/.python-version")
 **Why**: Easier to update when Python version changes
 
 **Action**:
+
 1. Create `.python-version` file
 2. Update macupdate to read from it
 3. Update general.yml to reference it
@@ -612,6 +654,7 @@ Line 81:  Double quote to prevent globbing
 ```
 
 **Recommendation**:
+
 - Fix before next major change
 - Add shellcheck to pre-commit hooks
 - Run `shellcheck scripts/*.sh init*.sh` regularly
@@ -621,6 +664,7 @@ Line 81:  Double quote to prevent globbing
 **From CLAUDE.md**: ansible-lint is required for CI to pass
 
 **Recommendation**:
+
 - Add to pre-commit hooks
 - Run before commits: `ansible-lint plays/*.yml`
 - Fix any errors before committing
@@ -630,6 +674,7 @@ Line 81:  Double quote to prevent globbing
 **From CLAUDE.md**: yamllint must pass
 
 **Recommendation**:
+
 - Add to pre-commit hooks
 - Common fixes documented in CLAUDE.md:152-162
 
@@ -642,6 +687,7 @@ Line 81:  Double quote to prevent globbing
 **Current State**: No automated testing
 
 **Recommendation**:
+
 - Add Molecule for role testing
 - Add test playbooks that run in CI
 - Test on VMs before applying to production Macs
@@ -651,6 +697,7 @@ Line 81:  Double quote to prevent globbing
 **Current State**: GitHub Actions may exist (check .github/workflows/)
 
 **Recommendation**:
+
 - Run ansible-lint, yamllint, shellcheck in CI
 - Test playbooks on macOS runners (if budget allows)
 - Automated testing of init.sh on fresh VM
@@ -660,6 +707,7 @@ Line 81:  Double quote to prevent globbing
 **From TODO.md**: `.macos` (952 lines) should become Ansible tasks
 
 **Long-term recommendation**:
+
 - Convert `.macos` script to `community.general.osx_defaults` tasks
 - Keep true dotfiles (.bashrc, .vimrc) in dotfiles repo
 - Move everything else to Ansible
@@ -667,11 +715,13 @@ Line 81:  Double quote to prevent globbing
 ### 4. Secrets Rotation
 
 **Current Challenge**: Changing sudo password requires:
+
 1. Update password in your head
 2. Re-encrypt in all host_vars files
 3. Commit and push
 
 **Future Enhancement**:
+
 - Consider `ansible-vault rekey` for password rotation
 - Or move to 1Password for easier rotation
 - Document rotation procedure
@@ -681,12 +731,14 @@ Line 81:  Double quote to prevent globbing
 ## 💡 Summary
 
 ### Strengths
+
 - ✅ Solid inventory structure
 - ✅ Good role organization
 - ✅ Thoughtful documentation attempts
 - ✅ Separation of concerns (update vs. full)
 
 ### Improvement Areas
+
 - 🔄 Consolidate bootstrap approaches
 - 🔄 Move Brewfiles to Ansible repo
 - 🔄 Choose one secrets management approach
@@ -707,23 +759,27 @@ The repository works well and shows thoughtful design. The main opportunity is *
 If you want to tackle these improvements, here's a suggested order:
 
 **Week 1: Quick Wins**
+
 - [ ] Move Brewfiles to Ansible repo (1h)
 - [ ] Create docs/SECRETS_MANAGEMENT.md (30m)
 - [ ] Centralize Python version to .python-version (15m)
 - [ ] Fix shellcheck warnings in init.sh (30m)
 
 **Week 2: Bootstrap Consolidation**
+
 - [ ] Extract scripts/lib/python-env.sh (1h)
 - [ ] Update init.sh to use shared Python setup (2h)
 - [ ] Test on VM or test Mac (1h)
 - [ ] Update documentation (30m)
 
 **Week 3: Documentation**
+
 - [ ] Consolidate docs into SETUP.md, ARCHITECTURE.md, etc. (2h)
 - [ ] Move completed TODOs to done section (30m)
 - [ ] Convert active TODOs to GitHub Issues (1h)
 
 **Week 4: Polish**
+
 - [ ] Add pre-commit hooks (shellcheck, yamllint, ansible-lint) (1h)
 - [ ] Review and update CLAUDE.md (30m)
 - [ ] Test full workflow on test Mac (2h)

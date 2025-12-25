@@ -2,7 +2,6 @@
 # Mac Dev Playbook Workflows
 
 This document explains the different workflows and when to use which script/playbook.
-
 ---
 
 ## Overview: Three Different Scenarios
@@ -50,6 +49,7 @@ This document explains the different workflows and when to use which script/play
 **Script**: `init.sh`
 
 **What it does**:
+
 1. Installs Command Line Tools (if needed)
 2. Installs Homebrew
 3. Clones this repository to `/tmp/git`
@@ -61,6 +61,7 @@ This document explains the different workflows and when to use which script/play
 9. Runs `plays/full.yml` for complete system provisioning
 
 **How to run**:
+
 ```bash
 # From a fresh Mac (Terminal.app, not iTerm2)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
@@ -80,6 +81,7 @@ See: [docs/NEW_MAC_SETUP.md](NEW_MAC_SETUP.md)
 **When**: You made configuration changes and want to apply them
 
 ### Examples of Configuration Changes:
+
 - Added a new Homebrew package to `brew.yml`
 - Changed Dock settings in `dock.yml`
 - Updated dotfiles configuration
@@ -91,6 +93,7 @@ See: [docs/NEW_MAC_SETUP.md](NEW_MAC_SETUP.md)
 **Script**: `macapply`
 
 **What it does**:
+
 1. Activates the pyenv virtualenv (mac-dev-playbook-venv)
 2. Runs `plays/full.yml` on the current Mac
 3. Applies all configuration (or specific tags)
@@ -121,6 +124,7 @@ macapply -vvv  # Very verbose
 ```
 
 **Available tags**:
+
 - `homebrew` - Homebrew packages and casks
 - `dotfiles` - Dotfiles synchronization
 - `mas` - Mac App Store apps (if enabled)
@@ -189,6 +193,7 @@ macapply --check --diff
 **Script**: `macupdate`
 
 **What it does**:
+
 1. Ensures pyenv and mise are installed
 2. Sets up Python environment (pyenv + virtualenv)
 3. Updates git repository
@@ -235,12 +240,14 @@ macupdate
 **Script**: `macrun`
 
 **Why it exists**:
+
 - Avoids sudo permission issues when running `macapply --tags post`
 - Faster than running full playbook
 - Cleaner output for debugging specific tasks
 - Automatically handles sudo setup/cleanup
 
 **What it does**:
+
 1. Sets up temporary passwordless sudo
 2. Runs the specified post-provision task from `tasks/post/`
 3. Cleans up sudo permissions automatically (even on failure)
@@ -308,13 +315,13 @@ macrun k8s
 
 **When to use macrun vs macapply**:
 
-| Use Case | Use | Why |
-|----------|-----|-----|
-| Single task after config change | `macrun <task>` | Faster, cleaner output |
-| Multiple tasks | `macapply --tags post` | More efficient |
-| Full configuration apply | `macapply` | Updates everything |
-| Debugging a specific task | `macrun <task> -vv` | Easier to see what's happening |
-| Sudo permission issues | `macrun <task>` | Handles sudo automatically |
+| Use Case                        | Use                    | Why                            |
+| ------------------------------- | ---------------------- | ------------------------------ |
+| Single task after config change | `macrun <task>`        | Faster, cleaner output         |
+| Multiple tasks                  | `macapply --tags post` | More efficient                 |
+| Full configuration apply        | `macapply`             | Updates everything             |
+| Debugging a specific task       | `macrun <task> -vv`    | Easier to see what's happening |
+| Sudo permission issues          | `macrun <task>`        | Handles sudo automatically     |
 
 ---
 
@@ -345,19 +352,19 @@ Start
 
 ## Quick Reference
 
-| What do you want? | Use this | Example |
-|-------------------|----------|---------|
-| Set up a brand new Mac | `init.sh` | `curl ... \| bash` |
-| Add a Homebrew package | `macapply --tags homebrew` | After editing `brew.yml` |
-| Change Dock layout | `macapply --tags dock` | After editing `dock.yml` |
-| Update macOS settings | `macapply --tags osx` | After editing `tasks/osx.yml` |
-| Apply all config changes | `macapply` | After editing multiple files |
-| Configure printers | `macrun printers` | After editing `printers.yml` |
-| Install fonts | `macrun fonts` | After adding font files |
-| Run any single post-task | `macrun <task>` | See `macrun` for list |
-| Update Homebrew packages | `macupdate` | Daily/weekly maintenance |
-| Update macOS system | `macupdate` | Daily/weekly maintenance |
-| See what would change | `macapply --check --diff` | Before applying |
+| What do you want?        | Use this                   | Example                       |
+| ------------------------ | -------------------------- | ----------------------------- |
+| Set up a brand new Mac   | `init.sh`                  | `curl ... \| bash`            |
+| Add a Homebrew package   | `macapply --tags homebrew` | After editing `brew.yml`      |
+| Change Dock layout       | `macapply --tags dock`     | After editing `dock.yml`      |
+| Update macOS settings    | `macapply --tags osx`      | After editing `tasks/osx.yml` |
+| Apply all config changes | `macapply`                 | After editing multiple files  |
+| Configure printers       | `macrun printers`          | After editing `printers.yml`  |
+| Install fonts            | `macrun fonts`             | After adding font files       |
+| Run any single post-task | `macrun <task>`            | See `macrun` for list         |
+| Update Homebrew packages | `macupdate`                | Daily/weekly maintenance      |
+| Update macOS system      | `macupdate`                | Daily/weekly maintenance      |
+| See what would change    | `macapply --check --diff`  | Before applying               |
 
 ---
 
@@ -378,17 +385,18 @@ Start
 
 **They serve different purposes:**
 
-| Feature | macapply | macupdate |
-|---------|----------|-----------|
-| Playbook | `plays/full.yml` | `plays/update.yml` |
-| Purpose | Apply configuration | Update packages/system |
-| When | After config changes | Daily/weekly |
-| Homebrew | Installs packages from config | Updates existing packages |
-| macOS Settings | Applies osx.yml settings | Doesn't change settings |
-| Dotfiles | Syncs from repo | Syncs from repo |
-| Duration | 5-30 min | 5-15 min |
+| Feature        | macapply                      | macupdate                 |
+| -------------- | ----------------------------- | ------------------------- |
+| Playbook       | `plays/full.yml`              | `plays/update.yml`        |
+| Purpose        | Apply configuration           | Update packages/system    |
+| When           | After config changes          | Daily/weekly              |
+| Homebrew       | Installs packages from config | Updates existing packages |
+| macOS Settings | Applies osx.yml settings      | Doesn't change settings   |
+| Dotfiles       | Syncs from repo               | Syncs from repo           |
+| Duration       | 5-30 min                      | 5-15 min                  |
 
 **You might need both:**
+
 ```bash
 # 1. Make config change
 vim inventories/group_vars/macs/brew.yml  # Add new package
@@ -471,7 +479,7 @@ Make sure you have the vault password file or know the password:
 
 ```bash
 # Check if file exists
-ls ~/iCloudDrive/Allgemein/bin/vault_password_file
+ls ${HOME}/Library/Mobile\ Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/vault_password_file
 
 # If not, you'll be prompted (or specify different file)
 macapply --vault-password-file=/path/to/vault_password
@@ -480,6 +488,7 @@ macapply --vault-password-file=/path/to/vault_password
 ### Changes not taking effect
 
 Make sure you:
+
 1. Saved your configuration changes
 2. Used the right tags (or no tags for full run)
 3. Check for errors in the Ansible output
