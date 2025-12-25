@@ -93,20 +93,24 @@ echo ""
 step "Preparing system"
 echo " - Preparing repository"
 
-# Clean up existing /tmp/git if present (from previous run)
-if [ -d "/tmp/git" ]; then
-  echo "   Removing existing /tmp/git directory"
-  rm -rf /tmp/git
+# Define target directory for permanent location
+REPO_DIR="${HOME}/development/github/tuxpeople/mac-dev-playbook"
+
+# Clean up existing directory if present (from previous run)
+if [ -d "${REPO_DIR}" ]; then
+  echo "   Removing existing ${REPO_DIR} directory"
+  rm -rf "${REPO_DIR}"
 fi
 
-if ! mkdir -p /tmp/git; then
-  echo "❌ ERROR: Failed to create /tmp/git directory"
+# Create parent directories
+if ! mkdir -p "${HOME}/development/github/tuxpeople"; then
+  echo "❌ ERROR: Failed to create parent directories"
   echo "   Check permissions and disk space"
   exit 1
 fi
 
-echo " - Cloning Repo"
-if ! git clone https://github.com/tuxpeople/mac-dev-playbook.git /tmp/git; then
+echo " - Cloning Repo to ${REPO_DIR}"
+if ! git clone https://github.com/tuxpeople/mac-dev-playbook.git "${REPO_DIR}"; then
   echo "❌ ERROR: Failed to clone repository"
   echo "   Check internet connection and GitHub access"
   exit 1
@@ -121,23 +125,23 @@ if ! ${PYTHON_BIN} -m pip install --upgrade pip --user; then
 fi
 
 echo " - Installing Ansible"
-if ! ${PYTHON_BIN} -m pip install --user --requirement /tmp/git/requirements.txt; then
+if ! ${PYTHON_BIN} -m pip install --user --requirement "${REPO_DIR}/requirements.txt"; then
   echo "❌ ERROR: Failed to install Ansible dependencies"
-  echo "   Check /tmp/git/requirements.txt and internet connection"
+  echo "   Check ${REPO_DIR}/requirements.txt and internet connection"
   exit 1
 fi
 PATH="/usr/local/bin:$(${PYTHON_BIN} -m site --user-base)/bin:$PATH"
 export PATH
 
 echo " - Installing Ansible requirements"
-if ! ansible-galaxy install -r /tmp/git/requirements.yml; then
+if ! ansible-galaxy install -r "${REPO_DIR}/requirements.yml"; then
   echo "❌ ERROR: Failed to install Ansible Galaxy requirements"
-  echo "   Check /tmp/git/requirements.yml and internet connection"
+  echo "   Check ${REPO_DIR}/requirements.yml and internet connection"
   exit 1
 fi
 
 echo " - Setting max open files"
-cd /tmp/git
+cd "${REPO_DIR}"
 sudo cp files/system/limit.maxfiles.plist /Library/LaunchDaemons
 sudo cp files/system/limit.maxproc.plist /Library/LaunchDaemons
 sudo chown root:wheel /Library/LaunchDaemons/limit.maxfiles.plist
@@ -157,7 +161,7 @@ fi
 step "Preparing Ansible configuration"
 
 # Check if host_vars file exists in the repo
-HOST_VARS_FILE="/tmp/git/inventories/host_vars/${newhostname}.yml"
+HOST_VARS_FILE="${REPO_DIR}/inventories/host_vars/${newhostname}.yml"
 
 if [[ ! -f "${HOST_VARS_FILE}" ]]; then
   echo ""
@@ -214,7 +218,7 @@ echo "     • Or skip if you don't use iCloud sync"
 echo ""
 echo "Then run Phase 3 (Full Configuration):"
 echo "  (Vault password will be automatically read from 1Password)"
-echo "  cd /tmp/git"
+echo "  cd ~/development/github/tuxpeople/mac-dev-playbook"
 echo "  ./scripts/macapply"
 echo ""
 echo "=========================================="
