@@ -294,11 +294,11 @@ fi
 # Determine vault password source
 if [[ -f "${VAULT_PASSWORD_FILE}" ]]; then
   echo "✓ Using vault password from: ${VAULT_PASSWORD_FILE}"
-  ANSIBLE_EXTRA_ARGS="--vault-password-file=${VAULT_PASSWORD_FILE}"
+  ANSIBLE_EXTRA_ARGS=(--vault-password-file "${VAULT_PASSWORD_FILE}")
 else
   echo "ℹ️  Vault password file not found"
   echo "You will be prompted for Ansible Vault password during playbook run"
-  ANSIBLE_EXTRA_ARGS="--ask-vault-pass"
+  ANSIBLE_EXTRA_ARGS=(--ask-vault-pass)
 fi
 
 step "Starting Ansible run"
@@ -306,9 +306,8 @@ step "Starting Ansible run"
 echo "If something went wrong, start this step again with:"
 echo "     cd /tmp/git"
 echo "     export newhostname=<HOSTNAME>"
-if [[ -n "${ANSIBLE_EXTRA_ARGS}" ]]; then
-  echo "     ansible-playbook plays/full.yml -i inventories -l \${newhostname} --extra-vars \"newhostname=\${newhostname}\" --connection=local ${ANSIBLE_EXTRA_ARGS}"
+if [[ ${#ANSIBLE_EXTRA_ARGS[@]} -gt 0 ]]; then
+  echo "     ansible-playbook plays/full.yml -i inventories -l \${newhostname} --extra-vars \"newhostname=\${newhostname}\" --connection=local ${ANSIBLE_EXTRA_ARGS[*]}"
 fi
 
-# shellcheck disable=SC2086
-ansible-playbook plays/full.yml -i inventories -l "${newhostname}" --extra-vars "newhostname=${newhostname}" --connection=local ${ANSIBLE_EXTRA_ARGS}
+ansible-playbook plays/full.yml -i inventories -l "${newhostname}" --extra-vars "newhostname=${newhostname}" --connection=local "${ANSIBLE_EXTRA_ARGS[@]}"
