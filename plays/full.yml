@@ -38,6 +38,20 @@
     - import_tasks: ../tasks/pre/cleanup-old-python-versions.yml
     - import_tasks: ../tasks/pre/ssh.yml
 
+    - name: Ensure ~/bin directory exists
+      ansible.builtin.file:
+        path: "{{ myhomedir }}/bin"
+        state: directory
+        mode: '0755'
+      become: false
+
+    - name: Deploy vault password script from template
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/../files/scripts/vault_password_from_1password.sh.j2"
+        dest: "{{ myhomedir }}/bin/vault_password_mac_dev_playbook"
+        mode: '0700'
+      become: false
+
     - name: Ensure /private/etc/sudoers.d exists
       file:
         path: '/private/etc/sudoers.d'

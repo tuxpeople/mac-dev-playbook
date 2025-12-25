@@ -137,32 +137,9 @@ echo ""
 # Change to repo directory
 cd "${REPO_DIR}" || exit 1
 
-# 1Password secret reference (keep synchronized with inventories/group_vars/macs/onepassword.yml)
-ONEPASSWORD_VAULT_REF="op://Private/ansible-vault-keys/mac-dev-playbook"
-
-# Determine vault password options
-VAULT_ARGS=()
-
-# Try to read from 1Password first
-if command -v op &>/dev/null; then
-    log "Reading vault password from 1Password..."
-    if VAULT_PASSWORD=$(op read "${ONEPASSWORD_VAULT_REF}" 2>/dev/null); then
-        log "✓ Vault password loaded from 1Password"
-        # Create temporary file for vault password (cleaned up automatically on script exit)
-        VAULT_TEMP_FILE=$(mktemp)
-        trap 'rm -f "${VAULT_TEMP_FILE}"' EXIT
-        echo "${VAULT_PASSWORD}" > "${VAULT_TEMP_FILE}"
-        VAULT_ARGS+=("--vault-password-file=${VAULT_TEMP_FILE}")
-    else
-        log_warn "Failed to read from 1Password (not logged in?)"
-        log "You will be prompted for vault password"
-        VAULT_ARGS+=("--ask-vault-pass")
-    fi
-else
-    log_warn "1Password CLI (op) not found"
-    log "You will be prompted for vault password"
-    VAULT_ARGS+=("--ask-vault-pass")
-fi
+# Vault password is configured in ansible.cfg (vault_password_file = ~/bin/vault_password_mac_dev_playbook)
+# The script is auto-deployed from template in plays/full.yml
+log "Vault password will be read from 1Password via ansible.cfg"
 
 # Check if host_vars exists
 HOST_VARS_FILE="${REPO_DIR}/inventories/host_vars/${HOSTNAME}.yml"
@@ -180,7 +157,6 @@ if ansible-playbook plays/full.yml \
     -i inventories \
     -l "${HOSTNAME}" \
     --connection=local \
-    "${VAULT_ARGS[@]}" \
     "${ANSIBLE_ARGS[@]}"; then
 
     echo ""
