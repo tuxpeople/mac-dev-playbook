@@ -14,21 +14,38 @@ This playbook installs and configures software on multiple Macs for development 
 
 ### Fresh Mac Setup (Initial Installation)
 
-For setting up a brand new Mac, use the bootstrap script:
+For setting up a brand new Mac, the process is split into 3 phases:
+
+**Phase 1 - Bootstrap (Automated):**
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
 ```
 
-**Before running**: Create `inventories/host_vars/<hostname>.yml` for your Mac. See [docs/NEW_MAC_SETUP.md](docs/NEW_MAC_SETUP.md) for complete setup instructions.
+This installs:
 
-The bootstrap script will:
+- Xcode Command Line Tools
+- Homebrew
+- Python and Ansible
+- Essential CLI tools (git, bash, jq, node)
+- 1Password app
 
-- Install Xcode Command Line Tools
-- Set up Python environment (pyenv + virtualenv)
-- Install Ansible and dependencies
-- Clone this repository
-- Run the full provisioning playbook
+**Phase 2 - Manual Setup (5-10 min):**
+
+1. Open 1Password and sign in
+2. Wait for iCloud Drive to sync (optional)
+3. Add vault password to keychain: `~/iCloudDrive/Allgemein/bin/add_vault_password`
+
+**Phase 3 - Full Configuration (Automated):**
+
+```bash
+cd /tmp/git
+./scripts/macapply
+```
+
+This completes the setup with dotfiles, Brewfile packages, system settings, and all configurations.
+
+**Before running Phase 1**: Create `inventories/host_vars/<hostname>.yml` for your Mac. See [docs/NEW_MAC_SETUP.md](docs/NEW_MAC_SETUP.md) for complete step-by-step instructions.
 
 ### Applying Configuration Changes
 

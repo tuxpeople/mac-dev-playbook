@@ -23,18 +23,24 @@ Configuration cascades from general → group → host-specific, allowing shared
 
 ### Playbook Types
 
-**main.yml**: Simple full provisioning playbook for initial setup
+**plays/bootstrap.yml**: Minimal Phase 1 bootstrap playbook (NEW as of 2025-12-25)
 
-- Uses `default.config.yml` for configuration
-- Runs all standard roles (homebrew, mas, dotfiles, dock, etc.)
-- Suitable for fresh Mac setup
+- NO external dependencies (no vault password, no iCloud, no 1Password login)
+- Installs Homebrew + essential CLI tools (git, bash, jq, node) + 1Password app
+- Uses `homebrew_use_brewfile: false` (only installs packages from group_vars)
+- Creates ~/iCloudDrive symlink (with ignore_errors if not synced)
+- Purpose: Get Mac "Ansible-ready" with minimal tooling
+- Called by init.sh (Phase 1), followed by manual 1Password setup (Phase 2), then macapply (Phase 3)
 
-**plays/full.yml**: Complete provisioning with advanced features
+**plays/full.yml**: Complete provisioning with all dependencies (Phase 3)
 
+- Requires vault password (from keychain), 1Password login, iCloud sync
 - Sets up temporary passwordless sudo for automation
 - Installs Rosetta 2 for Apple Silicon Macs
 - Includes SSH key setup and additional pre-tasks
 - Runs post-provision tasks from `post_provision_tasks` glob
+- Uses `homebrew_use_brewfile: true` (installs packages from group_vars + Brewfile)
+- Called by macapply script after bootstrap and manual setup
 
 **plays/update.yml**: Daily update/maintenance playbook
 
@@ -42,6 +48,12 @@ Configuration cascades from general → group → host-specific, allowing shared
 - Runs custom roles: `ansible-mac-update`, `munki_update`, `ansible-role-nvm`
 - Uses environment variable `env_path` for proper PATH setup
 - Manages temporary sudo permissions automatically
+- Called by macupdate script
+
+**main.yml**: Legacy simple provisioning (deprecated, use bootstrap.yml + full.yml instead)
+
+- Uses `default.config.yml` for configuration
+- Runs all standard roles (homebrew, mas, dotfiles, dock, etc.)
 
 ### Custom Roles
 
@@ -64,15 +76,32 @@ Defined in `requirements.yml`:
 
 **See [docs/WORKFLOWS.md](docs/WORKFLOWS.md) for complete workflow documentation.**
 
-### Initial Setup (Brand New Mac)
+### Initial Setup (Brand New Mac) - 3 Phases
+
+**Phase 1 - Bootstrap (Automated):**
 
 ```bash
-# Bootstrap a completely fresh Mac (runs before anything else)
+# Run init.sh - installs Homebrew, Ansible, essential tools, 1Password app
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
 
 # Prerequisites: Create inventories/host_vars/<hostname>.yml BEFORE running
-# See: docs/NEW_MAC_SETUP.md
+# NO vault password, iCloud sync, or 1Password login required for Phase 1
 ```
+
+**Phase 2 - Manual Setup (5-10 min):**
+
+1. Open 1Password and sign in
+2. Wait for iCloud Drive to sync (optional)
+3. Add vault password to keychain: `~/iCloudDrive/Allgemein/bin/add_vault_password`
+
+**Phase 3 - Full Configuration (Automated):**
+
+```bash
+cd /tmp/git
+./scripts/macapply  # Runs plays/full.yml with all dependencies
+```
+
+**See**: [docs/NEW_MAC_SETUP.md](docs/NEW_MAC_SETUP.md) for detailed step-by-step guide
 
 ### Configuration Changes (After Editing Config Files)
 
