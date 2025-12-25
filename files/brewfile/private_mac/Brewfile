@@ -460,8 +460,6 @@ cask "dupeguru"
 cask "firefox"
 cask "font-roboto"
 cask "font-roboto-mono"
-# Free VPN client for FortiClient
-cask "forticlient-vpn"
 # Web browser
 cask "google-chrome"
 # Tools to protect your emails and files
