@@ -1,4 +1,5 @@
 # Brewfile location (moved from dotfiles repo to Ansible repo on 2025-12-22)
 # Old location: {{dotfiles_repo_local_destination}}/machine/business_mac/
 # Note: Brewfiles must be in files/ not group_vars/ (Ansible parses group_vars as YAML)
-homebrew_brewfile_dir: "{{ playbook_dir }}/files/brewfile/business_mac"
+# Note: playbook_dir points to /path/to/repo/plays, so we need to go up one level
+homebrew_brewfile_dir: "{{ playbook_dir }}/../files/brewfile/business_mac"

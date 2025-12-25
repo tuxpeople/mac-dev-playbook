@@ -121,14 +121,15 @@
 
 - name: Set macOS default settings
   community.general.osx_defaults:
-    domain: "{{ item['domain'] }}"
-    key: "{{ item['key'] }}"
-    type: "{{ item['type'] | default(omit) }}"
-    value: "{{ item['value'] }}"
-  become: "{{ item['become'] | default(omit) }}"
+    domain: "{{ default_setting['domain'] }}"
+    key: "{{ default_setting['key'] }}"
+    type: "{{ default_setting['type'] | default(omit) }}"
+    value: "{{ default_setting['value'] }}"
+  become: "{{ default_setting['become'] | default(omit) }}"
   loop: "{{ defaults }}"
   loop_control:
-    label: "{{ item['name'] }}"
+    loop_var: default_setting
+    label: "{{ default_setting['name'] }}"
 
 - name: Restart dock to apply changes
   ansible.builtin.command: killall Dock

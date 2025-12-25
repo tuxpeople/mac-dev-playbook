@@ -146,7 +146,7 @@ defaults:
   key: AppleLanguages
   name: Apple Languages
   type: array
-  value: de
+  value: [de]
 - domain: NSGlobalDomain
   key: AppleLocale
   name: Apple Locale
@@ -371,7 +371,7 @@ defaults:
   key: StringEncodings
   name: String Encodings
   type: array
-  value: '4'
+  value: [4]
 - domain: com.apple.terminal
   key: SecureKeyboardEntry
   name: Secure Keyboard Entry
