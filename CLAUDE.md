@@ -475,3 +475,49 @@ The init.sh bootstrap script has been significantly improved for fresh Mac setup
 - **docs/NEW_MAC_SETUP.md**: Updated troubleshooting guide
 - **docs/PYTHON_VERSION_MANAGEMENT.md**: Requirements.txt strategy explained
 - **docs/sessions/SESSION_STATUS.md**: Session 4 details (2025-12-25)
+
+### Vault Password Bootstrap & Python Optimization (2025-12-25)
+
+Resolved chicken-egg problem with vault password script and optimized Python environment setup for faster macapply runs.
+
+**Problem Background**: The vault password script (`~/bin/vault_password_mac_dev_playbook`) is deployed by `plays/full.yml`, but Ansible needs the script to decrypt secrets BEFORE running the playbook. Also, macapply was using full Python setup on every run (slow, unnecessary).
+
+**Key Improvements**:
+
+1. **Vault Password Bootstrap**: macapply creates the script if it doesn't exist
+   - Reads 1Password reference from `inventories/group_vars/macs/onepassword.yml`
+   - Generates script before running ansible-playbook
+   - playbook later updates script from template (idempotent)
+   - Flow: macapply creates → ansible runs → template updates → subsequent runs use template version
+
+2. **Python Setup Optimization**: macapply uses lightweight environment activation
+   - Old: `full_python_setup` (install Python, create venv, install requirements)
+   - New: `setup_python_env` (just activate existing venv)
+   - Use `macupdate` for full environment setup/updates
+   - macapply is for frequent config changes → should be fast
+
+3. **Clear Separation of Concerns**:
+   - `init.sh`: Bootstrap with system Python (once per Mac)
+   - `macupdate`: Full pyenv environment setup/maintenance (weekly)
+   - `macapply`: Lightweight activation + config application (after changes)
+
+**Architecture**: Vault Password Flow
+
+```
+macapply bootstrap → ~/bin/vault_password_mac_dev_playbook
+                  ↓
+ansible.cfg (vault_password_file) → script → op read → 1Password
+                  ↓
+plays/full.yml template → updates script (idempotent)
+```
+
+**Impact**:
+
+- macapply works on first run (no "vault password file not found" error)
+- macapply runs faster (no unnecessary Python reinstalls)
+- Clean bootstrap mechanism (no manual intervention needed)
+
+**Related Commits**:
+
+- f3d15ab: Template-based vault password script with ansible.cfg integration
+- 3955b0e: Vault password bootstrap and Python optimization
