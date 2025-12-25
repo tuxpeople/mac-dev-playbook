@@ -350,36 +350,56 @@ When starting a new session, Claude should read these files:
 
 ## Code Quality & Pre-Commit Checks
 
-Before committing changes, always run:
+**Pre-commit hooks are configured and run automatically on every commit.**
+
+### Automated Checks (via pre-commit)
+
+Pre-commit hooks are installed and will run automatically before each commit:
+
+```bash
+# Pre-commit runs automatically on: git commit
+
+# Manual run on all files:
+pre-commit run --all-files
+
+# Update hook versions:
+pre-commit autoupdate
+```
+
+**Active Hooks:**
+
+- ✅ yamllint (YAML syntax/style)
+- ✅ ansible-lint (Ansible best practices, optional)
+- ✅ shellcheck (Shell script linting)
+- ✅ markdownlint (Markdown formatting)
+- ✅ trailing-whitespace (auto-fix)
+- ✅ end-of-file-fixer (auto-fix)
+- ✅ check-yaml, check-merge-conflict, check-case-conflict, etc.
+
+**Configuration:**
+
+- `.pre-commit-config.yaml`: Hook configuration
+- `.markdownlint.json`: Markdown rules (relaxed)
+
+**Skip hooks (emergency only):**
+
+```bash
+git commit --no-verify -m "emergency fix"
+```
+
+### Manual Checks (Alternative)
+
+If pre-commit is not available, run manually:
 
 ```bash
 # Lint YAML files
 yamllint .
 
-# Lint Ansible playbooks
+# Lint Ansible playbooks (optional)
 ansible-lint
 
 # Lint shell scripts
 shellcheck scripts/*.sh init*.sh tests/*.sh
-```
-
-**Required for CI to pass:**
-
-- yamllint: No errors (warnings are acceptable)
-- ansible-lint: No errors
-- shellcheck: No errors
-
-**Common yamllint fixes:**
-
-```bash
-# Add document start marker
-echo "---" | cat - file.yml > temp && mv temp file.yml
-
-# Remove trailing spaces
-sed -i '' 's/[[:space:]]*$//' file.yml
-
-# Add newline at end of file
-echo "" >> file.yml
 ```
 
 ## Recent Improvements

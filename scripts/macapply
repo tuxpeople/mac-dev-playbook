@@ -118,25 +118,11 @@ fi
 log "========================================"
 echo ""
 
-# Check if we're in a pyenv virtualenv
-if [[ -z "${PYENV_VERSION}" ]]; then
-    log_warn "Not in a pyenv virtualenv"
-    log "Activating ${VENV_NAME}..."
-
-    if ! command -v pyenv &> /dev/null; then
-        log_error "pyenv not found. Please run 'macupdate' first to set up the environment."
-        exit 1
-    fi
-
-    # Activate virtualenv
-    eval "$(pyenv init -)"
-    if pyenv versions | grep -q "${VENV_NAME}"; then
-        pyenv activate "${VENV_NAME}"
-    else
-        log_error "Virtualenv '${VENV_NAME}' not found."
-        log "Please run 'macupdate' first to create the environment."
-        exit 1
-    fi
+# Setup Python environment
+# shellcheck source=scripts/lib/python-env.sh
+source "${SCRIPT_DIR}/lib/python-env.sh"
+if ! setup_python_env; then
+    exit 1
 fi
 
 # Check if Ansible is available
