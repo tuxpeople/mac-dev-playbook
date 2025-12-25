@@ -118,10 +118,10 @@ fi
 log "========================================"
 echo ""
 
-# Setup Python environment
+# Setup Python environment (full setup: install Python, create venv, install requirements)
 # shellcheck source=scripts/lib/python-env.sh
 source "${SCRIPT_DIR}/lib/python-env.sh"
-if ! setup_python_env; then
+if ! full_python_setup "${REPO_DIR}"; then
     exit 1
 fi
 
