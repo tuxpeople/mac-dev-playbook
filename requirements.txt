@@ -1,8 +1,8 @@
-ansible==12.2.0
-bcrypt==4.2.0
-cryptography==46.0.3
-paramiko==4.0.0
-pyparsing==3.1.2
-jmespath==1.0.1
-pexpect==4.9.0
-ansible-cmdb==1.31
+ansible
+bcrypt
+cryptography
+paramiko
+pyparsing
+jmespath
+pexpect
+ansible-cmdb
