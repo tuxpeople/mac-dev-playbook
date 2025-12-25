@@ -1,0 +1,41 @@
+---
+# Hazel Configuration
+configure_hazel: true
+
+# Deploy all rules found in files/Hazel/hazelrules/
+hazel_deploy_all_rules: true
+
+# Backup existing rules before deploying new ones
+hazel_backup_before_deploy: true
+
+# License source: use license file from 1Password attachment
+hazel_license_from_file: true
+hazel_license_from_1password: false  # Set to true if using 1Password lookup instead
+
+# Folder mappings: Readable name → Actual path
+# Used to map rule files to their target folders
+hazel_folder_mappings:
+  Downloads-old: "{{ myhomedir }}/Downloads/old"
+  Downloads: "{{ myhomedir }}/Downloads"
+  iCloudDownloads-old: "{{ myhomedir }}/Library/Mobile Documents/com~apple~CloudDocs/Downloads/old"
+  iCloudDownloads: "{{ myhomedir }}/Library/Mobile Documents/com~apple~CloudDocs/Downloads"
+  Desktop: "{{ myhomedir }}/Desktop"
+
+# Hazel Preferences (optional)
+hazel_preferences:
+  - domain: com.noodlesoft.Hazel
+    key: automaticallyUpdate
+    type: bool
+    value: true
+    
+  - domain: com.noodlesoft.Hazel
+    key: SUEnableAutomaticChecks
+    type: bool
+    value: true
+
+# Hazel Helper Preferences
+hazel_helper_preferences:
+  - domain: com.noodlesoft.HazelHelper
+    key: StartAtLogin
+    type: bool
+    value: true

@@ -8,6 +8,7 @@ post_provision_tasks:
   - ../tasks/post/github.yml
   - ../tasks/post/dotfiles-remote-ssh.yml
   - ../tasks/post/gpg.yml
+  - ../tasks/post/hazel.yml
   - ../tasks/post/iterm2.yml
   - ../tasks/post/k8s.yml
   - ../tasks/post/printers.yml

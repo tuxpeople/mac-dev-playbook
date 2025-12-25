@@ -1,0 +1,134 @@
+---
+# Hazel Configuration Deployment
+
+- name: Check if Hazel is installed
+  stat:
+    path: /Applications/Hazel.app
+  register: hazel_app
+
+- name: Hazel configuration block
+  block:
+    # 1. BACKUP EXISTING CONFIG
+    - name: Backup existing Hazel configuration
+      copy:
+        src: "{{ myhomedir }}/Library/Application Support/Hazel/"
+        dest: "{{ myhomedir }}/Library/Application Support/Hazel.backup-{{ ansible_date_time.iso8601_basic_short }}/"
+        remote_src: yes
+      when: hazel_backup_before_deploy | default(true)
+      ignore_errors: yes
+      become: false
+
+    # 2. ENSURE HAZEL DIRECTORY EXISTS
+    - name: Ensure Hazel directory exists
+      file:
+        path: "{{ myhomedir }}/Library/Application Support/Hazel"
+        state: directory
+        mode: '0755'
+      become: false
+
+    # 3. GET CURRENT VOLUME UUID (for file naming)
+    - name: Get current volume UUID
+      shell: diskutil info / | grep "Volume UUID" | awk '{print $NF}' | tr -d '-' | tr '[:upper:]' '[:lower:]' | head -c 8
+      register: volume_uuid
+      changed_when: false
+
+    - name: Debug volume UUID
+      debug:
+        msg: "Volume UUID prefix: {{ volume_uuid.stdout }}"
+      when: ansible_verbosity >= 1
+
+    # 4. DEPLOY HAZEL RULES
+    - name: Find Hazel rules in repository
+      find:
+        paths: "{{ playbook_dir }}/../files/Hazel/hazelrules"
+        patterns: "*.hazelrules"
+        recurse: no
+      register: hazel_rules_found
+      delegate_to: localhost
+      become: no
+
+    - name: Deploy Hazel rules with volume-specific naming
+      copy:
+        src: "{{ item.path }}"
+        dest: "{{ myhomedir }}/Library/Application Support/Hazel/{{ volume_uuid.stdout }}-{{ item.path | basename | regex_replace('.hazelrules$', '') }}.hazelrules"
+        mode: '0644'
+      loop: "{{ hazel_rules_found.files }}"
+      loop_control:
+        loop_var: hazel_rule
+        label: "{{ item.path | basename }}"
+      when: hazel_deploy_all_rules | default(true)
+      become: false
+      notify: restart_hazel
+
+    # 5. DEPLOY LICENSE FILE
+    - name: Check if license file exists in repo
+      stat:
+        path: "{{ playbook_dir }}/../files/Hazel/license"
+      register: hazel_license_file
+      delegate_to: localhost
+      become: no
+
+    - name: Deploy Hazel license file
+      copy:
+        src: "{{ playbook_dir }}/../files/Hazel/license"
+        dest: "{{ myhomedir }}/Library/Application Support/Hazel/license"
+        mode: '0644'
+      when: 
+        - hazel_license_from_file | default(false)
+        - hazel_license_file.stat.exists
+      become: false
+      notify: restart_hazel
+
+    # 6. SET HAZEL PREFERENCES
+    - name: Configure Hazel preferences
+      community.general.osx_defaults:
+        domain: "{{ hazel_pref.domain }}"
+        key: "{{ hazel_pref.key }}"
+        type: "{{ hazel_pref.type }}"
+        value: "{{ hazel_pref.value }}"
+      loop: "{{ hazel_preferences | default([]) }}"
+      loop_control:
+        loop_var: hazel_pref
+        label: "{{ hazel_pref.key }}"
+      become: false
+      notify: restart_hazel
+
+    # 7. SET HAZEL HELPER PREFERENCES
+    - name: Configure Hazel Helper preferences
+      community.general.osx_defaults:
+        domain: "{{ hazel_helper_pref.domain }}"
+        key: "{{ hazel_helper_pref.key }}"
+        type: "{{ hazel_helper_pref.type }}"
+        value: "{{ hazel_helper_pref.value }}"
+      loop: "{{ hazel_helper_preferences | default([]) }}"
+      loop_control:
+        loop_var: hazel_helper_pref
+        label: "{{ hazel_helper_pref.key }}"
+      become: false
+
+  when: 
+    - hazel_app.stat.exists
+    - configure_hazel | default(false)
+
+# HANDLERS
+- name: restart_hazel
+  block:
+    - name: Quit Hazel
+      shell: osascript -e 'quit app "Hazel"' 2>/dev/null || true
+      changed_when: false
+      become: false
+
+    - name: Kill Hazel Helper
+      shell: killall HazelHelper 2>/dev/null || true
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Wait for Hazel to quit
+      pause:
+        seconds: 3
+
+    - name: Restart Hazel
+      shell: open -a Hazel
+      changed_when: false
+      become: false
+  listen: restart_hazel
