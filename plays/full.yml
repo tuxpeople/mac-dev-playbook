@@ -59,6 +59,15 @@
           include_role:
             name: elliotweiser.osx-command-line-tools
 
+        - name: Debug Brewfile configuration
+          ansible.builtin.debug:
+            msg:
+              - "homebrew_use_brewfile: {{ homebrew_use_brewfile | default('NOT DEFINED') }}"
+              - "homebrew_brewfile_dir: {{ homebrew_brewfile_dir | default('NOT DEFINED') }}"
+              - "Expected Brewfile path: {{ homebrew_brewfile_dir | default('NOT DEFINED') }}/Brewfile"
+              - "playbook_dir: {{ playbook_dir }}"
+          tags: ['homebrew']
+
         - name: Install Homebrew packages
           include_role:
             name: geerlingguy.mac.homebrew

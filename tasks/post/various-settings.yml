@@ -50,11 +50,12 @@
   changed_when: true
 
 - name: Set the default Dock items
-  # shell: "{{ mybrewbindir }}/dockutil --add {{ item.path }} --position {{ item.pos }}; sleep 5"
-  shell: "/usr/local/bin/dockutil --add {{ item.path }} --position {{ item.pos }}; sleep 5"
+  # shell: "{{ mybrewbindir }}/dockutil --add {{ dock_item.path }} --position {{ dock_item.pos }}; sleep 5"
+  shell: "/usr/local/bin/dockutil --add {{ dock_item.path }} --position {{ dock_item.pos }}; sleep 5"
   loop: "{{ dockitems }}"
   loop_control:
-    label: "{{ item.name }}"
+    loop_var: dock_item
+    label: "{{ dock_item.name }}"
     pause: 3
   become: false
   changed_when: true

@@ -1,8 +1,14 @@
 # gathering additional facts
+- name: Get hardware model name
+  command: system_profiler SPHardwareDataType
+  register: hardware_info
+  changed_when: false
+  check_mode: false
+
 - name: Check if this is a MacBook
   set_fact:
     macbook: true
-  when: "'MacBook' in ansible_model"
+  when: "'MacBook' in hardware_info.stdout"
 
 - name: Set controller_host fact
   set_fact:

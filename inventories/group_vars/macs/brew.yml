@@ -23,6 +23,7 @@ homebrew_group: "staff"
 homebrew_user: "{{ ansible_user }}"
 homebrew_cask_appdir: /Applications
 homebrew_installed_packages:
+  - bash  # Modern bash (macOS ships with old version)
   - jq
   - node  # Required for npm_packages (claude-code)
 homebrew_taps: []
