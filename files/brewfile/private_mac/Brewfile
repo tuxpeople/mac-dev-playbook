@@ -76,7 +76,7 @@ brew "diceware"
 # Load/unload environment variables based on $PWD
 brew "direnv"
 # Pack, ship and run any application as a lightweight container
-brew "docker", link: false
+brew "docker"
 # Isolated development environments using Docker
 brew "docker-compose", link: false
 # Platform keystore credential helper for Docker
@@ -105,8 +105,6 @@ brew "ghorg"
 brew "git"
 # Highly caffeinated git GUI
 brew "git-cola"
-# Extensions to follow Vincent Driessen's branching model
-brew "git-flow"
 # Audit git repos for secrets
 brew "gitleaks"
 # Open-source GitLab command-line tool
@@ -124,7 +122,7 @@ brew "libusb"
 # Passphrase entry dialog utilizing the Assuan protocol
 brew "pinentry"
 # GNU Privacy Guard (OpenPGP)
-brew "gnupg", link: false
+brew "gnupg"
 # Command-driven, interactive function plotting
 brew "gnuplot"
 # Open source programming language to build simple/reliable/efficient software
@@ -145,8 +143,6 @@ brew "grype"
 brew "gzip"
 # Smarter Dockerfile linter to validate best practices
 brew "hadolint"
-# CLI client for haste-server
-brew "haste-client"
 # Kubernetes package manager
 brew "helm"
 # Deploy Kubernetes Helm Charts
@@ -279,8 +275,6 @@ brew "p7zip"
 brew "pandoc"
 # Efficient rsh-like utility, for using hosts in parallel
 brew "pdsh"
-# Display the PID number for a given process name
-brew "pidof"
 # Parallel gzip
 brew "pigz"
 # Pinentry for GPG on Mac
@@ -301,8 +295,6 @@ brew "pre-commit"
 brew "prettier"
 # Show ps output as a tree
 brew "pstree"
-# Parse HTML at the command-line
-brew "pup"
 # Monitor data's progress through a pipe
 brew "pv"
 # Password generator
@@ -369,8 +361,6 @@ brew "tcpflow"
 brew "tcping"
 # Active TCP connections monitoring tool
 brew "tcpstat"
-# Analyze tcpdump output
-brew "tcptrace"
 # Traceroute implementation using TCP packets
 brew "tcptraceroute"
 # User interface to the TELNET protocol
@@ -397,8 +387,6 @@ brew "tree"
 brew "unrtf"
 # Extraction utility for .zip compressed archives
 brew "unzip"
-# Bash completion for Vagrant
-brew "vagrant-completion"
 # Creates fully functional virtual k8s cluster inside host k8s cluster's namespace
 brew "vcluster"
 # Disaster recovery for Kubernetes resources and persistent volumes
@@ -409,8 +397,6 @@ brew "vim"
 brew "watch"
 # Convert HTML to PDF
 brew "weasyprint"
-# Create screenshots of webpages from the terminal
-brew "webkit2png"
 # Internet file retriever
 brew "wget"
 # Lookup tool for domain names and other internet resources
@@ -425,8 +411,6 @@ brew "yamllint"
 brew "yq"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
-# New zlib (gzip, deflate) compatible compressor
-brew "zopfli"
 # Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues
 brew "aquasecurity/trivy/trivy"
 # Command-line interface for Tunnelblick
@@ -483,16 +467,12 @@ cask "calibre"
 cask "charles"
 # OpenAI's coding agent that runs in your terminal
 cask "codex"
-# Prints location information from CoreLocation
-cask "corelocationcli"
 # Universal database tool and SQL client
 cask "dbeaver-community"
 # App to build and share containerised applications and microservices
 cask "docker-desktop"
 # Online diagram software
 cask "drawio"
-# Finds duplicate files in a computer system
-cask "dupeguru"
 # Web browser
 cask "firefox"
 cask "font-roboto"
@@ -505,19 +485,14 @@ cask "gpg-suite"
 cask "handbrake-app"
 # Automated organisation
 cask "hazel"
-# IDE for Java development - community edition
-cask "intellij-idea-ce"
 # Terminal emulator as alternative to Apple's Terminal app
 cask "iterm2"
-# Personal data manager focusing on security
-cask "keepassx"
 # Host-based application firewall
 cask "little-snitch"
 # Software for Logitech devices
 cask "logi-options+"
 # Orchestrates virtual Ubuntu instances
 cask "multipass"
-cask "mysides", args: { appdir: "/Applications" }
 # Rename a list of files quickly
 cask "namechanger"
 # WiFi site survey software and WiFi scanner
@@ -530,14 +505,10 @@ cask "ollama-app"
 cask "omnissa-horizon-client"
 # Programmable solid 3D CAD modeller
 cask "openscad"
-# Tool to create native applications from command-line scripts
-cask "platypus"
 # Podcast platform
 cask "pocket-casts"
 # Browse, manage, inspect containers and images
 cask "podman-desktop"
-# IDE for Python programming - Community Edition
-cask "pycharm-ce"
 # Workspace simplifier - to organize your workspace and boost your productivity
 cask "rambox"
 # Archive manager for data compression and backups
@@ -574,8 +545,6 @@ cask "visual-studio-code"
 cask "vlc"
 # Network protocol analyzer
 cask "wireshark-app"
-# Application for configuring any YubiKey
-cask "yubico-yubikey-manager"
 mas "1Password for Safari", id: 1569813296
 mas "Affinity Designer", id: 824171161
 mas "Affinity Photo", id: 824183456
