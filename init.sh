@@ -269,7 +269,7 @@ step "Preparing Ansible configuration"
 
 # Check if host_vars file exists in the repo
 HOST_VARS_FILE="/tmp/git/inventories/host_vars/${newhostname}.yml"
-VAULT_PASSWORD_FILE="${HOME}/iCloudDrive/Allgemein/bin/vault_password_file"
+VAULT_PASSWORD_FILE="${HOME}/Library/Mobile Documents/com~apple~CloudDocs/Dateien/Allgemein/bin/vault_password_file"
 ANSIBLE_EXTRA_ARGS=""
 
 if [[ ! -f "${HOST_VARS_FILE}" ]]; then

@@ -24,5 +24,6 @@ homebrew_user: "{{ ansible_user }}"
 homebrew_cask_appdir: /Applications
 homebrew_installed_packages:
   - jq
+  - node  # Required for npm_packages (claude-code)
 homebrew_taps: []
 mas_installed_apps: []
