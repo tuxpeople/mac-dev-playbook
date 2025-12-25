@@ -15,17 +15,18 @@
       delay: 60
     - name: Create Git project directories
       ansible.builtin.file:
-        path: "{{ myhomedir }}/development/github/{{ github_user }}/{{ item['name'] }}"
+        path: "{{ myhomedir }}/development/github/{{ github_user }}/{{ repo['name'] }}"
         state: directory
         mode: 0750
       loop: "{{ github_repos['json']['items'] }}"
       loop_control:
-        label: "{{ item['name'] }}"
+        loop_var: repo
+        label: "{{ repo['name'] }}"
     - name: Clone my GitHub repositories
       ansible.builtin.git:
-        repo: "{{ item['clone_url'] }}"  # Use HTTPS URL directly
-        version: "{{ item['default_branch'] }}"
-        dest: "{{ myhomedir }}/development/github/{{ github_user }}/{{ item['name'] }}"
+        repo: "{{ repo['clone_url'] }}"  # Use HTTPS URL directly
+        version: "{{ repo['default_branch'] }}"
+        dest: "{{ myhomedir }}/development/github/{{ github_user }}/{{ repo['name'] }}"
         accept_hostkey: true
         update: false
       environment:
@@ -34,17 +35,21 @@
         GIT_PASSWORD: "{{ github_personal_token }}"
       loop: "{{ github_repos['json']['items'] }}"
       loop_control:
-        label: "{{ item['name'] }}"
+        loop_var: repo
+        label: "{{ repo['name'] }}"
       no_log: true  # Protect token from appearing in logs
+      ignore_errors: true  # Allow cloning to fail for individual repos (e.g., private repos)
     - name: Update remote origin to SSH url
       community.general.git_config:
-        repo: "{{ myhomedir }}/development/github/{{ github_user }}/{{ item['name'] }}"
+        repo: "{{ myhomedir }}/development/github/{{ github_user }}/{{ repo['name'] }}"
         scope: local
         name: remote.origin.url
-        value: "{{ item['ssh_url'] }}"
+        value: "{{ repo['ssh_url'] }}"
       loop: "{{ github_repos['json']['items'] }}"
       loop_control:
-        label: "{{ item['name'] }}"
+        loop_var: repo
+        label: "{{ repo['name'] }}"
+      ignore_errors: true  # Ignore errors if repo wasn't cloned
   tags: github_repos
   become: false
 

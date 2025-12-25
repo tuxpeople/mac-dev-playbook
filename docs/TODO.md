@@ -4,6 +4,20 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
 
 ## Zu erledigen
 
+- [ ] **GitHub Repository Cloning: Ansible vs. ghorg**
+  - **Problem**: Ansible-basiertes Repo-Cloning (tasks/post/github.yml) hat Nachteile:
+    - Einige private Repos schlagen fehl (trotz Token)
+    - Dupliziert Funktionalität von ghorg (bereits konfiguriert in dotfiles)
+    - Verlangsamt init.sh (nicht essentiell für Bootstrap)
+  - **Status**: Quick-Fixes angewendet (2025-12-25):
+    - ✅ Loop variable 'item' conflict behoben (loop_var: repo)
+    - ✅ ignore_errors: true für fehlschlagende Repos
+  - **Optionen**:
+    1. **Behalten**: Repos sind automatisch nach init.sh verfügbar
+    2. **Zu ghorg wechseln**: Manuell `ghorg clone tuxpeople --clone-type=user` nach 1Password-Login
+    3. **Hybrid**: github.yml optional machen (Tag oder Variable)
+  - **Entscheidung**: Noch offen - später evaluieren
+
 - [ ] **Bootstrap Scripts Review & Konsolidierung** 🔄 **PHASE 1 ABGESCHLOSSEN**
   - **Status**: Vollständige Analyse + Quick Wins implementiert
   - **Analyse**: `docs/analysis/BOOTSTRAP_SCRIPTS_ANALYSIS.md` (565 Zeilen)
