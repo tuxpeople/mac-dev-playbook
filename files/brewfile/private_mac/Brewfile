@@ -438,6 +438,8 @@ cask "bambu-studio"
 cask "basictex"
 # Text, code, and markup editor
 cask "bbedit"
+# Build, render, and create LEGO instructions
+cask "bricklink-studio"
 # Open source, extensible AI agent that goes beyond code suggestions
 cask "block-goose"
 # Build, render, and create LEGO instructions
