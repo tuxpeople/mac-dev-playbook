@@ -121,7 +121,17 @@ echo ""
 # shellcheck source=scripts/lib/python-env.sh
 source "${SCRIPT_DIR}/lib/python-env.sh"
 
-# Check if pyenv is available
+# Add Homebrew to PATH if not already there (needed after fresh bootstrap)
+if [[ -d "/opt/homebrew/bin" ]] && [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]]; then
+    export PATH="/opt/homebrew/bin:$PATH"
+    log "Added Homebrew (Apple Silicon) to PATH"
+fi
+if [[ -d "/usr/local/bin" ]] && [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
+    export PATH="/usr/local/bin:$PATH"
+    log "Added Homebrew (Intel) to PATH"
+fi
+
+# Check if pyenv is available (now should be in PATH)
 if command -v pyenv &> /dev/null; then
     # pyenv available: Try to use existing venv (lightweight)
     log "pyenv found, using virtualenv..."
