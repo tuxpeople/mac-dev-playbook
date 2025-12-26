@@ -1,0 +1,90 @@
+---
+# Dock Configuration
+# This file contains all Dock-related tasks including dockutil installation and Dock setup
+
+- name: Install base utilities (m-cli for Dock configuration)
+  homebrew:
+    name: ['m-cli']
+  become: false
+
+########## TEMP Workaround - dockutil installation #################
+# The Homebrew version of dockutil is broken, so we install it manually from GitHub releases
+
+- name: Check if dockutil is already installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/dockutil
+  register: dockutil_installed
+
+- name: Get installed dockutil version
+  shell: /usr/local/bin/dockutil --version 2>/dev/null || echo "0.0.0"
+  register: dockutil_current_version
+  changed_when: false
+  when: dockutil_installed.stat.exists
+
+- name: Remove dockutil from homebrew (broken)
+  homebrew:
+    name: dockutil
+    state: absent
+  become: false
+
+- name: Get latest dockutil version from GitHub
+  shell: |
+    curl --silent \
+      -H "Authorization: token {{ github_personal_token }}" \
+      "https://api.github.com/repos/kcrawford/dockutil/releases/latest" \
+    | jq -r .tag_name
+  register: dockutil_latest_version
+  changed_when: false
+  no_log: true  # Protect token in logs
+  when: github_personal_token is defined
+
+- name: Download dockutil pkg
+  get_url:
+    url: "https://github.com/kcrawford/dockutil/releases/download/{{ dockutil_latest_version.stdout }}/dockutil-{{ dockutil_latest_version.stdout }}.pkg"
+    dest: /tmp/dockutil.pkg
+  become: false
+  when:
+    - github_personal_token is defined
+    - dockutil_latest_version.stdout is defined
+    - not dockutil_installed.stat.exists or dockutil_current_version.stdout != dockutil_latest_version.stdout
+
+- name: Run dockutil installer
+  shell: 'installer -pkg "/tmp/dockutil.pkg" -target /'
+  become: true
+  when:
+    - github_personal_token is defined
+    - dockutil_latest_version.stdout is defined
+    - not dockutil_installed.stat.exists or dockutil_current_version.stdout != dockutil_latest_version.stdout
+
+- name: Remove dockutil pkg
+  ansible.builtin.file:
+    path: /tmp/dockutil.pkg
+    state: absent
+  when:
+    - github_personal_token is defined
+    - dockutil_latest_version.stdout is defined
+    - not dockutil_installed.stat.exists or dockutil_current_version.stdout != dockutil_latest_version.stdout
+########## TEMP Workaround #################
+
+# Dock Configuration Tasks
+- name: Remove all items from the Dock
+  # shell: "{{ mybrewbindir }}/dockutil --remove all; sleep 3"
+  shell: "/usr/local/bin/dockutil --remove all; sleep 3"
+  become: false
+  changed_when: true
+
+- name: Set the default Dock items
+  # shell: "{{ mybrewbindir }}/dockutil --add {{ dock_item.path }} --position {{ dock_item.pos }}; sleep 5"
+  shell: "/usr/local/bin/dockutil --add {{ dock_item.path }} --position {{ dock_item.pos }}; sleep 5"
+  loop: "{{ dockitems }}"
+  loop_control:
+    loop_var: dock_item
+    label: "{{ dock_item.name }}"
+    pause: 3
+  become: false
+  changed_when: true
+
+- name: Turn magnification of the dock on
+  shell: "{{ mybrewbindir }}/m dock magnification YES; sleep 2"
+  become: false
+  changed_when: true

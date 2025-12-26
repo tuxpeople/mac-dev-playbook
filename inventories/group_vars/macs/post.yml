@@ -1,6 +1,7 @@
 ---
 # List of ansible task files to run after all other tasks are finished.
 # Note: Tasks are executed in the order listed below
+# Note: Dock configuration moved to tasks/dock.yml (separate file with dock tag)
 post_provision_tasks:
   - ../tasks/post/user-config.yml
   - ../tasks/post/various-settings.yml

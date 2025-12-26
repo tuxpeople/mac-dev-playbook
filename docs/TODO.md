@@ -4,6 +4,20 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
 
 ## Zu erledigen
 
+- [ ] **Tasks Reorganisation - Separation of Concerns**
+  - **Kontext**: Dock-Konfiguration wurde in separate `tasks/dock.yml` Datei ausgelagert (Session 5, 2025-12-26)
+  - **Idee**: Andere Tasks ähnlich reorganisieren für bessere Wartbarkeit
+  - **Zu prüfen**:
+    - Ist `tasks/post/various-settings.yml` noch sinnvoll strukturiert?
+    - Sollten andere Funktionen in eigene Task-Dateien ausgelagert werden?
+    - Beispiele: Finder-Settings, System-Preferences, User-Config
+    - Gibt es weitere Tasks die gemischt sind und getrennt werden sollten?
+  - **Vorteile**:
+    - Bessere Wartbarkeit (eine Datei pro Funktion)
+    - Granulare Tags (--tags finder, --tags system, etc.)
+    - Klarere Struktur (Separation of Concerns)
+  - **Hinzugefügt**: 2025-12-26 (Session 5 - nach Dock-Refactoring)
+
 - [ ] **LaunchAgents Tasks Review**
   - **Problem**: Tasks in `tasks/post/_launchagents.yml` wurden lange nicht aktualisiert
   - **Zu prüfen**:

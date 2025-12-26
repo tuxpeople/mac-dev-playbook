@@ -35,18 +35,15 @@ dockitems:
   - name: "Console"
     path: /System/Applications/Utilities/Console.app
     pos: 12
-  - name: "Royal TSX"
-    path: "\"/Applications/Royal TSX.app\""
-    pos: 13
   - name: "App Store"
     path: "\"/System/Applications/App Store.app\""
+    pos: 13
+  - name: "System Settings"
+    path: "\"/System/Applications/System Settings.app\""
     pos: 14
-  - name: "System Preferences"
-    path: "\"/System/Applications/System Preferences.app\""
-    pos: 15
   - name: "Applications Folder"
     path: /Applications --section others
-    pos: 16
+    pos: 15
   - name: "Downloads Folder"
     path: ~/Downloads --section others
-    pos: 17
+    pos: 16

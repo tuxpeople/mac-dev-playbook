@@ -125,11 +125,8 @@
         #   when: mas_installed_apps or mas_installed_app_ids
         #   tags: ['mas']
 
-        - name: Configure Dock
-          include_role:
-            name: geerlingguy.mac.dock
-          when: configure_dock
-          tags: ['dock']
+        # Dock configuration via tasks/post/various-settings.yml (with dock tag)
+        # Note: geerlingguy.mac.dock role disabled in favor of direct dockutil commands
 
         - import_tasks: ../tasks/osx.yml
           when: configure_osx
@@ -141,6 +138,12 @@
 
         - import_tasks: ../tasks/extra-packages.yml
           tags: ['extra-packages']
+
+        - import_tasks: ../tasks/dock.yml
+          tags: ['dock']
+
+        - import_tasks: ../tasks/post/various-settings.yml
+          tags: ['post']
 
         - name: Run configured post-provision ansible task files
           include_tasks:

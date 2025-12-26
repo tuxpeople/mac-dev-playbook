@@ -1,5 +1,4 @@
-# Set to 'true' to configure the Dock via dockutil.
-configure_dock: false
+# Dock is configured via geerlingguy.mac.dock role (configure_dock in general.yml)
 dockitems_remove: []
 # - Launchpad
 # - TV

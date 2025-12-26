@@ -12,6 +12,7 @@ softwareupdate_recommended_only: true
 osx_script: "{{myhomedir}}/.macos --no-restart"
 
 configure_dotfiles: true
+configure_dock: false  # Dock configured via tasks/post/various-settings.yml instead
 configure_osx: true
 
 timezone: "Europe/Zurich"
