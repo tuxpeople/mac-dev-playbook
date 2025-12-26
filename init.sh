@@ -206,6 +206,9 @@ echo ""
 
 ansible-playbook plays/bootstrap.yml -i inventories -l "${newhostname}" --connection=local
 
+# Remove dummy vault password file (will be recreated by macapply in Phase 3)
+rm -f ~/bin/vault_password_mac_dev_playbook
+
 echo ""
 echo "=========================================="
 echo "✅ Bootstrap Phase 1 Complete!"

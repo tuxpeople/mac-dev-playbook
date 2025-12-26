@@ -144,9 +144,10 @@ log "Vault password will be read from 1Password via ansible.cfg"
 
 # Bootstrap: Create vault password script if it doesn't exist (chicken-egg problem)
 # This script is needed BEFORE ansible-playbook runs, but is normally deployed BY the playbook
+# Note: init.sh creates a dummy version during Phase 1, then deletes it afterward
 VAULT_SCRIPT="${HOME}/bin/vault_password_mac_dev_playbook"
 if [[ ! -f "${VAULT_SCRIPT}" ]]; then
-    log "Creating vault password script (first run bootstrap)..."
+    log "Creating vault password script (first run)..."
 
     # Read the 1Password reference from group_vars
     ONEPASSWORD_LINE=$(grep "onepassword_vault_password_ref:" \
