@@ -134,9 +134,10 @@ fi
 # Check if pyenv is available (now should be in PATH)
 if command -v pyenv &> /dev/null; then
     # pyenv available: Try to use existing venv (lightweight)
-    log "pyenv found, using virtualenv..."
-    if ! setup_python_env; then
-        log_warn "Virtualenv not found, setting up complete environment..."
+    log "pyenv found, checking for virtualenv..."
+    if ! setup_python_env 2>/dev/null; then
+        # Virtualenv not found, do full setup (suppress confusing error messages)
+        log "Virtualenv not found, setting up complete environment..."
         full_python_setup "${REPO_DIR}" || {
             log_error "Failed to set up Python environment"
             exit 1
