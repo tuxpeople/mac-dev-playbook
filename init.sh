@@ -190,10 +190,20 @@ echo ""
 echo "No vault password or iCloud sync required for this phase."
 echo ""
 
-# Run bootstrap playbook
-# Override vault_password_file with /dev/null to prevent decryption attempts
-# This allows bootstrap to run without vault secrets (Phase 1 doesn't need them)
-ansible-playbook plays/bootstrap.yml -i inventories -l "${newhostname}" --connection=local --vault-password-file=/dev/null
+# Temporarily hide secrets.yml to prevent Ansible from trying to decrypt it
+# Bootstrap doesn't need secrets, so we just move it aside
+SECRETS_FILE="inventories/group_vars/macs/secrets.yml"
+if [[ -f "${SECRETS_FILE}" ]]; then
+  mv "${SECRETS_FILE}" "${SECRETS_FILE}.bootstrap_disabled"
+fi
+
+# Run bootstrap playbook (no vault needed)
+ansible-playbook plays/bootstrap.yml -i inventories -l "${newhostname}" --connection=local
+
+# Restore secrets.yml
+if [[ -f "${SECRETS_FILE}.bootstrap_disabled" ]]; then
+  mv "${SECRETS_FILE}.bootstrap_disabled" "${SECRETS_FILE}"
+fi
 
 echo ""
 echo "=========================================="
