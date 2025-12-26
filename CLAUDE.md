@@ -536,34 +536,36 @@ Resolved chicken-egg problem in fresh Mac setup where ansible.cfg references vau
 - Ansible tries to decrypt `inventories/group_vars/macs/secrets.yml`
 - Error: "Decryption failed (no vault secrets were found that could decrypt)"
 
-**Solution Evolution** (4 iterations):
+**Solution Evolution** (5 iterations):
 
 1. **Dummy vault password file** (af76019, c27aa77) - Didn't work
    - Created dummy script returning placeholder password
    - Failed: Ansible still tried to decrypt secrets.yml with wrong password
 
-2. **Separate plays/ansible.cfg** (68b5637) - Worked but complex
+2. **Separate plays/ansible.cfg** (68b5637) - Didn't work
    - Created duplicate ansible.cfg without vault_password_file
-   - Used: `ANSIBLE_CONFIG=plays/ansible.cfg`
-   - Worked but required maintaining duplicate config
+   - Failed: Ansible still tried to decrypt secrets.yml
 
-3. **Temporary sed edit** (f3de506) - Worked but complex
+3. **Temporary sed edit** (f3de506) - Didn't work
    - `sed` removes vault_password_file line temporarily
-   - Run bootstrap.yml (no vault needed)
-   - `git checkout ansible.cfg` restores original
-   - Complex: 6 lines of code (sed, ansible-playbook, git checkout, rm)
+   - Failed: Ansible still tried to decrypt secrets.yml
 
-4. **--vault-password-file=/dev/null** (3d640b7) - Final solution ✅
+4. **--vault-password-file=/dev/null** (3d640b7) - Didn't work
    - Command-line option overrides ansible.cfg
-   - Ansible shows warning but continues without decryption
-   - Only 1 line of code!
-   - Simplest and most elegant approach
+   - Failed: "ERROR! Attempting to decrypt but no vault secrets found"
+
+5. **Temporarily hide secrets.yml** (90c1912) - Final solution ✅
+   - `mv secrets.yml → secrets.yml.bootstrap_disabled`
+   - Run bootstrap.yml (no encrypted file found)
+   - `mv secrets.yml.bootstrap_disabled → secrets.yml` (restore)
+   - **Root cause**: Ansible ALWAYS loads all group_vars, and if encrypted file exists, it MUST decrypt
+   - Only solution: Make the file not exist temporarily
 
 **Final Flow**:
 
 ```
-init.sh: ansible-playbook --vault-password-file=/dev/null
-         (Phase 1, warning shown but playbook runs)
+init.sh: hide secrets.yml → bootstrap.yml runs → restore secrets.yml
+         (Phase 1)           (no encrypted files)  (cleanup)
                                 ↓
 macapply: Creates real vault password script → plays/full.yml
           (Phase 3)                             (with secrets)
@@ -578,8 +580,11 @@ macapply: Creates real vault password script → plays/full.yml
 
 **Related Commits**:
 
-- af76019: Initial dummy password approach (superseded)
-- c27aa77: Simplified dummy handling (superseded)
-- 68b5637: Separate ansible.cfg approach (superseded)
-- f3de506: Temporary sed edit approach (superseded)
-- 3d640b7: Final solution - --vault-password-file=/dev/null ✅
+- af76019: Initial dummy password approach (didn't work)
+- c27aa77: Simplified dummy handling (didn't work)
+- 68b5637: Separate ansible.cfg approach (didn't work)
+- f3de506: Temporary sed edit approach (didn't work)
+- 3d640b7: --vault-password-file=/dev/null (didn't work)
+- 90c1912: Final solution - hide secrets.yml temporarily ✅
+
+**Lesson learned**: Ansible behavior with vault-encrypted files in group_vars is non-negotiable - if the file exists, Ansible will try to decrypt it. The only reliable solution is to temporarily remove the file.
