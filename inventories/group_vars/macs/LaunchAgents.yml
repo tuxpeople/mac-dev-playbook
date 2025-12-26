@@ -10,8 +10,17 @@ unload_launchagents:
   - "/Library/LaunchAgents/org.gpgtools.macgpg2.shutdown-gpg-agent.plist"
   - "/Library/LaunchAgents/org.gpgtools.updater.plist"
 
+  # Google - Auto-update services (3 agents)
+  # Disable automatic updates, manual updates preferred
+  - "{{ myhomedir }}/Library/LaunchAgents/com.google.GoogleUpdater.wake.plist"
+  - "{{ myhomedir }}/Library/LaunchAgents/com.google.keystone.agent.plist"
+  - "{{ myhomedir }}/Library/LaunchAgents/com.google.keystone.xpcservice.plist"
+
   # Virtualization & Remote Tools - Background daemons (2 daemons)
   # Multipass: Canonical's VM tool
   - "/Library/LaunchDaemons/com.canonical.multipassd.plist"
   # TeamViewer: Remote access helper (only daemon exists, agents already removed)
   - "/Library/LaunchDaemons/com.teamviewer.Helper.plist"
+
+# Keep these agents running (do not unload):
+# - homebrew.mxcl.node_exporter (monitoring tool, desired on all macs)

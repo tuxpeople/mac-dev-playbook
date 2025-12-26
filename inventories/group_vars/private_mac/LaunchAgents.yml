@@ -1,0 +1,22 @@
+# LaunchAgents to unload on private Macs only
+# These agents are useful on business Macs but not needed on private Macs
+# Reviewed: 2025-12-26
+
+# Additional LaunchAgents to unload on private Macs (extends base list)
+private_mac_launchagents:
+  # Workspace ONE - MDM/Enterprise Management (4 agents)
+  # Not needed on private Macs
+  - "{{ myhomedir }}/Library/LaunchAgents/com.ws1.deem.MacUIEvents.plist"
+  - "{{ myhomedir }}/Library/LaunchAgents/com.ws1.ws1etlmu.plist"
+  - "/Library/LaunchDaemons/com.ws1.deem.plist"
+  - "/Library/LaunchDaemons/com.ws1.ws1etlmu.plist"
+
+  # Logitech - Webcam AI Features (3 agents)
+  # Business feature, not needed on private Macs
+  - "/Library/LaunchAgents/com.logi.optionsplus.plist"
+  - "/Library/LaunchAgents/com.logitech.LogiRightSight.Agent.plist"
+  - "/Library/LaunchDaemons/com.logi.optionsplus.updater.plist"
+
+  # VMware Horizon - Virtual Desktop Client (1 daemon)
+  # Business tool, not needed on private Macs
+  - "/Library/LaunchDaemons/com.omnissa.horizon.CDSHelper.plist"

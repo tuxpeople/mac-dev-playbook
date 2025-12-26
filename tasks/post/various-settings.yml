@@ -15,7 +15,7 @@
 # LaunchAgents
 - name: LaunchAgents
   include_tasks: "_launchagents.yml"
-  loop: "{{ unload_launchagents | default(omit) }}"
+  loop: "{{ (unload_launchagents | default([])) + (private_mac_launchagents | default([])) }}"
   loop_control:
     loop_var: agent
 
