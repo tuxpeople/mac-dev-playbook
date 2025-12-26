@@ -4,19 +4,25 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
 
 ## Zu erledigen
 
-- [ ] **Tasks Reorganisation - Separation of Concerns** 🔄 **TEILWEISE ERLEDIGT**
-  - **Status**: ✅ Dock-Konfiguration in separate `tasks/dock.yml` ausgelagert (Commit `0f3e90a`, Session 5, 2025-12-26)
-  - **Idee**: Andere Tasks ähnlich reorganisieren für bessere Wartbarkeit
-  - **Zu prüfen**:
-    - Ist `tasks/post/various-settings.yml` noch sinnvoll strukturiert?
-    - Sollten andere Funktionen in eigene Task-Dateien ausgelagert werden?
-    - Beispiele: Finder-Settings, System-Preferences, User-Config
-    - Gibt es weitere Tasks die gemischt sind und getrennt werden sollten?
-  - **Vorteile**:
-    - Bessere Wartbarkeit (eine Datei pro Funktion)
-    - Granulare Tags (--tags finder, --tags system, etc.)
-    - Klarere Struktur (Separation of Concerns)
-  - **Hinzugefügt**: 2025-12-26 (Session 5 - nach Dock-Refactoring)
+- [x] **Tasks Reorganisation - Separation of Concerns** ✅ **ABGESCHLOSSEN (2025-12-26)**
+  - **Phase 1**: ✅ Dock-Konfiguration ausgelagert (Commit `0f3e90a`, Session 5)
+  - **Phase 2**: ✅ various-settings.yml reorganisiert (Session 5)
+  - **Durchgeführte Änderungen**:
+    - ✅ `tasks/finder.yml` erstellt - Finder-spezifische Settings (40 Zeilen)
+    - ✅ `tasks/system.yml` erstellt - System-Level Settings (25 Zeilen)
+    - ✅ `tasks/maintenance.yml` erstellt - Maintenance Tasks (31 Zeilen)
+    - ✅ Dock restart zu `tasks/dock.yml` verschoben
+    - ✅ `various-settings.yml` reduziert: 113 → 38 Zeilen (Orchestrator)
+  - **Neue Tags verfügbar**:
+    - `--tags finder` - Nur Finder-Settings
+    - `--tags system` - Nur System-Settings (Touch ID, SSH, Wallpaper)
+    - `--tags maintenance` - Nur Maintenance Tasks
+    - `--tags dock` - Dock inkl. Dock restart
+  - **Ergebnis**:
+    - Bessere Wartbarkeit (Separation of Concerns)
+    - Granulare Tags für schnelles Testen
+    - Klarere Struktur - jede Datei hat einen Zweck
+  - **Hinzugefügt**: 2025-12-26 (Session 5)
 
 - [ ] **LaunchAgents Tasks Review**
   - **Problem**: Tasks in `tasks/post/_launchagents.yml` wurden lange nicht aktualisiert

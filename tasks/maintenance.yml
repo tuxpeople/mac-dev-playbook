@@ -1,0 +1,31 @@
+---
+# Maintenance Tasks
+# This file contains maintenance and housekeeping tasks
+
+- name: Fix Homedir Permissions (with security checks)
+  block:
+    - name: Check if fix-perms script exists
+      ansible.builtin.stat:
+        path: "{{myhomedir}}/iCloudDrive/Allgemein/bin/fix-perms.sh"
+      register: fix_perms_script
+
+    - name: Verify script ownership and permissions
+      ansible.builtin.assert:
+        that:
+          - fix_perms_script.stat.exists
+          - fix_perms_script.stat.pw_name == ansible_user
+          - fix_perms_script.stat.mode in ['0750', '0700', '0755']
+        fail_msg: "⚠️  fix-perms.sh has unsafe ownership or permissions - must be owned by {{ ansible_user }} with mode 0750/0700/0755"
+        success_msg: "fix-perms.sh security checks passed"
+      when: fix_perms_script.stat.exists
+
+    - name: Execute fix-perms script
+      ansible.builtin.command:
+        cmd: "{{myhomedir}}/iCloudDrive/Allgemein/bin/fix-perms.sh"
+      become: true
+      when: fix_perms_script.stat.exists
+
+  rescue:
+    - name: Log fix-perms failure
+      ansible.builtin.debug:
+        msg: "⚠️  Skipping fix-perms - script not found or failed security checks"

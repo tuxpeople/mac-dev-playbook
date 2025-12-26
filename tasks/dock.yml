@@ -88,3 +88,8 @@
   shell: "{{ mybrewbindir }}/m dock magnification YES; sleep 2"
   become: false
   changed_when: true
+
+- name: Restart dock to apply changes
+  ansible.builtin.command: killall Dock
+  changed_when: false
+  become: true

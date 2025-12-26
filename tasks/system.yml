@@ -1,0 +1,25 @@
+---
+# System Configuration
+# This file contains system-level settings including Touch ID, SSH, and desktop preferences
+
+# https://www.maketecheasier.com/use-touch-id-authenticate-sudo-commands-mac/
+- name: Enable Touch ID for sudo if this is a MacBook
+  lineinfile:
+    path: /etc/pam.d/sudo
+    insertafter: "^(#)? sudo: auth account password session"
+    line: "auth       sufficient     pam_tid.so"
+    firstmatch: yes
+    state: present
+  become: true
+  when: macbook is defined
+
+- name: Set wallpaper
+  shell: osascript -e 'tell application "System Events" to tell every desktop to set picture to "~/iCloudDrive/Multimedia/Backgounds/Desktop/luca-micheli-422053-unsplash.jpg"'
+  changed_when: false
+  become: false
+
+- name: Enable SSH access (private_mac only - disabled by policy on business_mac)
+  shell: systemsetup -setremotelogin on
+  become: true
+  changed_when: true
+  when: "'private_mac' in group_names"

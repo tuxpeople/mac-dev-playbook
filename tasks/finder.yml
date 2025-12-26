@@ -1,0 +1,40 @@
+---
+# Finder Configuration
+# This file contains all Finder-related tasks including view settings, icons, and sidebar
+
+- name: Arrange Files by Kind
+  shell: |
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
+  become: false
+  changed_when: true
+
+- name: Set the Grid Spacing for Files
+  shell: |
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 54" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:gridSpacing 30" ~/Library/Preferences/com.apple.finder.plist
+  become: false
+  changed_when: true
+
+- name: Use Smaller Icons
+  shell: |
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 48" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 64" ~/Library/Preferences/com.apple.finder.plist
+  become: false
+  changed_when: true
+
+- name: Unhide ~/Library
+  ansible.builtin.command: "chflags nohidden {{ myhomedir }}/Library"
+  become: false
+  changed_when: true
+
+- name: Unhide /Volumes
+  ansible.builtin.command: chflags nohidden /Volumes
+  changed_when: false
+  become: true
+
+- name: Add Pictures folder to sidebar
+  shell: "mysides add Bilder file://$HOME/Pictures/"
+  become: false
+  changed_when: true
+  failed_when: false  # OK if already exists

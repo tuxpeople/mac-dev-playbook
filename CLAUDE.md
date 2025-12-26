@@ -111,14 +111,17 @@ cd /tmp/git
 ./scripts/macapply
 
 # Or apply only specific parts (faster)
-./scripts/macapply --tags homebrew  # Only Homebrew packages
-./scripts/macapply --tags dock      # Only Dock configuration
-./scripts/macapply --tags osx       # Only macOS settings
+./scripts/macapply --tags homebrew    # Only Homebrew packages
+./scripts/macapply --tags dock        # Only Dock configuration
+./scripts/macapply --tags finder      # Only Finder settings
+./scripts/macapply --tags system      # Only System settings (Touch ID, SSH, wallpaper)
+./scripts/macapply --tags maintenance # Only maintenance tasks
+./scripts/macapply --tags osx         # Only macOS settings
 
 # Dry run (see what would change)
 ./scripts/macapply --check --diff
 
-# Available tags: homebrew, dotfiles, mas, dock, osx, fonts, extra-packages, post
+# Available tags: homebrew, dotfiles, mas, dock, finder, system, maintenance, osx, fonts, extra-packages, post
 # Note: mas tag is currently disabled in plays/full.yml
 ```
 

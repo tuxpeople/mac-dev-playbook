@@ -1,71 +1,25 @@
 ---
-# https://www.maketecheasier.com/use-touch-id-authenticate-sudo-commands-mac/
-- name: Enable Touch ID for sudo if this is a MacBook
-  lineinfile:
-    path: /etc/pam.d/sudo
-    insertafter: "^(#)? sudo: auth account password session"
-    line: "auth       sufficient     pam_tid.so"
-    firstmatch: yes
-    state: present
-  become: true
-  when: macbook is defined
+# Various macOS Settings
+# This file orchestrates various macOS configuration tasks
 
-# Note: Dock configuration moved to tasks/dock.yml
+# Finder Configuration
+- name: Import Finder settings
+  ansible.builtin.import_tasks: ../finder.yml
+  tags: ['finder']
 
-- name: Arrange Files by Kind
-  shell: |
-    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
-    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
-  become: false
-  changed_when: true
+# System Configuration
+- name: Import System settings
+  ansible.builtin.import_tasks: ../system.yml
+  tags: ['system']
 
-- name: Set the Grid Spacing for Files
-  shell: |
-    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 54" ~/Library/Preferences/com.apple.finder.plist
-    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:gridSpacing 30" ~/Library/Preferences/com.apple.finder.plist
-  become: false
-  changed_when: true
-
-- name: Use Smaller Icons
-  shell: |
-    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 48" ~/Library/Preferences/com.apple.finder.plist
-    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 64" ~/Library/Preferences/com.apple.finder.plist
-  become: false
-  changed_when: true
-
-- name: Unhide ~/Library
-  ansible.builtin.command: "chflags nohidden {{ myhomedir }}/Library"
-  become: false
-  changed_when: true
-
-- name: Unhide /Volumes
-  ansible.builtin.command: chflags nohidden /Volumes
-  changed_when: false
-  become: true
-
-- name: Set wallpaper
-  shell: osascript -e 'tell application "System Events" to tell every desktop to set picture to "~/iCloudDrive/Multimedia/Backgounds/Desktop/luca-micheli-422053-unsplash.jpg"'
-  changed_when: false
-  become: false
-
-- name: Enable SSH access (private_mac only - disabled by policy on business_mac)
-  shell: systemsetup -setremotelogin on
-  become: true
-  changed_when: true
-  when: "'private_mac' in group_names"
-
-- name: Add Pictures folder to sidebar
-  shell: "mysides add Bilder file://$HOME/Pictures/"
-  become: false
-  changed_when: true
-  failed_when: false  # OK if already exists
-
+# LaunchAgents
 - name: LaunchAgents
   include_tasks: "_launchagents.yml"
   loop: "{{ unload_launchagents | default(omit) }}"
   loop_control:
     loop_var: agent
 
+# macOS Defaults (generic loop from defaults.yml config)
 - name: Set macOS default settings
   community.general.osx_defaults:
     domain: "{{ default_setting['domain'] }}"
@@ -78,35 +32,7 @@
     loop_var: default_setting
     label: "{{ default_setting['name'] }}"
 
-- name: Restart dock to apply changes
-  ansible.builtin.command: killall Dock
-  changed_when: false
-  become: true
-
-- name: Fix Homedir Permissions (with security checks)
-  block:
-    - name: Check if fix-perms script exists
-      ansible.builtin.stat:
-        path: "{{myhomedir}}/iCloudDrive/Allgemein/bin/fix-perms.sh"
-      register: fix_perms_script
-
-    - name: Verify script ownership and permissions
-      ansible.builtin.assert:
-        that:
-          - fix_perms_script.stat.exists
-          - fix_perms_script.stat.pw_name == ansible_user
-          - fix_perms_script.stat.mode in ['0750', '0700', '0755']
-        fail_msg: "⚠️  fix-perms.sh has unsafe ownership or permissions - must be owned by {{ ansible_user }} with mode 0750/0700/0755"
-        success_msg: "fix-perms.sh security checks passed"
-      when: fix_perms_script.stat.exists
-
-    - name: Execute fix-perms script
-      ansible.builtin.command:
-        cmd: "{{myhomedir}}/iCloudDrive/Allgemein/bin/fix-perms.sh"
-      become: true
-      when: fix_perms_script.stat.exists
-
-  rescue:
-    - name: Log fix-perms failure
-      ansible.builtin.debug:
-        msg: "⚠️  Skipping fix-perms - script not found or failed security checks"
+# Maintenance Tasks
+- name: Import Maintenance tasks
+  ansible.builtin.import_tasks: ../maintenance.yml
+  tags: ['maintenance']
