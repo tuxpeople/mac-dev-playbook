@@ -12,20 +12,25 @@ Der Code Review hat **72 Probleme** in 4 Schweregraden identifiziert:
 
 - 🔴 **8 CRITICAL**: Sicherheitslücken, fatale Bugs → **✅ ALLE BEHOBEN** (C1, C3, C5, C6, C7, C8, C10, C11)
 - 🟠 **5 HIGH**: Zuverlässigkeitsprobleme, Datenverlustrisiko → **✅ ALLE BEHOBEN** (H1, H3, H5, H9, H10, H14, H16)
-- 🟡 **41 MEDIUM**: Best Practice Verstöße, Wartbarkeitsprobleme
+- 🟡 **41 MEDIUM**: Best Practice Verstöße, Wartbarkeitsprobleme → **4 behoben** (M7, M17, M23, M24)
 - 🔵 **2 LOW**: Kleinigkeiten, Code-Hygiene
 
-**Update 2025-10-23**: Alle 8 CRITICAL Issues behoben in Commits:
+**Update 2025-10-23 (Session 2)**: Alle 8 CRITICAL Issues behoben in Commits:
 
 - `2f5b5d3`: Security fixes (C6, C7, C8)
 - `a80d2d8`: Critical bugs and security (C1, C3, C5, C10, C11)
 
-**Update 2025-10-24**: Alle 5 HIGH Issues behoben in Commits:
+**Update 2025-10-24 (Session 3)**: Alle 5 HIGH Issues behoben in Commits:
 
 - `f88ac7c`: env_path validation, package managers, shell safety (H1, H3, H5, H9, H10)
 - `ca50fb4`: sudo script security, kubectl backup (H14, H16)
 
-**Verbleibend**: 0 CRITICAL + 0 HIGH + 41 MEDIUM + 2 LOW = **43 Issues**
+**Update 2025-12-26 (Session 5)**: 4 MEDIUM Issues behoben in Commit:
+
+- `0fda67e`: M17 (vscode path escaping), M23 (krew error handling), M24 (munki regex)
+- Plus: hazel.yml changed_when fix
+
+**Verbleibend**: 0 CRITICAL + 0 HIGH + ~37 MEDIUM + 2 LOW = **~39 Issues**
 
 **Hinweis**: Die Nummerierung C1-C11 hat Lücken (C2, C4, C9 existieren nicht) aufgrund von Umstrukturierung während der initialen Analyse.
 
@@ -708,7 +713,9 @@ pre_tasks:
 
 ---
 
-### M7: iCloud Dependency ohne Validation
+### ✅ M7: iCloud Dependency ohne Validation (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `719f84a` (Session 3, 2025-10-24)
 
 **Betroffene Datei**: `tasks/post/business_mac-settings.yml` (Zeile 2-8)
 
@@ -750,7 +757,9 @@ pre_tasks:
 
 ---
 
-### M17: Path Escaping in YAML falsch
+### ✅ M17: Path Escaping in YAML falsch (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `0fda67e` (Session 5, 2025-12-26)
 
 **Betroffene Datei**: `tasks/post/vscode.yml` (Zeile 10-13)
 
@@ -778,7 +787,9 @@ pre_tasks:
 
 ---
 
-### M23: Krew plugin installation ohne Error Handling
+### ✅ M23: Krew plugin installation ohne Error Handling (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `0fda67e` (Session 5, 2025-12-26)
 
 **Betroffene Datei**: `roles/ansible-mac-update/tasks/kubectl.yaml`
 
@@ -813,7 +824,9 @@ pre_tasks:
 
 ---
 
-### M24: Munki Regex Over-Escaped
+### ✅ M24: Munki Regex Over-Escaped (BEHOBEN)
+
+**Status**: ✅ Fixed in commit `0fda67e` (Session 5, 2025-12-26)
 
 **Betroffene Datei**: `roles/munki_update/tasks/main.yml` (Zeile 15)
 
