@@ -30,5 +30,6 @@ homebrew_installed_packages:
   - node  # Required for npm_packages (claude-code)
   - pyenv  # Python version management (needed for Phase 3)
   - pyenv-virtualenv  # Python virtualenv management (needed for Phase 3)
+  - 1password-cli  # 1password command line tool (needed for Phase 3)
 homebrew_taps: []
 mas_installed_apps: []
