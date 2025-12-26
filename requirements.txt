@@ -6,4 +6,3 @@ paramiko>=3.0
 pyparsing>=3.0
 jmespath>=1.0
 pexpect>=4.8
-#ansible-cmdb>=1.31

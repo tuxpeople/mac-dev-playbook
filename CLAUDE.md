@@ -524,3 +524,43 @@ plays/full.yml template → updates script (idempotent)
 
 - f3d15ab: Template-based vault password script with ansible.cfg integration
 - 3955b0e: Vault password bootstrap and Python optimization
+
+### Init.sh Vault Password Fix (2025-12-26)
+
+Resolved chicken-egg problem in fresh Mac setup where ansible.cfg references vault_password_file before it exists.
+
+**Problem**: On fresh Macs during Phase 1 (init.sh → plays/bootstrap.yml):
+
+- ansible.cfg references `vault_password_file = ~/bin/vault_password_mac_dev_playbook`
+- File doesn't exist yet and 1Password isn't set up
+- Error: "The vault password file ... was not found"
+
+**Solution**: Temporary dummy vault password file
+
+1. init.sh creates dummy script before running bootstrap.yml
+   - Returns placeholder: `echo "bootstrap_phase_no_vault_needed"`
+   - bootstrap.yml doesn't use encrypted secrets, so dummy is sufficient
+2. bootstrap.yml runs successfully
+3. init.sh deletes dummy script after completion
+4. macapply creates real 1Password-based script in Phase 3
+
+**Flow**:
+
+```
+init.sh: create dummy → bootstrap.yml runs → delete dummy
+         (Phase 1)                          (cleanup)
+                                                ↓
+macapply: create real script (file missing) → plays/full.yml
+          (Phase 3)
+```
+
+**Impact**:
+
+- Fresh Mac setup works without vault password errors
+- Clean separation: temporary file properly cleaned up
+- No changes needed to ansible.cfg or bootstrap.yml
+
+**Related Commits**:
+
+- af76019: fix: Resolve vault password chicken-egg problem in bootstrap
+- c27aa77: refactor: Simplify vault password dummy handling
