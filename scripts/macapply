@@ -122,14 +122,20 @@ echo ""
 # shellcheck source=scripts/lib/python-env.sh
 source "${SCRIPT_DIR}/lib/python-env.sh"
 if ! setup_python_env; then
-    exit 1
+    log_warn "pyenv not available, falling back to system Python"
+    log "For better Python environment, run 'macupdate' first"
+    echo ""
 fi
 
-# Check if Ansible is available
+# Check if Ansible is available (system or venv)
 if ! command -v ansible-playbook &> /dev/null; then
-    log_error "ansible-playbook not found in current environment"
-    log "Please run 'macupdate' first to install Ansible"
-    exit 1
+    log_error "ansible-playbook not found"
+    log "Installing Ansible with system Python..."
+    python3 -m pip install --user -r "${REPO_DIR}/requirements.txt" || {
+        log_error "Failed to install Ansible"
+        log "Please install manually: pip3 install ansible"
+        exit 1
+    }
 fi
 
 log "Using Ansible: $(ansible-playbook --version | head -n1)"
