@@ -1,21 +1,21 @@
 ---
 # tasks file for ansible-mac-update
-- include_tasks: microsoft_update.yaml
+- include_tasks: microsoft_update.yml
   tags:
     - microsoft_update
   when: microsoft_update
 
-- include_tasks: brew_cu.yaml
+- include_tasks: brew_cu.yml
   tags:
     - brew_cu
   when: brew_cu
 
-- include_tasks: kubectl.yaml
+- include_tasks: kubectl.yml
   tags:
     - kubectl
   when: kubectl
 
-- include_tasks: ssh.yaml
+- include_tasks: ssh.yml
   tags:
     - ssh
   when: ssh
