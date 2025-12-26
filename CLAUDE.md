@@ -554,21 +554,29 @@ Resolved chicken-egg problem in fresh Mac setup where ansible.cfg references vau
    - Command-line option overrides ansible.cfg
    - Failed: "ERROR! Attempting to decrypt but no vault secrets found"
 
-5. **Temporarily hide secrets.yml** (90c1912) - Final solution ✅
+5. **Temporarily hide secrets.yml** (90c1912) - Almost there!
    - `mv secrets.yml → secrets.yml.bootstrap_disabled`
    - Run bootstrap.yml (no encrypted file found)
    - `mv secrets.yml.bootstrap_disabled → secrets.yml` (restore)
    - **Root cause**: Ansible ALWAYS loads all group_vars, and if encrypted file exists, it MUST decrypt
    - Only solution: Make the file not exist temporarily
+   - But: Also found encrypted `ansible_become_pass` in host_vars!
+
+6. **Hide all vault files + interactive sudo** (38591ce) - Final solution ✅
+   - Hide both `secrets.yml` AND `host_vars/{hostname}.yml`
+   - Use `--ask-become-pass` for interactive sudo password
+   - Restore both files after bootstrap completes
+   - Handles ALL vault-encrypted files in inventory
+   - Interactive sudo password is acceptable for Phase 1 (fresh Mac setup)
 
 **Final Flow**:
 
 ```
-init.sh: hide secrets.yml → bootstrap.yml runs → restore secrets.yml
-         (Phase 1)           (no encrypted files)  (cleanup)
-                                ↓
+init.sh: hide secrets.yml + host_vars → bootstrap.yml --ask-become-pass → restore files
+         (Phase 1)                      (no encrypted files, interactive sudo) (cleanup)
+                                                ↓
 macapply: Creates real vault password script → plays/full.yml
-          (Phase 3)                             (with secrets)
+          (Phase 3)                             (with all secrets from vault)
 ```
 
 **Impact**:
@@ -585,6 +593,7 @@ macapply: Creates real vault password script → plays/full.yml
 - 68b5637: Separate ansible.cfg approach (didn't work)
 - f3de506: Temporary sed edit approach (didn't work)
 - 3d640b7: --vault-password-file=/dev/null (didn't work)
-- 90c1912: Final solution - hide secrets.yml temporarily ✅
+- 90c1912: Hide secrets.yml (almost - missed host_vars!)
+- 38591ce: Final solution - hide all vault files + interactive sudo ✅
 
-**Lesson learned**: Ansible behavior with vault-encrypted files in group_vars is non-negotiable - if the file exists, Ansible will try to decrypt it. The only reliable solution is to temporarily remove the file.
+**Lesson learned**: Ansible behavior with vault-encrypted files (both group_vars AND host_vars) is non-negotiable - if the file exists, Ansible will try to decrypt it. The only reliable solution is to temporarily remove ALL vault-encrypted files and use interactive prompts for sensitive data during bootstrap.
