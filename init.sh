@@ -190,19 +190,31 @@ echo ""
 echo "No vault password or iCloud sync required for this phase."
 echo ""
 
-# Temporarily hide secrets.yml to prevent Ansible from trying to decrypt it
-# Bootstrap doesn't need secrets, so we just move it aside
+# Temporarily hide vault-encrypted files to prevent Ansible from trying to decrypt them
+# Bootstrap doesn't need vault secrets, so we move them aside
 SECRETS_FILE="inventories/group_vars/macs/secrets.yml"
+HOST_VARS_FILE="inventories/host_vars/${newhostname}.yml"
+
 if [[ -f "${SECRETS_FILE}" ]]; then
   mv "${SECRETS_FILE}" "${SECRETS_FILE}.bootstrap_disabled"
 fi
 
-# Run bootstrap playbook (no vault needed)
-ansible-playbook plays/bootstrap.yml -i inventories -l "${newhostname}" --connection=local
+if [[ -f "${HOST_VARS_FILE}" ]]; then
+  mv "${HOST_VARS_FILE}" "${HOST_VARS_FILE}.bootstrap_disabled"
+fi
 
-# Restore secrets.yml
+# Run bootstrap playbook (no vault needed)
+# Use --ask-become-pass for interactive sudo password (ok for Phase 1)
+echo "You'll be prompted for your sudo password during bootstrap..."
+ansible-playbook plays/bootstrap.yml -i inventories -l "${newhostname}" --connection=local --ask-become-pass
+
+# Restore vault-encrypted files
 if [[ -f "${SECRETS_FILE}.bootstrap_disabled" ]]; then
   mv "${SECRETS_FILE}.bootstrap_disabled" "${SECRETS_FILE}"
+fi
+
+if [[ -f "${HOST_VARS_FILE}.bootstrap_disabled" ]]; then
+  mv "${HOST_VARS_FILE}.bootstrap_disabled" "${HOST_VARS_FILE}"
 fi
 
 echo ""
