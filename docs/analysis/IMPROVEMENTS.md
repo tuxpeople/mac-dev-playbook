@@ -30,15 +30,19 @@ Der Code Review hat **72 Probleme** in 4 Schweregraden identifiziert:
 - `0fda67e`: M17 (vscode path escaping), M23 (krew error handling), M24 (munki regex)
 - Plus: hazel.yml changed_when fix
 
-**Update 2025-12-26 (Documentation Cleanup & Verification)**:
+**Update 2025-12-26 (Session 5 - Cleanup & Reorganisation)**:
 
 - C7 (whereami.yml): Datei komplett gelöscht (commit `db4635d`)
 - changed_when: 6 Dateien behoben (business_mac-settings, private_mac-settings, various-settings, gpg, hazel, citrix gelöscht)
-- L1 (Dead Code): citrix.yml (commit `7c420f0`) + k8s.yml (commit `21ed94b`) gelöscht - **BEHOBEN**
-- L2 (File Extensions): 4 .yaml → .yml umbenannt (commit `6bbc25c`) - **BEHOBEN**
+- L1 (Dead Code): citrix.yml + k8s.yml gelöscht - **BEHOBEN**
+- L2 (File Extensions): 4 .yaml → .yml umbenannt - **BEHOBEN**
+- L2 (Commented Code): 27 Zeilen dead code entfernt (commit `5783f92`) - **BEHOBEN**
 - M26 (Hostname Pattern): Verifiziert - Code ist korrekt
+- Tasks Reorganisation: 3 neue Dateien (finder, system, maintenance)
 
-**Verbleibend**: 0 CRITICAL + 0 HIGH + ~32 MEDIUM + 0 LOW = **~32 Issues**
+**Verbleibend**: 0 CRITICAL + 0 HIGH + ~32 MEDIUM + **0 LOW** = **~32 Issues**
+
+**Alle LOW Issues sind behoben! 🎉**
 
 **Hinweis**: Die Nummerierung C1-C11 hat Lücken (C2, C4, C9 existieren nicht) aufgrund von Umstrukturierung während der initialen Analyse.
 
@@ -887,7 +891,7 @@ when: myhostname is match("ws.*") or myhostname is match("UMB.*")
 
 ## 🔵 LOW Issues
 
-### ✅ L1 & L2: Code Hygiene (L1 & L2 BEHOBEN)
+### ✅ L1 & L2: Code Hygiene - **VOLLSTÄNDIG BEHOBEN**
 
 - **L1 - Dead Code**: ✅ **BEHOBEN**
   - ✅ `tasks/post/citrix.yml`: **GELÖSCHT** (Commit `7c420f0`)
@@ -898,11 +902,14 @@ when: myhostname is match("ws.*") or myhostname is match("UMB.*")
   - Nur noch 1 `.yaml` Datei: `.pre-commit-config.yaml` (Standard-Name, korrekt)
   - Konsistenz: 72 `.yml` Dateien
 
-- **Commented Code**: ⚠️ **NOCH OFFEN**
-  - Viele auskommentierte Sections → entfernen oder dokumentieren
-  - Beispiele: dock.yml, business_mac-settings.yml
+- **L2 - Commented Code**: ✅ **BEHOBEN** (Commit `5783f92`, 2025-12-26)
+  - 27 Zeilen auskommentierter Code entfernt aus 4 Dateien:
+    - `tasks/dock.yml`: Alte shell commands
+    - `tasks/post/business_mac-settings.yml`: Obsoleter Dock task
+    - `tasks/post/github.yml`: Unused reference repos feature
+    - `tasks/post/vscode.yml`: Experimental/debug tasks
 
-**Estimated Time**: 30 Minuten (nur Commented Code cleanup übrig)
+**Result**: Alle L1 & L2 Issues sind vollständig behoben! ✅
 
 ---
 
