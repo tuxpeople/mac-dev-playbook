@@ -86,6 +86,7 @@
         - not hazel_license_exists.stat.exists
       become: false
       register: hazel_license_downloaded
+      changed_when: true
 
     # 6. SET HAZEL PREFERENCES
     - name: Configure Hazel preferences
