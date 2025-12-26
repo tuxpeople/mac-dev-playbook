@@ -527,40 +527,52 @@ plays/full.yml template → updates script (idempotent)
 
 ### Init.sh Vault Password Fix (2025-12-26)
 
-Resolved chicken-egg problem in fresh Mac setup where ansible.cfg references vault_password_file before it exists.
+Resolved chicken-egg problem in fresh Mac setup where ansible.cfg references vault_password_file before secrets can be decrypted.
 
 **Problem**: On fresh Macs during Phase 1 (init.sh → plays/bootstrap.yml):
 
 - ansible.cfg references `vault_password_file = ~/bin/vault_password_mac_dev_playbook`
-- File doesn't exist yet and 1Password isn't set up
-- Error: "The vault password file ... was not found"
+- 1Password isn't set up yet, so vault password isn't available
+- Ansible tries to decrypt `inventories/group_vars/macs/secrets.yml`
+- Error: "Decryption failed (no vault secrets were found that could decrypt)"
 
-**Solution**: Temporary dummy vault password file
+**Solution Evolution** (3 iterations):
 
-1. init.sh creates dummy script before running bootstrap.yml
-   - Returns placeholder: `echo "bootstrap_phase_no_vault_needed"`
-   - bootstrap.yml doesn't use encrypted secrets, so dummy is sufficient
-2. bootstrap.yml runs successfully
-3. init.sh deletes dummy script after completion
-4. macapply creates real 1Password-based script in Phase 3
+1. **Dummy vault password file** (af76019, c27aa77) - Didn't work
+   - Created dummy script returning placeholder password
+   - Failed: Ansible still tried to decrypt secrets.yml with wrong password
 
-**Flow**:
+2. **Separate plays/ansible.cfg** (68b5637) - Worked but complex
+   - Created duplicate ansible.cfg without vault_password_file
+   - Used: `ANSIBLE_CONFIG=plays/ansible.cfg`
+   - Worked but required maintaining duplicate config
+
+3. **Temporary edit ansible.cfg** (f3de506) - Final solution ✅
+   - `sed` removes vault_password_file line temporarily
+   - Run bootstrap.yml (no vault needed)
+   - `git checkout ansible.cfg` restores original
+   - Simplest and cleanest approach
+
+**Final Flow**:
 
 ```
-init.sh: create dummy → bootstrap.yml runs → delete dummy
-         (Phase 1)                          (cleanup)
+init.sh: sed removes vault_password_file → bootstrap.yml runs → git restore
+         (Phase 1)                         (no secrets.yml)     (cleanup)
                                                 ↓
-macapply: create real script (file missing) → plays/full.yml
-          (Phase 3)
+macapply: Creates real vault password script → plays/full.yml
+          (Phase 3)                             (with secrets)
 ```
 
 **Impact**:
 
-- Fresh Mac setup works without vault password errors
-- Clean separation: temporary file properly cleaned up
-- No changes needed to ansible.cfg or bootstrap.yml
+- Fresh Mac setup works without vault/decryption errors
+- No duplicate config files to maintain
+- Single source of truth (root ansible.cfg)
+- Clean, simple solution
 
 **Related Commits**:
 
-- af76019: fix: Resolve vault password chicken-egg problem in bootstrap
-- c27aa77: refactor: Simplify vault password dummy handling
+- af76019: Initial dummy password approach (superseded)
+- c27aa77: Simplified dummy handling (superseded)
+- 68b5637: Separate ansible.cfg approach (superseded)
+- f3de506: Final solution - temporary sed edit
