@@ -60,7 +60,20 @@
   with_items: "{{ krew_plugins }}"
   when: krew_plugins is defined and krew_exists.stat.exists
   become: false
-  changed_when: true
+  register: krew_install_result
+  failed_when: false
+  changed_when: krew_install_result.rc == 0
+
+- name: Report failed krew plugin installations
+  ansible.builtin.debug:
+    msg: "⚠️  Failed to install krew plugin: {{ item.item }} (rc: {{ item.rc }})"
+  loop: "{{ krew_install_result.results | default([]) }}"
+  when:
+    - krew_install_result is defined
+    - item.rc is defined
+    - item.rc != 0
+  loop_control:
+    label: "{{ item.item }}"
 
 - name: Ensure .kube directory exist
   file:

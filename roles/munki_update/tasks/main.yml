@@ -12,7 +12,7 @@
 
 - name: Check if updates are pending (via regex)
   set_fact:
-    munki_updates_pending: "{{ munki_check.stdout is search('^\\\\s*\\\\+\\\\s+.+', multiline=True) }}"
+    munki_updates_pending: "{{ munki_check.stdout is search('^\\s*\\+\\s+.+', multiline=True) }}"
 
 - name: Check if any skip packages are present in output
   set_fact:

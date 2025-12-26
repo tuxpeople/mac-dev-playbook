@@ -7,14 +7,14 @@
   become: true
 - name: Creates settings directory
   file:
-    path: "{{ myhomedir }}/Library/Application\ Support/Code/User/"
+    path: "{{ myhomedir }}/Library/Application Support/Code/User/"
     state: directory
   become: false
 
 - name: Copy settings
   ansible.builtin.template:
     src: "../files/VSCode/settings.json.j2"
-    dest: "{{ myhomedir }}/Library/Application\ Support/Code/User/settings.json"
+    dest: "{{ myhomedir }}/Library/Application Support/Code/User/settings.json"
     owner: "{{ ansible_user }}"
   become: false
 
