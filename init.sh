@@ -180,6 +180,20 @@ if [[ ! -f "${HOST_VARS_FILE}" ]]; then
   fi
 fi
 
+step "Creating dummy vault password file for bootstrap"
+# ansible.cfg references vault_password_file, but we can't use 1Password yet
+# Create a dummy script that returns empty password for Phase 1
+# The real vault password script will be created by macapply in Phase 3
+mkdir -p ~/bin
+cat > ~/bin/vault_password_mac_dev_playbook <<'EOF'
+#!/bin/bash
+# Dummy vault password file for bootstrap phase (Phase 1)
+# Returns a placeholder password since no encrypted files are needed during bootstrap
+# This file will be replaced by the real vault password script during Phase 3
+echo "bootstrap_phase_no_vault_needed"
+EOF
+chmod +x ~/bin/vault_password_mac_dev_playbook
+
 step "Running Bootstrap Playbook (Phase 1)"
 
 echo "This will install:"
