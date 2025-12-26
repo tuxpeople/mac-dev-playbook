@@ -17,11 +17,3 @@
     dest: "{{ myhomedir }}/Library/Application Support/Code/User/settings.json"
     owner: "{{ ansible_user }}"
   become: false
-
-# - name: Install or update extensions
-#   shell: xargs -n1 code --install-extension < ../files/VSCode/extensions.txt
-#   changed_when: false
-
-# - name: Kill Electron
-#   shell: kill -9 $(pgrep Electron)
-#   changed_when: false

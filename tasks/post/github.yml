@@ -52,14 +52,3 @@
       ignore_errors: true  # Ignore errors if repo wasn't cloned
   tags: github_repos
   become: false
-
-# - name: Clone reference Git repositories
-#   ansible.builtin.git:
-#     repo: "{{ item['https_url'] }}"
-#     dest: "{{ myhomedir }}/Development/Reference/{{ item['name'] }}"
-#     depth: '1'
-#     version: "{{ item['version'] | default('master') }}"
-#   loop: "{{ git_reference_repos }}"
-#   loop_control:
-#     label: "{{ item['name'] }}"
-#   tags: [github_repos, git_ref_repos]
