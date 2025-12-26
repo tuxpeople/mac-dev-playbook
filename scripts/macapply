@@ -117,23 +117,46 @@ fi
 log "========================================"
 echo ""
 
-# Setup Python environment (lightweight: just activate existing venv)
-# For full setup (install Python, create venv, etc.), use 'macupdate' instead
+# Setup Python environment
 # shellcheck source=scripts/lib/python-env.sh
 source "${SCRIPT_DIR}/lib/python-env.sh"
-if ! setup_python_env; then
-    log_warn "pyenv not available, falling back to system Python"
-    log "For better Python environment, run 'macupdate' first"
-    echo ""
-fi
 
-# Check if Ansible is available (system or venv)
-if ! command -v ansible-playbook &> /dev/null; then
-    log_error "ansible-playbook not found"
-    log "Installing Ansible with system Python..."
-    python3 -m pip install --user -r "${REPO_DIR}/requirements.txt" || {
-        log_error "Failed to install Ansible"
-        log "Please install manually: pip3 install ansible"
+# Check if pyenv is available
+if command -v pyenv &> /dev/null; then
+    # pyenv available: Try to use existing venv (lightweight)
+    log "pyenv found, using virtualenv..."
+    if ! setup_python_env; then
+        log_warn "Virtualenv not found, setting up complete environment..."
+        full_python_setup "${REPO_DIR}" || {
+            log_error "Failed to set up Python environment"
+            exit 1
+        }
+    fi
+else
+    # No pyenv: Do full setup (install pyenv, create venv, install requirements)
+    log "pyenv not found, setting up complete Python environment..."
+    log "This will install: pyenv, pyenv-virtualenv, Python, and create virtualenv"
+    echo ""
+
+    # Install pyenv and pyenv-virtualenv
+    if ! command -v brew &> /dev/null; then
+        log_error "Homebrew not found. Cannot install pyenv."
+        exit 1
+    fi
+
+    log "Installing pyenv and pyenv-virtualenv..."
+    brew install pyenv pyenv-virtualenv || {
+        log_error "Failed to install pyenv"
+        exit 1
+    }
+
+    # Initialize pyenv in current shell
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
+
+    # Full setup: install Python, create venv, install requirements
+    full_python_setup "${REPO_DIR}" || {
+        log_error "Failed to set up Python environment"
         exit 1
     }
 fi
