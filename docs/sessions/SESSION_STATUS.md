@@ -1,4 +1,115 @@
-# Session Status - 2025-12-25 (Session 4)
+# Session Status - 2025-12-26 (Session 5)
+
+**Session Start**: Nach Commit `ce7027a` (remove docker-compose)
+**Session Focus**: Bug fixes and cleanup
+
+---
+
+**Vorherige Session**: [Session 4](#session-4-summary) (2025-12-25)
+
+---
+
+## 📊 Session 5 Übersicht
+
+### Commits dieser Session: **6 Commits**
+
+```
+e196aaf fix: Resolve three configuration issues
+ce7027a remove docker-compose
+8b0f685 add lockfile to gitignore
+db4635d refactor: Remove whereami task and fix vault file pre-commit excludes
+161bfde fix: Handle macOS quarantine attributes in BBEdit CLI symlink
+4838583 docs: Add TODO items for LaunchAgents and Dock cleanup
+```
+
+### ✅ Behobene Probleme
+
+**1. Hazel nested loop warning** (`e196aaf`)
+
+- **Problem**: Ansible-Warnung "loop variable 'item' is already in use" in `tasks/post/hazel.yml`
+- **Ursache**: Loop verwendete Standard-Variable `item` statt spezifischer Variable
+- **Fix**: Loop-Variable von `item` → `folder_mapping` geändert
+- **Datei**: `tasks/post/hazel.yml:29-39`
+- **Status**: ✅ Behoben
+
+**2. Terminal.app setlocale warning** (`e196aaf`)
+
+- **Problem**: Warnung beim Start von Apple Terminal: "setlocale: LC_CTYPE: Kann die Regionaleinstellungen nicht ändern: Bad file descriptor"
+- **Ursache**: `StringEncodings` Einstellung `[4]` kollidierte mit macOS Locale-Einstellungen (de_CH.UTF-8)
+- **Fix**: `StringEncodings` aus `defaults.yml` entfernt - Terminal.app verwaltet Encoding jetzt automatisch
+- **Betroffen**: Nur Apple Terminal, nicht iTerm2
+- **Datei**: `inventories/group_vars/macs/defaults.yml:370-374`
+- **Status**: ✅ Behoben
+
+**3. iTerm2 deprecated key mappings** (`e196aaf`)
+
+- **Problem**: iTerm2 zeigt beim Start Dialog "Remove Deprecated Key Mappings?"
+- **Ursache**: Veraltete Keyboard Mappings (z.B. `0x2d-0x40000`) in iTerm2-Konfiguration, die mit macOS Sequoia Window Tiling kollidieren
+- **Fix**: iTerm2 plist aktualisiert mit geleerten Keyboard Mappings
+- **Datei**: `files/iterm/com.googlecode.iterm2.plist`
+- **Status**: ✅ Behoben
+
+### 🧹 Cleanup & Refactoring
+
+**4. Docker Compose entfernt** (`ce7027a`)
+
+- Docker Compose aus Brewfile/Konfiguration entfernt (nicht mehr benötigt)
+
+**5. Lockfile zu .gitignore** (`8b0f685`)
+
+- Verhindert versehentliches Committen von Lock-Dateien
+
+**6. whereami Task entfernt** (`db4635d`)
+
+- Veraltetes whereami-Tool aus Post-Tasks entfernt
+- Vault-Datei Excludes für pre-commit angepasst
+
+**7. BBEdit CLI Symlink Fix** (`161bfde`)
+
+- Behandelt macOS Quarantine-Attribute beim BBEdit CLI-Tool Symlink
+- Verhindert "Operation not permitted" Fehler
+
+### 📝 Dokumentation
+
+**8. TODO.md aktualisiert** (`4838583`)
+
+- Neue Items hinzugefügt:
+  - LaunchAgents Review & Cleanup
+  - Dock Items Review & Cleanup
+
+### 📈 Impact
+
+**Benutzererfahrung**:
+
+- ✅ Keine Ansible-Warnungen mehr beim Hazel deployment
+- ✅ Keine setlocale-Warnung mehr im Terminal
+- ✅ Keine iTerm2-Dialoge mehr beim Start
+- ✅ Sauberere Konfiguration (obsolete Pakete entfernt)
+
+**Code Quality**:
+
+- ✅ Bessere Loop-Variablen-Namensgebung (explizit statt implizit)
+- ✅ System-managed Einstellungen wo möglich (Terminal Encoding)
+- ✅ Moderne iTerm2-Konfiguration (macOS Sequoia kompatibel)
+- ✅ Reduzierte Abhängigkeiten (docker-compose, whereami entfernt)
+
+---
+
+## 💡 Nächste Schritte
+
+**Aus TODO.md**:
+
+- [ ] LaunchAgents Tasks reviewen und aufräumen
+- [ ] Dock Items Configuration aktualisieren
+- [ ] Weitere MEDIUM Issues angehen (siehe docs/analysis/IMPROVEMENTS.md)
+
+---
+
+**Vorherige Session**: [Session 4](#session-4-summary) (2025-12-25)
+
+---
+
+# Session Status - 2025-12-25 (Session 4) {#session-4-summary}
 
 **Session Start**: Nach Commit `df7b751` (Remove iCloud script check for add_vault_password)
 **Session Focus**: Fix init.sh for fresh Mac setup (saga)
