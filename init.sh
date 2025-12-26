@@ -190,16 +190,10 @@ echo ""
 echo "No vault password or iCloud sync required for this phase."
 echo ""
 
-# Temporarily remove vault_password_file from ansible.cfg
-# This prevents Ansible from trying to decrypt secrets.yml during Phase 1
-sed -i.bootstrap_backup '/^vault_password_file/d' ansible.cfg
-
 # Run bootstrap playbook
-ansible-playbook plays/bootstrap.yml -i inventories -l "${newhostname}" --connection=local
-
-# Restore ansible.cfg from git
-git checkout ansible.cfg
-rm -f ansible.cfg.bootstrap_backup
+# Override vault_password_file with /dev/null to prevent decryption attempts
+# This allows bootstrap to run without vault secrets (Phase 1 doesn't need them)
+ansible-playbook plays/bootstrap.yml -i inventories -l "${newhostname}" --connection=local --vault-password-file=/dev/null
 
 echo ""
 echo "=========================================="
