@@ -536,7 +536,7 @@ Resolved chicken-egg problem in fresh Mac setup where ansible.cfg references vau
 - Ansible tries to decrypt `inventories/group_vars/macs/secrets.yml`
 - Error: "Decryption failed (no vault secrets were found that could decrypt)"
 
-**Solution Evolution** (3 iterations):
+**Solution Evolution** (4 iterations):
 
 1. **Dummy vault password file** (af76019, c27aa77) - Didn't work
    - Created dummy script returning placeholder password
@@ -547,18 +547,24 @@ Resolved chicken-egg problem in fresh Mac setup where ansible.cfg references vau
    - Used: `ANSIBLE_CONFIG=plays/ansible.cfg`
    - Worked but required maintaining duplicate config
 
-3. **Temporary edit ansible.cfg** (f3de506) - Final solution ✅
+3. **Temporary sed edit** (f3de506) - Worked but complex
    - `sed` removes vault_password_file line temporarily
    - Run bootstrap.yml (no vault needed)
    - `git checkout ansible.cfg` restores original
-   - Simplest and cleanest approach
+   - Complex: 6 lines of code (sed, ansible-playbook, git checkout, rm)
+
+4. **--vault-password-file=/dev/null** (3d640b7) - Final solution ✅
+   - Command-line option overrides ansible.cfg
+   - Ansible shows warning but continues without decryption
+   - Only 1 line of code!
+   - Simplest and most elegant approach
 
 **Final Flow**:
 
 ```
-init.sh: sed removes vault_password_file → bootstrap.yml runs → git restore
-         (Phase 1)                         (no secrets.yml)     (cleanup)
-                                                ↓
+init.sh: ansible-playbook --vault-password-file=/dev/null
+         (Phase 1, warning shown but playbook runs)
+                                ↓
 macapply: Creates real vault password script → plays/full.yml
           (Phase 3)                             (with secrets)
 ```
@@ -575,4 +581,5 @@ macapply: Creates real vault password script → plays/full.yml
 - af76019: Initial dummy password approach (superseded)
 - c27aa77: Simplified dummy handling (superseded)
 - 68b5637: Separate ansible.cfg approach (superseded)
-- f3de506: Final solution - temporary sed edit
+- f3de506: Temporary sed edit approach (superseded)
+- 3d640b7: Final solution - --vault-password-file=/dev/null ✅
