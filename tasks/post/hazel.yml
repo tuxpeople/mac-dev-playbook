@@ -28,13 +28,13 @@
 
     - name: Ensure monitored folders exist
       file:
-        path: "{{ item.value }}"
+        path: "{{ folder_mapping.value }}"
         state: directory
         mode: '0755'
       loop: "{{ hazel_folder_mappings | dict2items }}"
       loop_control:
-        loop_var: item
-        label: "{{ item.key }}: {{ item.value }}"
+        loop_var: folder_mapping
+        label: "{{ folder_mapping.key }}: {{ folder_mapping.value }}"
       become: false
       when: hazel_create_folders | default(true)
 

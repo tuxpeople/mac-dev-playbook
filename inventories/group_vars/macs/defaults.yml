@@ -368,11 +368,6 @@ defaults:
   type: bool
   value: 'true'
 - domain: com.apple.terminal
-  key: StringEncodings
-  name: String Encodings
-  type: array
-  value: [4]
-- domain: com.apple.terminal
   key: SecureKeyboardEntry
   name: Secure Keyboard Entry
   type: bool
