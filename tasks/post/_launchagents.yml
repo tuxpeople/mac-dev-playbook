@@ -1,13 +1,38 @@
 ---
+# Unload/disable unwanted LaunchAgents
+# Improved version with better idempotency
+
 - name: "Check if {{ agent }} exists"
   ansible.builtin.stat:
     path: "{{ agent }}"
-  register: launchagents_result
+  register: launchagent_exists
+
+- name: "Check if {{ agent }} is loaded"
+  ansible.builtin.command:
+    cmd: "launchctl list"
+  register: launchctl_list
+  changed_when: false
+  when: launchagent_exists.stat.exists
 
 - name: "Unload {{ agent }}"
   ansible.builtin.command:
     cmd: "launchctl unload {{ agent }}"
-  when: launchagents_result.stat.exists
+  when:
+    - launchagent_exists.stat.exists
+    - agent | basename | regex_replace('\\.plist$', '') in launchctl_list.stdout
   become: true
   changed_when: true
-  failed_when: false
+  failed_when: false  # OK if unload fails (might already be unloaded)
+  register: launchagent_unload
+
+- name: "Debug: {{ agent }} status"
+  ansible.builtin.debug:
+    msg: >-
+      {% if not launchagent_exists.stat.exists %}
+      Agent file does not exist - skipped
+      {% elif agent | basename | regex_replace('\.plist$', '') not in launchctl_list.stdout %}
+      Agent not loaded - already disabled
+      {% else %}
+      Agent was loaded - unloaded successfully
+      {% endif %}
+  when: ansible_verbosity >= 1
