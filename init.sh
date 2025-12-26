@@ -180,20 +180,6 @@ if [[ ! -f "${HOST_VARS_FILE}" ]]; then
   fi
 fi
 
-step "Creating dummy vault password file for bootstrap"
-# ansible.cfg references vault_password_file, but we can't use 1Password yet
-# Create a dummy script that returns empty password for Phase 1
-# The real vault password script will be created by macapply in Phase 3
-mkdir -p ~/bin
-cat > ~/bin/vault_password_mac_dev_playbook <<'EOF'
-#!/bin/bash
-# Dummy vault password file for bootstrap phase (Phase 1)
-# Returns a placeholder password since no encrypted files are needed during bootstrap
-# This file will be replaced by the real vault password script during Phase 3
-echo "bootstrap_phase_no_vault_needed"
-EOF
-chmod +x ~/bin/vault_password_mac_dev_playbook
-
 step "Running Bootstrap Playbook (Phase 1)"
 
 echo "This will install:"
@@ -204,10 +190,9 @@ echo ""
 echo "No vault password or iCloud sync required for this phase."
 echo ""
 
-ansible-playbook plays/bootstrap.yml -i inventories -l "${newhostname}" --connection=local
-
-# Remove dummy vault password file (will be recreated by macapply in Phase 3)
-rm -f ~/bin/vault_password_mac_dev_playbook
+# Use special ansible.cfg for bootstrap (no vault_password_file)
+# This prevents Ansible from trying to decrypt secrets.yml during Phase 1
+ANSIBLE_CONFIG=plays/ansible.cfg ansible-playbook plays/bootstrap.yml -i inventories -l "${newhostname}" --connection=local
 
 echo ""
 echo "=========================================="
