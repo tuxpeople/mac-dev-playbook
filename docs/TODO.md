@@ -4,8 +4,8 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
 
 ## Zu erledigen
 
-- [ ] **Tasks Reorganisation - Separation of Concerns**
-  - **Kontext**: Dock-Konfiguration wurde in separate `tasks/dock.yml` Datei ausgelagert (Session 5, 2025-12-26)
+- [ ] **Tasks Reorganisation - Separation of Concerns** 🔄 **TEILWEISE ERLEDIGT**
+  - **Status**: ✅ Dock-Konfiguration in separate `tasks/dock.yml` ausgelagert (Commit `0f3e90a`, Session 5, 2025-12-26)
   - **Idee**: Andere Tasks ähnlich reorganisieren für bessere Wartbarkeit
   - **Zu prüfen**:
     - Ist `tasks/post/various-settings.yml` noch sinnvoll strukturiert?
@@ -83,7 +83,7 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - ✅ `init.sh`: Obsoleten Brewfile-Code entfernt (Zeilen 100-105)
     - ✅ `init_light.sh`: Als DEPRECATED markiert mit Hinweis auf `scripts/macupdate`
   - **Nächste Schritte**:
-    - [x] README.md: Bootstrap-Sektion erweitern (Wann welches Script?) ✅ **ERLEDIGT (2025-12-24)**
+    - [x] README.md: Bootstrap-Sektion erweitern (Wann welches Script?) ✅ **ERLEDIGT (Commit `24e3504`, 2025-12-25)**
     - [ ] iCloud-Dependency untersuchen: Was steht in filelists?
     - [ ] Optional: Konsolidierung evaluieren (siehe Analyse Option 2)
 
@@ -105,18 +105,19 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - .macos.backup* Dateien entfernen
     - Nur echte Dotfiles behalten
 
-- [ ] **myenv Variable Refactoring**
+- [ ] **myenv Variable Refactoring** ⚠️ **NICHT KRITISCH - FUNKTIONIERT**
+  - **Status**: Analysiert (2025-12-26) - Komplexer als erwartet
   - **Aktuell**: Variable `myenv` wird doppelt definiert (group_vars + runtime fact)
-  - **Ziel**: Ersetzen durch Ansible's eingebaute `group_names` Variable
-  - **Änderungen**:
-    - `when: myenv == "business_mac"` → `when: "'business_mac' in group_names"`
-    - `post.yml`: `{{ myenv }}-settings.yml` → Bedingte Include basierend auf group_names
-    - `tasks/pre/additional-facts.yml`: myenv-Fact entfernen
-    - `inventories/group_vars/business_mac/general.yml`: myenv entfernen
-    - `inventories/group_vars/private_mac/general.yml`: myenv entfernen
-  - **Betroffen**: ~5-10 Dateien (grep nach "myenv" zeigt alle)
+  - **Warum redundant**: Hosts sind bereits in Inventory-Gruppen (business_mac/private_mac) zugeordnet
+  - **Warum kompliziert**:
+    - Verwendet `group_by: key=myenv` für dynamische Gruppierung
+    - `post.yml` nutzt `{{ myenv }}-settings.yml` für dynamische Includes
+    - Pattern-Matching in additional-facts.yml als Absicherung
+  - **Ziel (wenn durchgeführt)**: Ersetzen durch Ansible's eingebaute `group_names` Variable
+  - **Aufwand**: 15-20 Min, braucht Tests
   - **Vorteil**: Eine Variable weniger, nutzt Ansible-Standard
-  - **Priorität**: Low (funktioniert aktuell, ist aber redundant)
+  - **Priorität**: Low (funktioniert aktuell, technische Schuld aber nicht kritisch)
+  - **Entscheidung**: Später angehen, wenn mehr Zeit oder bei größerem Refactoring
 
 - [ ] **Desktop-Hintergrund automatisiert setzen**
   - Unterschiedliche Bilder für private_mac vs. business_mac
