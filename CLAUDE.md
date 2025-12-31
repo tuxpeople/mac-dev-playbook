@@ -434,6 +434,84 @@ ansible-lint
 shellcheck scripts/*.sh init*.sh tests/*.sh
 ```
 
+## Ansible Best Practices
+
+### Loop Variable Naming
+
+**IMPORTANT**: Always use explicit `loop_var` names in `loop_control` to avoid variable collisions and improve code readability.
+
+**Problem**: Using the default `item` variable can cause conflicts when:
+
+- Loops are nested (e.g., within `vars` definitions)
+- Multiple tasks reference each other
+- Debugging complex playbooks
+
+**Solution**: Always specify a descriptive `loop_var` name that reflects what you're iterating over.
+
+**Good Examples**:
+
+```yaml
+# Printer configuration
+- name: Add new printers
+  ansible.builtin.command: lpadmin -p "{{ printer.name }}" ...
+  loop: "{{ printers }}"
+  loop_control:
+    loop_var: printer
+
+# Dock items
+- name: Set the default Dock items
+  shell: "/usr/local/bin/dockutil --add {{ dock_item.path }} ..."
+  loop: "{{ dockitems }}"
+  loop_control:
+    loop_var: dock_item
+    label: "{{ dock_item.name }}"
+
+# Font files
+- name: Install common fonts
+  ansible.builtin.copy:
+    src: "{{ font_file.path }}"
+    dest: "{{ fonts_target_dir }}/{{ font_file.path | basename }}"
+  loop: "{{ common_fonts_found.files }}"
+  loop_control:
+    loop_var: font_file
+    label: "{{ font_file.path | basename }}"
+
+# Configuration settings
+- name: Set macOS default settings
+  community.general.osx_defaults:
+    domain: "{{ default_setting['domain'] }}"
+    key: "{{ default_setting['key'] }}"
+    value: "{{ default_setting['value'] }}"
+  loop: "{{ defaults }}"
+  loop_control:
+    loop_var: default_setting
+    label: "{{ default_setting['name'] }}"
+```
+
+**Bad Example** (causes warnings):
+
+```yaml
+# DON'T: Using default 'item' variable
+- name: Add new printers
+  ansible.builtin.command: lpadmin -p "{{ item.name }}" ...
+  loop: "{{ printers }}"
+  # No loop_control - will cause conflicts if nested loops exist
+```
+
+**When to Use**:
+
+- Always use `loop_var` when iterating over complex objects
+- Always use `loop_var` when there's any possibility of nesting
+- Use descriptive names: `printer`, `dock_item`, `font_file`, `default_setting`, etc.
+- Combine with `label` to keep output clean (shows only relevant info, not entire object)
+
+**Benefits**:
+
+- Prevents "loop variable collision" warnings
+- Makes code self-documenting (clear what you're iterating over)
+- Easier debugging (descriptive variable names in error messages)
+- Future-proof (works even if loops become nested later)
+
 ## Recent Improvements
 
 ### init.sh Robustness (2025-12-25)

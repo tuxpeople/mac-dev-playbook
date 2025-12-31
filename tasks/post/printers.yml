@@ -14,18 +14,20 @@
     - name: Add new printers
       ansible.builtin.command: >-
         lpadmin
-        -p "{{ item.name }}"
-        -v "{{ item.uri }}"
-        {% if item.description is defined %}-D "{{ item.description }}"{% endif %}
-        {% if item.location is defined %}-L "{{ item.location }}"{% endif %}
-        {% if item.ppd is defined %}-P "{{ item.ppd }}"{% endif %}
+        -p "{{ printer.name }}"
+        -v "{{ printer.uri }}"
+        {% if printer.description is defined %}-D "{{ printer.description }}"{% endif %}
+        {% if printer.location is defined %}-L "{{ printer.location }}"{% endif %}
+        {% if printer.ppd is defined %}-P "{{ printer.ppd }}"{% endif %}
         -o printer-is-shared=false
         -E
       become: true
       loop: "{{ printers }}"
+      loop_control:
+        loop_var: printer
       when:
-        - item.state | default('present') == 'present'
-        - item.name not in installed_printers.stdout
+        - printer.state | default('present') == 'present'
+        - printer.name not in installed_printers.stdout
       register: printer_add_result
       changed_when: printer_add_result.rc == 0
       failed_when: printer_add_result.rc != 0
@@ -33,18 +35,20 @@
     - name: Update existing printers (always runs to ensure config is current)
       ansible.builtin.command: >-
         lpadmin
-        -p "{{ item.name }}"
-        -v "{{ item.uri }}"
-        {% if item.description is defined %}-D "{{ item.description }}"{% endif %}
-        {% if item.location is defined %}-L "{{ item.location }}"{% endif %}
-        {% if item.ppd is defined %}-P "{{ item.ppd }}"{% endif %}
+        -p "{{ printer.name }}"
+        -v "{{ printer.uri }}"
+        {% if printer.description is defined %}-D "{{ printer.description }}"{% endif %}
+        {% if printer.location is defined %}-L "{{ printer.location }}"{% endif %}
+        {% if printer.ppd is defined %}-P "{{ printer.ppd }}"{% endif %}
         -o printer-is-shared=false
         -E
       become: true
       loop: "{{ printers }}"
+      loop_control:
+        loop_var: printer
       when:
-        - item.state | default('present') == 'present'
-        - item.name in installed_printers.stdout
+        - printer.state | default('present') == 'present'
+        - printer.name in installed_printers.stdout
       register: printer_update_result
       changed_when: false  # Don't report as changed since we can't detect actual changes
       failed_when: printer_update_result.rc != 0
@@ -72,23 +76,27 @@
       failed_when: printer_options_result.rc != 0
 
     - name: Enable printers (idempotent - doesn't report changes)
-      ansible.builtin.command: cupsenable "{{ item.name }}"
+      ansible.builtin.command: cupsenable "{{ printer.name }}"
       become: true
       loop: "{{ printers }}"
+      loop_control:
+        loop_var: printer
       when:
-        - item.enabled | default(true)
-        - item.state | default('present') == 'present'
+        - printer.enabled | default(true)
+        - printer.state | default('present') == 'present'
       register: printer_enable_result
       changed_when: false  # Can't detect if printer was already enabled
       failed_when: false
 
     - name: Accept jobs for printers (idempotent - doesn't report changes)
-      ansible.builtin.command: cupsaccept "{{ item.name }}"
+      ansible.builtin.command: cupsaccept "{{ printer.name }}"
       become: true
       loop: "{{ printers }}"
+      loop_control:
+        loop_var: printer
       when:
-        - item.enabled | default(true)
-        - item.state | default('present') == 'present'
+        - printer.enabled | default(true)
+        - printer.state | default('present') == 'present'
       register: printer_accept_result
       changed_when: false  # Can't detect if printer was already accepting jobs
       failed_when: false
@@ -100,25 +108,29 @@
       failed_when: false
 
     - name: Set default printer (only if different)
-      ansible.builtin.command: lpadmin -d "{{ item.name }}"
+      ansible.builtin.command: lpadmin -d "{{ printer.name }}"
       become: true
       loop: "{{ printers }}"
+      loop_control:
+        loop_var: printer
       when:
-        - item.default | default(false)
-        - item.state | default('present') == 'present'
-        - item.name not in (current_default_printer.stdout | default(''))
+        - printer.default | default(false)
+        - printer.state | default('present') == 'present'
+        - printer.name not in (current_default_printer.stdout | default(''))
       register: default_printer_result
       changed_when: default_printer_result.rc == 0
       failed_when: default_printer_result.rc != 0
 
     - name: Remove printers
-      ansible.builtin.command: lpadmin -x "{{ item.name }}"
+      ansible.builtin.command: lpadmin -x "{{ printer.name }}"
       become: true
       loop: "{{ printers }}"
+      loop_control:
+        loop_var: printer
       when:
-        - item.state is defined
-        - item.state == 'absent'
-        - item.name in installed_printers.stdout
+        - printer.state is defined
+        - printer.state == 'absent'
+        - printer.name in installed_printers.stdout
       register: printer_remove_result
       changed_when: printer_remove_result.rc == 0
       failed_when: printer_remove_result.rc != 0
