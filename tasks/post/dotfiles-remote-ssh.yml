@@ -1,34 +1,34 @@
----
-# Switch dotfiles repo remote from HTTPS to SSH after bootstrap
-#
-# During bootstrap, the dotfiles repo is cloned via HTTPS (no SSH key required).
-# After bootstrap completes, we switch to SSH for normal git operations (push/pull)
-# using 1Password SSH Agent.
+# ---
+# # Switch dotfiles repo remote from HTTPS to SSH after bootstrap
+# #
+# # During bootstrap, the dotfiles repo is cloned via HTTPS (no SSH key required).
+# # After bootstrap completes, we switch to SSH for normal git operations (push/pull)
+# # using 1Password SSH Agent.
 
-- name: Check if dotfiles repo exists
-  ansible.builtin.stat:
-    path: "{{ dotfiles_repo_local_destination }}"
-  register: dotfiles_repo_check
-  become: false
+# - name: Check if dotfiles repo exists
+#   ansible.builtin.stat:
+#     path: "{{ dotfiles_repo_local_destination }}"
+#   register: dotfiles_repo_check
+#   become: false
 
-- name: Get current dotfiles remote URL
-  ansible.builtin.command:
-    cmd: git config --get remote.origin.url
-    chdir: "{{ dotfiles_repo_local_destination }}"
-  register: dotfiles_current_remote
-  changed_when: false
-  failed_when: false
-  when: dotfiles_repo_check.stat.exists
-  become: false
+# - name: Get current dotfiles remote URL
+#   ansible.builtin.command:
+#     cmd: git config --get remote.origin.url
+#     chdir: "{{ dotfiles_repo_local_destination }}"
+#   register: dotfiles_current_remote
+#   changed_when: false
+#   failed_when: false
+#   when: dotfiles_repo_check.stat.exists
+#   become: false
 
-- name: Switch dotfiles remote from HTTPS to SSH
-  community.general.git_config:
-    repo: "{{ dotfiles_repo_local_destination }}"
-    scope: local
-    name: remote.origin.url
-    value: "git@github.com:tuxpeople/dotfiles.git"
-  when:
-    - dotfiles_repo_check.stat.exists
-    - dotfiles_current_remote.stdout is defined
-    - "'https://' in dotfiles_current_remote.stdout"
-  become: false
+# - name: Switch dotfiles remote from HTTPS to SSH
+#   community.general.git_config:
+#     repo: "{{ dotfiles_repo_local_destination }}"
+#     scope: local
+#     name: remote.origin.url
+#     value: "git@github.com:tuxpeople/dotfiles.git"
+#   when:
+#     - dotfiles_repo_check.stat.exists
+#     - dotfiles_current_remote.stdout is defined
+#     - "'https://' in dotfiles_current_remote.stdout"
+#   become: false
