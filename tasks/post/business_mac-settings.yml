@@ -1,15 +1,28 @@
 ---
-- name: Check if iCloudDrive is mounted
+- name: Ensure iCloudDrive symlink exists
+  ansible.builtin.file:
+    src: "{{ myhomedir }}/Library/Mobile Documents/com~apple~CloudDocs/Dateien"
+    dest: "{{ myhomedir }}/iCloudDrive"
+    state: link
+    force: true
+  become: false
+  ignore_errors: true  # May not exist if iCloud not synced yet
+
+- name: Check if iCloudDrive source directory exists
   ansible.builtin.stat:
-    path: "{{myhomedir}}/iCloudDrive"
-  register: icloud_mounted
+    path: "{{myhomedir}}/iCloudDrive/Allgemein/apps"
+  register: icloud_apps_dir
+
+- name: Debug iCloud paths (only when debugging enabled)
+  ansible.builtin.debug:
+    msg:
+      - "iCloudDrive apps dir exists: {{ icloud_apps_dir.stat.exists | default(false) }}"
+      - "Expected path: {{myhomedir}}/iCloudDrive/Allgemein/apps"
+  when: false  # Set to true for debugging
 
 - name: Copy business apps from iCloudDrive
-  ansible.builtin.copy:
-    src: "{{myhomedir}}/iCloudDrive/Allgemein/apps/{{ business_app }}"
-    dest: "/Applications/"
-    mode: 0755  # Apps need execute permission
-    remote_src: "true"
+  ansible.builtin.command:
+    cmd: cp -R "{{myhomedir}}/iCloudDrive/Allgemein/apps/{{ business_app }}" "/Applications/"
   become: false
   loop:
     - "Open Umb.app"
@@ -17,8 +30,9 @@
   loop_control:
     loop_var: business_app
   when:
-    - icloud_mounted.stat.exists
-    - icloud_mounted.stat.isdir
+    - icloud_apps_dir.stat.exists
+  args:
+    creates: "/Applications/{{ business_app }}"  # Make idempotent - only copy if not exists
 
 # https://www.jamf.com/jamf-nation/discussions/12302/active-directory-q-a
 - name: Set DSBindTimeout to 4

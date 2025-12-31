@@ -387,21 +387,21 @@ The deployment process:
 
 ```yaml
 - name: Copy business apps from iCloudDrive
-  ansible.builtin.copy:
-    src: "{{myhomedir}}/iCloudDrive/Allgemein/apps/{{ business_app }}"
-    dest: "/Applications/"
-    mode: 0755  # Apps need execute permission
-    remote_src: "true"
+  ansible.builtin.command:
+    cmd: cp -R "{{myhomedir}}/iCloudDrive/Allgemein/apps/{{ business_app }}" "/Applications/"
   loop:
     - "Open Umb.app"
     - "Vertec.app"
   loop_control:
     loop_var: business_app
+  args:
+    creates: "/Applications/{{ business_app }}"  # Make idempotent
 ```
 
 ### Adding a New Business App
 
 1. **Save the app to iCloudDrive**:
+
    ```bash
    # For Safari web apps: File > Add to Dock
    # Then move the .app from Applications to iCloudDrive
@@ -409,6 +409,7 @@ The deployment process:
    ```
 
 2. **Add to deployment list** in `tasks/post/business_mac-settings.yml`:
+
    ```yaml
    loop:
      - "Open Umb.app"
@@ -417,6 +418,7 @@ The deployment process:
    ```
 
 3. **Add to Dock** (optional) in `inventories/group_vars/business_mac/dock.yml`:
+
    ```yaml
    - name: "Your App"
      path: "\"/Applications/Your App.app\""
@@ -424,6 +426,7 @@ The deployment process:
    ```
 
 4. **Apply configuration**:
+
    ```bash
    ./scripts/macapply
    ```
@@ -431,6 +434,7 @@ The deployment process:
 ### Why This Approach?
 
 **Advantages**:
+
 - Apps sync automatically via iCloudDrive to all business Macs
 - Works for Safari web apps (not in Homebrew)
 - Works for internal/proprietary apps
@@ -438,19 +442,22 @@ The deployment process:
 - Single source of truth (iCloudDrive)
 
 **When to Use**:
+
 - Safari web apps (company intranets, web tools)
 - Internal company apps not in Homebrew
 - Licensed apps stored in iCloudDrive
 
 **When NOT to Use**:
+
 - Apps available in Homebrew → Use Brewfile instead
 - Apps in Mac App Store → Use mas_installed_apps (if enabled)
 - Universal apps for all Macs → Add to general homebrew packages
 
 ### Notes
 
-- Apps require execute permissions (`mode: 0755`)
 - Safari web apps are regular `.app` bundles and work like native apps
+- Deployment uses `cp -R` instead of `ansible.builtin.copy` for proper .app bundle handling
+- Task is idempotent via `creates` parameter - only copies if app doesn't exist
 - Deployment runs during business_mac-settings tasks
 - iCloudDrive must be mounted and synced before deployment
 
