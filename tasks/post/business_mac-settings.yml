@@ -20,7 +20,7 @@
       - "Expected path: {{myhomedir}}/iCloudDrive/Allgemein/apps"
   when: false  # Set to true for debugging
 
-- name: Copy business apps from iCloudDrive
+- name: Copy business apps from iCloudDrive to /Applications
   ansible.builtin.command:
     cmd: cp -R "{{myhomedir}}/iCloudDrive/Allgemein/apps/{{ business_app }}" "/Applications/"
   become: false
@@ -35,6 +35,28 @@
   args:
     creates: "/Applications/{{ business_app }}"  # Make idempotent - only copy if not exists
   changed_when: true  # Report as changed when app is copied (creates parameter handles idempotence)
+
+- name: Ensure ~/Applications directory exists
+  ansible.builtin.file:
+    path: "{{ myhomedir }}/Applications"
+    state: directory
+    mode: '0755'
+  become: false
+
+- name: Copy Shortcuts apps from iCloudDrive to ~/Applications
+  ansible.builtin.command:
+    cmd: cp -R "{{myhomedir}}/iCloudDrive/Allgemein/apps/{{ shortcuts_app }}" "{{ myhomedir }}/Applications/"
+  become: false
+  loop:
+    - "Fokus arbeiten.app"
+  loop_control:
+    loop_var: shortcuts_app
+    label: "{{ shortcuts_app }}"
+  when:
+    - icloud_apps_dir.stat.exists
+  args:
+    creates: "{{ myhomedir }}/Applications/{{ shortcuts_app }}"  # Make idempotent - only copy if not exists
+  changed_when: true  # Report as changed when app is copied
 
 # https://www.jamf.com/jamf-nation/discussions/12302/active-directory-q-a
 - name: Set DSBindTimeout to 4
@@ -80,3 +102,17 @@
     - login_item in current_login_items.stdout
   become: false
   changed_when: true  # Always report as changed if we attempt removal
+
+- name: Add required Login Items
+  ansible.builtin.shell: |
+    osascript -e 'tell application "System Events" to make login item at end with properties {path:"{{ login_item_to_add.path }}", hidden:{{ login_item_to_add.hidden | default(false) | lower }}}'
+  loop:
+    - { name: "Fokus arbeiten", path: "{{ myhomedir }}/Applications/Fokus arbeiten.app", hidden: false }
+  loop_control:
+    loop_var: login_item_to_add
+    label: "{{ login_item_to_add.name }}"
+  when:
+    - current_login_items.rc == 0
+    - login_item_to_add.name not in current_login_items.stdout
+  become: false
+  changed_when: true  # Always report as changed if we attempt to add

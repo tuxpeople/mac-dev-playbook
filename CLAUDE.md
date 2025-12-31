@@ -373,21 +373,27 @@ This repository supports deploying custom apps to business Macs from iCloudDrive
 
 **Storage Location**: `~/iCloudDrive/Allgemein/apps/`
 
-**Deployment Target**: `/Applications/`
+**Deployment Target**:
+- Safari web apps: `/Applications/`
+- Shortcuts apps: `~/Applications/`
 
 ### Current Apps
 
-Two Safari web apps are deployed to business Macs:
+**Safari Web Apps** (deployed to `/Applications/`):
 
 1. **Open Umb.app** - UMB web application (Position 1 in Dock)
 2. **Vertec.app** - Vertec time tracking (Position 3 in Dock)
 
+**Shortcuts Apps** (deployed to `~/Applications/`):
+
+1. **Fokus arbeiten.app** - Sets Focus mode to "Arbeiten" at login (Login Item)
+
 ### How It Works
 
-The deployment process:
+**Safari Web Apps** (to `/Applications/`):
 
 ```yaml
-- name: Copy business apps from iCloudDrive
+- name: Copy business apps from iCloudDrive to /Applications
   ansible.builtin.command:
     cmd: cp -R "{{myhomedir}}/iCloudDrive/Allgemein/apps/{{ business_app }}" "/Applications/"
   loop:
@@ -397,6 +403,33 @@ The deployment process:
     loop_var: business_app
   args:
     creates: "/Applications/{{ business_app }}"  # Make idempotent
+```
+
+**Shortcuts Apps** (to `~/Applications/`):
+
+```yaml
+- name: Copy Shortcuts apps from iCloudDrive to ~/Applications
+  ansible.builtin.command:
+    cmd: cp -R "{{myhomedir}}/iCloudDrive/Allgemein/apps/{{ shortcuts_app }}" "{{ myhomedir }}/Applications/"
+  loop:
+    - "Fokus arbeiten.app"
+  loop_control:
+    loop_var: shortcuts_app
+  args:
+    creates: "{{ myhomedir }}/Applications/{{ shortcuts_app }}"  # Make idempotent
+```
+
+**Login Items** (auto-start at login):
+
+```yaml
+- name: Add required Login Items
+  ansible.builtin.shell: |
+    osascript -e 'tell application "System Events" to make login item at end with properties {path:"{{ login_item_to_add.path }}", hidden:{{ login_item_to_add.hidden | default(false) | lower }}}'
+  loop:
+    - { name: "Fokus arbeiten", path: "{{ myhomedir }}/Applications/Fokus arbeiten.app", hidden: false }
+  loop_control:
+    loop_var: login_item_to_add
+  when: login_item_to_add.name not in current_login_items.stdout
 ```
 
 ### Adding a New Business App

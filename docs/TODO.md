@@ -46,18 +46,21 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
   - **Hinzugefügt**: 2025-12-25 (Session mit saga setup)
   - **Abgeschlossen**: 2025-12-31 (Session 6)
 
-- [ ] **"Fokus arbeiten" Shortcuts Deployment für Business Macs**
+- [x] **"Fokus arbeiten" Shortcuts Deployment für Business Macs** ✅ **ABGESCHLOSSEN (2025-12-31)**
   - **Was**: Apple Shortcuts Automatisierung die beim Login den Fokus auf "arbeiten" setzt
-  - **Aktuell**: Nur manuell erstellt auf einem Business Mac (UMB-L3VWMGM77F)
-  - **Ziel**: Automatisches Deployment via Ansible für neue Business Macs
-  - **Umsetzung**:
-    - Shortcut als `.shortcut` Datei exportieren
-    - In Repository speichern (`files/shortcuts/business_mac/`)
-    - Ansible Task erstellen (Copy + Import via shortcuts CLI oder AppleScript)
-    - Bei neuem Business Mac Setup automatisch installieren
-  - **Priorität**: Medium (Nice-to-have)
-  - **Siehe auch**: `/tmp/login_items_decisions.md` (Details)
+  - **Implementiert** (Session 7):
+    - ✅ App nach `~/iCloudDrive/Allgemein/apps/` kopiert
+    - ✅ Deployment Task in `tasks/post/business_mac-settings.yml`
+      - Kopiert App von iCloud zu `~/Applications/`
+      - Erstellt `~/Applications` Directory falls nötig
+    - ✅ Login Item Management implementiert
+      - Fügt "Fokus arbeiten" automatisch als Login Item hinzu
+      - Nur wenn noch nicht vorhanden (idempotent)
+    - ✅ Dokumentation in CLAUDE.md erweitert
+  - **Anwendung**: `./scripts/macapply` auf neuem Business Mac
+  - **Hinweis**: Shortcut selbst wird via iCloud/Kurzbefehle gesynct
   - **Hinzugefügt**: 2025-12-31 (Session 6)
+  - **Abgeschlossen**: 2025-12-31 (Session 7)
 
 - [ ] **Startup Items Review auf Private Macs**
   - **Was**: Umfassende Startup/Login Items Analyse auf Private Macs (odin, thor)
