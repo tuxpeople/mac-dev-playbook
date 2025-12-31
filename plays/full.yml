@@ -106,9 +106,7 @@
           when: configure_dotfiles
           tags: ['dotfiles']
 
-        - name: Configure dotfiles
-          include_role:
-            name: geerlingguy.dotfiles
+        - import_tasks: ../tasks/dotfiles.yml
           when: configure_dotfiles
           tags: ['dotfiles']
 

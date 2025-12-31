@@ -1,0 +1,101 @@
+---
+# Dotfiles management - replaces geerlingguy.dotfiles role
+# Symlinks dotfiles from files/dotfiles to home directory
+
+- name: Ensure dotfiles source directory exists
+  ansible.builtin.stat:
+    path: "{{ playbook_dir }}/../files/dotfiles"
+  register: dotfiles_source_dir
+  failed_when: not dotfiles_source_dir.stat.exists
+  become: false
+
+- name: Get list of dotfiles to symlink
+  ansible.builtin.set_fact:
+    dotfiles_to_link: "{{ dotfiles_files | default([]) }}"
+
+- name: Check if dotfiles exist in source directory
+  ansible.builtin.stat:
+    path: "{{ playbook_dir }}/../files/dotfiles/{{ dotfile_item }}"
+  register: dotfile_checks
+  loop: "{{ dotfiles_to_link }}"
+  loop_control:
+    loop_var: dotfile_item
+    label: "{{ dotfile_item }}"
+  become: false
+
+- name: Create parent directories for dotfiles that need them
+  ansible.builtin.file:
+    path: "{{ myhomedir }}/{{ dotfile_item.dotfile_item | dirname }}"
+    state: directory
+    mode: '0755'
+  loop: "{{ dotfile_checks.results }}"
+  loop_control:
+    loop_var: dotfile_item
+    label: "{{ dotfile_item.dotfile_item }}"
+  when:
+    - dotfile_item.stat.exists
+    - "'/' in dotfile_item.dotfile_item"
+  become: false
+
+- name: Check existing dotfiles in home directory
+  ansible.builtin.stat:
+    path: "{{ myhomedir }}/{{ dotfile_item.dotfile_item }}"
+  register: existing_dotfiles
+  loop: "{{ dotfile_checks.results }}"
+  loop_control:
+    loop_var: dotfile_item
+    label: "{{ dotfile_item.dotfile_item }}"
+  when: dotfile_item.stat.exists
+  become: false
+
+- name: Backup existing dotfiles that are not symlinks
+  ansible.builtin.copy:
+    src: "{{ myhomedir }}/{{ backup_item.dotfile_item.dotfile_item }}"
+    dest: "{{ myhomedir }}/{{ backup_item.dotfile_item.dotfile_item }}.backup-{{ ansible_date_time.epoch }}"
+    remote_src: true
+    mode: preserve
+  loop: "{{ existing_dotfiles.results }}"
+  loop_control:
+    loop_var: backup_item
+    label: "{{ backup_item.dotfile_item.dotfile_item }}"
+  when:
+    - backup_item.stat is defined
+    - backup_item.stat.exists
+    - not backup_item.stat.islnk
+  become: false
+
+- name: Remove existing non-symlink dotfiles
+  ansible.builtin.file:
+    path: "{{ myhomedir }}/{{ remove_item.dotfile_item.dotfile_item }}"
+    state: absent
+  loop: "{{ existing_dotfiles.results }}"
+  loop_control:
+    loop_var: remove_item
+    label: "{{ remove_item.dotfile_item.dotfile_item }}"
+  when:
+    - remove_item.stat is defined
+    - remove_item.stat.exists
+    - not remove_item.stat.islnk
+  become: false
+
+- name: Create symlinks for dotfiles
+  ansible.builtin.file:
+    src: "{{ playbook_dir }}/../files/dotfiles/{{ symlink_item.dotfile_item }}"
+    dest: "{{ myhomedir }}/{{ symlink_item.dotfile_item }}"
+    state: link
+    force: true
+  loop: "{{ dotfile_checks.results }}"
+  loop_control:
+    loop_var: symlink_item
+    label: "{{ symlink_item.dotfile_item }}"
+  when: symlink_item.stat.exists
+  become: false
+
+- name: Warn about missing dotfiles
+  ansible.builtin.debug:
+    msg: "Warning: Dotfile '{{ missing_item.dotfile_item }}' not found in files/dotfiles/"
+  loop: "{{ dotfile_checks.results }}"
+  loop_control:
+    loop_var: missing_item
+    label: "{{ missing_item.dotfile_item }}"
+  when: not missing_item.stat.exists
