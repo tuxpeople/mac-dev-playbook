@@ -309,7 +309,6 @@ macrun
 # Run specific tasks
 macrun printers    # Configure printers
 macrun fonts       # Install fonts
-macrun k8s         # Setup Kubernetes tools
 macrun gpg         # Configure GPG
 macrun vscode      # Setup VS Code
 
@@ -352,13 +351,6 @@ cp ~/Downloads/MyFont.ttf files/fonts/common/
 macrun fonts
 
 # 3. Fonts are installed and cache is rebuilt
-```
-
-#### Setup Kubernetes tools on new environment
-
-```bash
-# Configure kubectl and install krew plugins
-macrun k8s
 ```
 
 **When to use macrun vs macapply**:

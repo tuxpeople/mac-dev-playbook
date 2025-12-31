@@ -158,7 +158,6 @@ ln -sf ~/development/github/tuxpeople/mac-dev-playbook/scripts/macupdate \
 # Run individual post-provision tasks without sudo issues
 ./scripts/macrun printers   # Configure printers
 ./scripts/macrun fonts      # Install fonts
-./scripts/macrun k8s        # Setup Kubernetes tools
 ./scripts/macrun gpg        # Configure GPG
 
 # List all available tasks

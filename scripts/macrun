@@ -2,7 +2,6 @@
 # macrun - Run a single post-provision task file
 # Usage: ./scripts/macrun printers
 #        ./scripts/macrun fonts
-#        ./scripts/macrun k8s
 
 set -euo pipefail
 

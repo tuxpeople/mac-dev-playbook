@@ -11,7 +11,6 @@ post_provision_tasks:
   - ../tasks/post/gpg.yml
   - ../tasks/post/hazel.yml
   - ../tasks/post/iterm2.yml
-  - ../tasks/post/k8s.yml
   - ../tasks/post/printers.yml
   - ../tasks/post/vscode.yml
   - ../tasks/post/{{ myenv }}-settings.yml
