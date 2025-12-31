@@ -57,34 +57,34 @@
 
 - name: Install global uv tools
   ansible.builtin.command:
-    cmd: "uv tool install {{ uv_tool.item.name }}"
+    cmd: "uv tool install {{ uv_result.uv_tool.name }}"
   loop: "{{ uv_tool_check.results }}"
   loop_control:
-    loop_var: uv_tool
-    label: "{{ uv_tool.item.name }}"
-  when: uv_tool.stdout == 'missing' and (uv_tool.item.state | default('present')) != 'absent'
+    loop_var: uv_result
+    label: "{{ uv_result.uv_tool.name }}"
+  when: uv_result.stdout == 'missing' and (uv_result.uv_tool.state | default('present')) != 'absent'
   register: uv_install_result
   changed_when: true
 
 - name: Upgrade uv tools to latest version
   ansible.builtin.command:
-    cmd: "uv tool upgrade {{ uv_tool.item.name }}"
+    cmd: "uv tool upgrade {{ uv_result.uv_tool.name }}"
   loop: "{{ uv_tool_check.results }}"
   loop_control:
-    loop_var: uv_tool
-    label: "{{ uv_tool.item.name }}"
-  when: uv_tool.stdout == 'installed' and (uv_tool.item.state | default('present')) == 'latest'
+    loop_var: uv_result
+    label: "{{ uv_result.uv_tool.name }}"
+  when: uv_result.stdout == 'installed' and (uv_result.uv_tool.state | default('present')) == 'latest'
   register: uv_upgrade_result
   changed_when: "'Already up-to-date' not in uv_upgrade_result.stdout"
   failed_when: false
 
 - name: Uninstall uv tools
   ansible.builtin.command:
-    cmd: "uv tool uninstall {{ uv_tool.item.name }}"
+    cmd: "uv tool uninstall {{ uv_result.uv_tool.name }}"
   loop: "{{ uv_tool_check.results }}"
   loop_control:
-    loop_var: uv_tool
-    label: "{{ uv_tool.item.name }}"
-  when: uv_tool.stdout == 'installed' and (uv_tool.item.state | default('present')) == 'absent'
+    loop_var: uv_result
+    label: "{{ uv_result.uv_tool.name }}"
+  when: uv_result.stdout == 'installed' and (uv_result.uv_tool.state | default('present')) == 'absent'
   register: uv_uninstall_result
   changed_when: true
