@@ -114,9 +114,10 @@ You can filter which part of the provisioning process to run by specifying a set
 ./scripts/macapply --tags "dotfiles,homebrew"
 ```
 
-Available tags: `dotfiles`, `homebrew`, `mas`, `dock`, `osx`, `fonts`, `extra-packages`, `post`
+**Available tags**: `homebrew`, `dotfiles`, `dock`, `finder`, `system`, `maintenance`, `osx`, `fonts`, `extra-packages`, `post`, `mas`
 
 > **Note**: The `mas` tag is currently disabled in `plays/full.yml`
+> **For complete tag descriptions**, see [CLAUDE.md](CLAUDE.md#configuration-changes-after-editing-config-files)
 
 Alternatively, you can run the playbook directly:
 
