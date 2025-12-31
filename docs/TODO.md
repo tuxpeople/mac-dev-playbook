@@ -59,6 +59,32 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
   - **Siehe auch**: `/tmp/login_items_decisions.md` (Details)
   - **Hinzugefügt**: 2025-12-31 (Session 6)
 
+- [ ] **Startup Items Review auf Private Macs**
+  - **Was**: Umfassende Startup/Login Items Analyse auf Private Macs (odin, thor)
+  - **Hintergrund**: Business Mac Review (Session 6) war sehr aufschlussreich
+  - **Durchzuführen**:
+    - Scan aller LaunchAgents/LaunchDaemons (via launchctl list)
+    - Login Items prüfen (System Settings via osascript)
+    - Background Task Management prüfen (sfltool dumpbtm)
+    - Entscheidung für jeden Agent/Daemon: behalten oder deaktivieren
+  - **Ziel**: Optimierte Startup-Performance auf Private Macs
+  - **Methode**: Gleiche systematische Vorgehensweise wie Business Mac
+  - **Priorität**: Medium
+  - **Siehe auch**: Business Mac Review (Session 6, Commit a567c49)
+  - **Hinzugefügt**: 2025-12-31 (Session 6)
+
+- [ ] **Munki-installierte Apps Review & Automatisierung**
+  - **Was**: Prüfen welche Apps aktuell via Munki installiert sind
+  - **Ziel**: Apps für automatische Installation auf neuen Geräten konfigurieren
+  - **Durchzuführen**:
+    - Liste aller Munki-managed Apps erstellen (`/usr/local/munki/munki-installed`)
+    - Prüfen welche Apps auch auf neuen Macs gewünscht sind
+    - Entscheiden: Munki vs. Homebrew vs. Manual
+    - Ggf. Munki Manifests in Ansible integrieren
+  - **Hintergrund**: Munki managed aktuell Apps, aber unklar welche
+  - **Priorität**: Low-Medium
+  - **Hinzugefügt**: 2025-12-31 (Session 6)
+
 - [ ] **Externe Abhängigkeiten Review & Entkopplungsstrategie**
   - **Aktuelle Abhängigkeiten**:
     - **iCloud Drive**: Dotfiles (ssh_keys, ssh_config, bin-scripts), filelists, licensed fonts
