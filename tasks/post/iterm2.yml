@@ -1,30 +1,30 @@
 - name: Copy iTerm2 setting
-  copy:
+  ansible.builtin.copy:
     src: ../files/iterm/com.googlecode.iterm2.plist
     dest: "{{ myhomedir }}/Library/Preferences/com.googlecode.iterm2.plist"
     owner: "{{ ansible_user }}"
   become: false
 
 - name: Copy iTerm2 theme
-  copy:
+  ansible.builtin.copy:
     src: ../files/iterm/Solarized Dark.itermcolors
     dest: "/tmp/Solarized Dark.itermcolors"
     owner: "{{ ansible_user }}"
   become: false
 
 - name: Remove extended attributes from iTerm2
-  shell: xattr -c /Applications/iTerm.app
+  ansible.builtin.shell: xattr -c /Applications/iTerm.app
   changed_when: false
   ignore_errors: true
   become: false
 
 - name: Ensure custom iTerm Solarized Dark theme is added.
-  shell: open "/tmp/Solarized Dark.itermcolors"
+  ansible.builtin.shell: open "/tmp/Solarized Dark.itermcolors"
   changed_when: false
   become: false
 
 - name: Kill iTerm2
-  shell: killall iTerm2
+  ansible.builtin.shell: killall iTerm2
   changed_when: false
 
 - name: Remove theme from tmp

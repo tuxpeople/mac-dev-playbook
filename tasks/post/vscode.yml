@@ -1,12 +1,12 @@
 ---
 # https://dev.to/0xdonut/why-and-how-you-should-to-migrate-from-visual-studio-code-to-vscodium-j7d
 - name: Remove extended attributes from Visual Studio Code.app
-  shell: xattr -c "/Applications/Visual Studio Code.app"
+  ansible.builtin.shell: xattr -c "/Applications/Visual Studio Code.app"
   changed_when: false
   ignore_errors: true
   become: true
 - name: Creates settings directory
-  file:
+  ansible.builtin.file:
     path: "{{ myhomedir }}/Library/Application Support/Code/User/"
     state: directory
   become: false

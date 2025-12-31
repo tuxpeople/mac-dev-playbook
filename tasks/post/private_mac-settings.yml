@@ -1,5 +1,5 @@
 ---
 - name: Set NetBios hostname
-  shell: "defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string {{ myhostname }}"
+  ansible.builtin.shell: "defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string {{ myhostname }}"
   become: true
   changed_when: true

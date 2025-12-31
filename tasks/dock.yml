@@ -3,7 +3,7 @@
 # This file contains all Dock-related tasks including dockutil installation and Dock setup
 
 - name: Install base utilities (m-cli for Dock configuration)
-  homebrew:
+  community.general.homebrew:
     name: ['m-cli']
   become: false
 
@@ -16,19 +16,19 @@
   register: dockutil_installed
 
 - name: Get installed dockutil version
-  shell: /usr/local/bin/dockutil --version 2>/dev/null || echo "0.0.0"
+  ansible.builtin.shell: /usr/local/bin/dockutil --version 2>/dev/null || echo "0.0.0"
   register: dockutil_current_version
   changed_when: false
   when: dockutil_installed.stat.exists
 
 - name: Remove dockutil from homebrew (broken)
-  homebrew:
+  community.general.homebrew:
     name: dockutil
     state: absent
   become: false
 
 - name: Get latest dockutil version from GitHub
-  shell: |
+  ansible.builtin.shell: |
     curl --silent \
       -H "Authorization: token {{ github_personal_token }}" \
       "https://api.github.com/repos/kcrawford/dockutil/releases/latest" \
@@ -39,7 +39,7 @@
   when: github_personal_token is defined
 
 - name: Download dockutil pkg
-  get_url:
+  ansible.builtin.get_url:
     url: "https://github.com/kcrawford/dockutil/releases/download/{{ dockutil_latest_version.stdout }}/dockutil-{{ dockutil_latest_version.stdout }}.pkg"
     dest: /tmp/dockutil.pkg
   become: false
@@ -49,7 +49,7 @@
     - not dockutil_installed.stat.exists or dockutil_current_version.stdout != dockutil_latest_version.stdout
 
 - name: Run dockutil installer
-  shell: 'installer -pkg "/tmp/dockutil.pkg" -target /'
+  ansible.builtin.shell: 'installer -pkg "/tmp/dockutil.pkg" -target /'
   become: true
   when:
     - github_personal_token is defined
@@ -68,12 +68,12 @@
 
 # Dock Configuration Tasks
 - name: Remove all items from the Dock
-  shell: "/usr/local/bin/dockutil --remove all; sleep 3"
+  ansible.builtin.shell: "/usr/local/bin/dockutil --remove all; sleep 3"
   become: false
   changed_when: true
 
 - name: Set the default Dock items
-  shell: "/usr/local/bin/dockutil --add {{ dock_item.path }} --position {{ dock_item.pos }}; sleep 5"
+  ansible.builtin.shell: "/usr/local/bin/dockutil --add {{ dock_item.path }} --position {{ dock_item.pos }}; sleep 5"
   loop: "{{ dockitems }}"
   loop_control:
     loop_var: dock_item
@@ -83,7 +83,7 @@
   changed_when: true
 
 - name: Turn magnification of the dock on
-  shell: "{{ mybrewbindir }}/m dock magnification YES; sleep 2"
+  ansible.builtin.shell: "{{ mybrewbindir }}/m dock magnification YES; sleep 2"
   become: false
   changed_when: true
 
