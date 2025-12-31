@@ -9,7 +9,6 @@ dotfiles_files:
   - .bash_prompt
   - .bashrc
   - .config/ghorg
-  - .config/git
   - .curlrc
   - .exports
   - .functions
