@@ -29,6 +29,7 @@
     - "Vertec.app"
   loop_control:
     loop_var: business_app
+    label: "{{ business_app }}"
   when:
     - icloud_apps_dir.stat.exists
   args:
@@ -37,7 +38,7 @@
 
 # https://www.jamf.com/jamf-nation/discussions/12302/active-directory-q-a
 - name: Set DSBindTimeout to 4
-  shell: "/usr/bin/defaults write /Library/Preferences/com.apple.loginwindow DSBindTimeout -int 4"
+  ansible.builtin.shell: "/usr/bin/defaults write /Library/Preferences/com.apple.loginwindow DSBindTimeout -int 4"
   become: true
   changed_when: true
 
@@ -73,6 +74,7 @@
   loop: "{{ login_items_to_remove | default([]) }}"
   loop_control:
     loop_var: login_item
+    label: "{{ login_item }}"
   when:
     - current_login_items.rc == 0
     - login_item in current_login_items.stdout

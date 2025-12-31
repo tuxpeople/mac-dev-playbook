@@ -25,6 +25,7 @@
       loop: "{{ printers }}"
       loop_control:
         loop_var: printer
+        label: "{{ printer.name }}"
       when:
         - printer.state | default('present') == 'present'
         - printer.name not in installed_printers.stdout
@@ -46,6 +47,7 @@
       loop: "{{ printers }}"
       loop_control:
         loop_var: printer
+        label: "{{ printer.name }}"
       when:
         - printer.state | default('present') == 'present'
         - printer.name in installed_printers.stdout
@@ -71,6 +73,7 @@
       loop: "{{ printer_option_pairs }}"
       loop_control:
         loop_var: pair
+        label: "{{ pair.printer }} - {{ pair.option.key }}"
       register: printer_options_result
       changed_when: false  # Can't detect if option actually changed
       failed_when: printer_options_result.rc != 0
@@ -81,6 +84,7 @@
       loop: "{{ printers }}"
       loop_control:
         loop_var: printer
+        label: "{{ printer.name }}"
       when:
         - printer.enabled | default(true)
         - printer.state | default('present') == 'present'
@@ -94,6 +98,7 @@
       loop: "{{ printers }}"
       loop_control:
         loop_var: printer
+        label: "{{ printer.name }}"
       when:
         - printer.enabled | default(true)
         - printer.state | default('present') == 'present'
@@ -113,6 +118,7 @@
       loop: "{{ printers }}"
       loop_control:
         loop_var: printer
+        label: "{{ printer.name }}"
       when:
         - printer.default | default(false)
         - printer.state | default('present') == 'present'
@@ -127,6 +133,7 @@
       loop: "{{ printers }}"
       loop_control:
         loop_var: printer
+        label: "{{ printer.name }}"
       when:
         - printer.state is defined
         - printer.state == 'absent'

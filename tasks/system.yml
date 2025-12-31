@@ -4,7 +4,7 @@
 
 # https://www.maketecheasier.com/use-touch-id-authenticate-sudo-commands-mac/
 - name: Enable Touch ID for sudo if this is a MacBook
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/pam.d/sudo
     insertafter: "^(#)? sudo: auth account password session"
     line: "auth       sufficient     pam_tid.so"
@@ -14,12 +14,12 @@
   when: macbook is defined
 
 - name: Set wallpaper
-  shell: osascript -e 'tell application "System Events" to tell every desktop to set picture to "{{ myhomedir }}/iCloudDrive/Multimedia/Backgrounds/Desktop/luca-micheli-422053-unsplash.jpg"'
+  ansible.builtin.shell: osascript -e 'tell application "System Events" to tell every desktop to set picture to "{{ myhomedir }}/iCloudDrive/Multimedia/Backgrounds/Desktop/luca-micheli-422053-unsplash.jpg"'
   changed_when: false
   become: false
 
 - name: Enable SSH access (private_mac only - disabled by policy on business_mac)
-  shell: systemsetup -setremotelogin on
+  ansible.builtin.shell: systemsetup -setremotelogin on
   become: true
   changed_when: true
   when: "'private_mac' in group_names"
