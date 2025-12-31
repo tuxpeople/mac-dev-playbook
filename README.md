@@ -57,11 +57,12 @@ After initial setup, use the `macapply` script to apply configuration changes:
 ./scripts/macapply
 
 # Apply only specific parts (faster)
-./scripts/macapply --tags homebrew    # Homebrew packages
-./scripts/macapply --tags dock        # Dock configuration
-./scripts/macapply --tags osx         # macOS settings
-./scripts/macapply --tags fonts       # Font installation
-./scripts/macapply --tags dotfiles    # Dotfiles sync
+./scripts/macapply --tags homebrew      # Homebrew packages
+./scripts/macapply --tags dock          # Dock configuration
+./scripts/macapply --tags osx           # macOS settings
+./scripts/macapply --tags fonts         # Font installation
+./scripts/macapply --tags launchagents  # LaunchAgents/Daemons management
+./scripts/macapply --tags dotfiles      # Dotfiles sync
 
 # See CLAUDE.md for complete list of available tags
 
@@ -114,7 +115,7 @@ You can filter which part of the provisioning process to run by specifying a set
 ./scripts/macapply --tags "dotfiles,homebrew"
 ```
 
-**Available tags**: `homebrew`, `dotfiles`, `dock`, `finder`, `system`, `maintenance`, `osx`, `fonts`, `extra-packages`, `post`, `mas`
+**Available tags**: `homebrew`, `dotfiles`, `dock`, `finder`, `system`, `launchagents`, `maintenance`, `osx`, `fonts`, `extra-packages`, `post`, `mas`
 
 > **Note**: The `mas` tag is currently disabled in `plays/full.yml`
 > **For complete tag descriptions**, see [CLAUDE.md](CLAUDE.md#configuration-changes-after-editing-config-files)

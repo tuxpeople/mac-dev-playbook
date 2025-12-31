@@ -158,6 +158,7 @@ macapply --tags dotfiles       # Dotfiles sync
 macapply --tags dock           # Dock configuration
 macapply --tags finder         # Finder settings
 macapply --tags system         # System settings (Touch ID, SSH, wallpaper)
+macapply --tags launchagents   # LaunchAgents/Daemons management
 macapply --tags maintenance    # Maintenance tasks
 macapply --tags osx            # macOS settings
 macapply --tags fonts          # Font installation
@@ -182,7 +183,8 @@ macapply -vvv  # Very verbose
 - `dotfiles` - Sync dotfiles repository
 - `dock` - Dock configuration (dockitems)
 - `finder` - Finder settings
-- `system` - System settings (Touch ID, SSH, wallpaper, LaunchAgents)
+- `system` - System settings (Touch ID, SSH, wallpaper)
+- `launchagents` - LaunchAgents/Daemons management (disable unwanted agents)
 - `maintenance` - Maintenance tasks
 - `osx` - macOS defaults and settings
 - `fonts` - Font installation (common, private, licensed)

@@ -130,12 +130,13 @@ cd /tmp/git
 # - dotfiles: Sync dotfiles repository
 # - dock: Dock configuration (dockitems)
 # - finder: Finder settings
-# - system: System settings (Touch ID, SSH, wallpaper, LaunchAgents)
+# - system: System settings (Touch ID, SSH, wallpaper)
+# - launchagents: LaunchAgents/Daemons management (disable unwanted agents)
 # - maintenance: Maintenance tasks
 # - osx: macOS defaults and settings
 # - fonts: Font installation (common, private, licensed)
 # - extra-packages: Extra packages (npm, pip, gem, composer)
-# - post: All post-provision tasks (includes finder, system, maintenance, and custom tasks)
+# - post: All post-provision tasks (includes finder, system, launchagents, maintenance, and custom tasks)
 # - mas: Mac App Store apps (CURRENTLY DISABLED - see plays/full.yml comments)
 ```
 
@@ -198,7 +199,7 @@ ansible-playbook plays/update.yml -i inventories -l odin --connection=local
 # Run with specific tags
 ansible-playbook main.yml -i inventories -l $(hostname) --connection=local --tags "homebrew,dotfiles"
 
-# Available tags: dotfiles, homebrew, mas, dock, osx, fonts, extra-packages, post
+# Available tags: dotfiles, homebrew, mas, dock, osx, fonts, extra-packages, launchagents, post
 ```
 
 ## Configuration System
@@ -460,6 +461,78 @@ The deployment process:
 - Task is idempotent via `creates` parameter - only copies if app doesn't exist
 - Deployment runs during business_mac-settings tasks
 - iCloudDrive must be mounted and synced before deployment
+
+## Business Mac Login Items Management
+
+This repository automatically removes unwanted Login Items on business Macs to reduce startup clutter and improve boot performance.
+
+### Overview
+
+**Configuration**: `inventories/group_vars/business_mac/login_items.yml`
+
+**Task Implementation**: `tasks/post/business_mac-settings.yml`
+
+**Execution**: Runs during post-provision phase (`--tags post`)
+
+### How It Works
+
+1. Gets current Login Items via osascript (System Events)
+2. Checks if unwanted items are present
+3. Removes them automatically
+
+```yaml
+login_items_to_remove:
+  - "Microsoft SharePoint"  # Not needed at startup
+  - "Rambox"                # Used occasionally, doesn't need auto-start
+```
+
+### Login Items Kept
+
+These apps remain in Login Items (required for functionality):
+
+- **DisplayLink Manager** - Docking station support
+- **OneDrive** - File synchronization
+- **Jabra Direct** - Headset support
+- **Fokus arbeiten** - Apple Shortcuts automation for Focus mode
+- **Magnet** - Window manager
+
+### Adding Items to Remove
+
+1. **Edit configuration** in `inventories/group_vars/business_mac/login_items.yml`:
+
+   ```yaml
+   login_items_to_remove:
+     - "Microsoft SharePoint"
+     - "Rambox"
+     - "Your Unwanted App"  # Add new item
+   ```
+
+2. **Apply configuration**:
+
+   ```bash
+   ./scripts/macapply --tags post
+   # Or for full apply
+   ./scripts/macapply
+   ```
+
+### Manual Verification
+
+Check current Login Items:
+
+```bash
+osascript -e 'tell application "System Events" to get the name of every login item'
+```
+
+Or via System Settings:
+
+- System Settings → General → Login Items
+
+### Notes
+
+- Task is idempotent - only removes items that exist
+- Uses osascript for reliable cross-version compatibility
+- Fails gracefully if System Events is not accessible
+- Items can be manually re-added in System Settings if needed
 
 ## Workflow Notes
 

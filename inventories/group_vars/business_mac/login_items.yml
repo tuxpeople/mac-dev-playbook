@@ -1,0 +1,20 @@
+---
+# Login Items to remove on Business Macs
+# These apps are configured to start at login but are not needed at startup
+# Review Date: 2025-12-31 (Business Mac UMB-L3VWMGM77F)
+
+login_items_to_remove:
+  - "Microsoft SharePoint"  # Not needed at startup
+  - "Rambox"                # Used occasionally, doesn't need auto-start
+
+# Notes:
+# - Login Items are managed via System Settings → General → Login Items
+# - Items are removed via osascript (System Events automation)
+# - Task runs during post-provision phase
+#
+# Login Items that SHOULD stay enabled:
+# - DisplayLink Manager (docking stations)
+# - OneDrive (file sync)
+# - Jabra Direct (headset support)
+# - Fokus arbeiten (Apple Shortcuts automation for Focus mode)
+# - Magnet (window manager)

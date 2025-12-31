@@ -50,3 +50,24 @@
   when:
     - icloud_mounted.stat.exists
     - icloud_mounted.stat.isdir
+
+# Login Items Management
+- name: Get current Login Items
+  ansible.builtin.shell: |
+    osascript -e 'tell application "System Events" to get the name of every login item'
+  register: current_login_items
+  changed_when: false
+  become: false
+  failed_when: false  # OK if System Events not accessible
+
+- name: Remove unwanted Login Items
+  ansible.builtin.shell: |
+    osascript -e 'tell application "System Events" to delete login item "{{ login_item }}"'
+  loop: "{{ login_items_to_remove | default([]) }}"
+  loop_control:
+    loop_var: login_item
+  when:
+    - current_login_items.rc == 0
+    - login_item in current_login_items.stdout
+  become: false
+  changed_when: true  # Always report as changed if we attempt removal
