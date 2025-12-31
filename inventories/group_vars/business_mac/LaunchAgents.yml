@@ -1,7 +1,7 @@
 ---
 # LaunchAgents to disable on Business Macs
 # These are merged with the base LaunchAgents.yml configuration
-# Review Date: 2025-12-31 (Business Mac UMB-L3VWMGM77F scan)
+# Review Date: 2025-12-31 (Business Mac UMB-L3VWMGM77F scan + launchctl analysis)
 
 launch_agents_to_disable:
   # Microsoft Auto-Updaters (managed by Intune MDM)
@@ -17,16 +17,39 @@ launch_agents_to_disable:
   - "com.microsoft.SyncReporter"
   - "com.microsoft.office.licensingV2.helper"
 
-  # Logitech Auto-Updaters (optional - can also be kept)
+  # Citrix (rarely used - can be started manually when needed)
+  - "com.citrix.AuthManager_Mac"
+  - "com.citrix.ReceiverHelper"
+  - "com.citrix.ServiceRecords"
+  - "com.citrix.UninstallMonitor"
+  - "com.citrix.safariadapter"
+  - "com.citrix.devicetrust.launchagent"
+
+  # VMware Horizon (used, but doesn't need to start at login)
+  - "com.omnissa.horizon.CDSHelper"
+
+  # GoToMeeting (rarely used - can be started manually)
+  - "com.logmein.GoToMeeting.G2MAIRUploader"
+  - "com.logmein.GoToMeeting.G2MUpdate"
+
+  # Other Auto-Updaters
   - "com.logi.optionsplus.updater"
+  - "us.zoom.updater"
+
+  # Startup helpers (not needed at login)
+  - "com.spotify.client.startuphelper"
+  - "com.toggl.TogglLauncher"
 
   # OnVUE Secure Browser Monitor (only needed during exams)
   - "com.testsys.SBMonitor"
 
 # Notes:
 # - Microsoft updaters are disabled because updates are managed by Intune MDM
+# - OneDriveLauncher is KEPT (user needs it)
+# - Ollama is KEPT (user actively uses it)
+# - Citrix workspace can be started manually when needed (rarely used)
+# - VMware Horizon/GoToMeeting don't need to run at startup
 # - OnVUE is for online proctored exams - only enable when needed
-# - Snap Camera assistant kept running (used for video calls)
 #
 # Business-critical agents that MUST stay enabled:
 # - com.microsoft.intuneMDMAgent.* (Intune MDM)
@@ -35,5 +58,12 @@ launch_agents_to_disable:
 # - com.qualys.* (Qualys Security Scanner)
 # - com.zscaler.tray (Zscaler VPN/Security)
 # - com.googlecode.munki.* (Munki Software Management)
-# - com.citrix.* (Citrix Workspace/VDI)
-# - at.obdev.littlesnitch.daemon (Little Snitch Firewall)
+# - ch.umb.* (UMB custom agents)
+#
+# Tools that should run at startup:
+# - com.displaylink.* (DisplayLink for docking stations)
+# - com.logitech.LogiRightSight.Agent (Logitech hardware)
+# - com.1password.* (1Password)
+# - com.noodlesoft.* (Hazel)
+# - homebrew.mxcl.tailscale (Tailscale VPN)
+# - homebrew.mxcl.node_exporter (Prometheus monitoring)

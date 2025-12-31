@@ -24,15 +24,18 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - Klarere Struktur - jede Datei hat einen Zweck
   - **Hinzugefügt**: 2025-12-26 (Session 5)
 
-- [x] **LaunchAgents Tasks Review** ✅ **ABGESCHLOSSEN (2025-12-26)**
+- [x] **LaunchAgents Tasks Review** ✅ **ABGESCHLOSSEN (2025-12-31)**
   - **Phase 1**: Private Mac Review ✅ (Commits `6fb846c`, `6060075`)
     - Cleanup: 30 → 6 agents (-80%)
     - Task verbessert: Bessere Idempotenz
     - Per-group Konfiguration: base + private_mac
-  - **Phase 2**: Business Mac Review ⏳ (TODO: 2025-12-31)
-    - Noch ausstehend: Scan auf Business Mac (UMB-L3VWMGM77F)
+  - **Phase 2**: Business Mac Review ✅ (2025-12-31)
+    - Systematische Prüfung aller LaunchAgents/Daemons auf Business Mac
+    - 25 Agents zum Deaktivieren markiert (Microsoft, Citrix, VMware, GoToMeeting, etc.)
+    - OneDriveLauncher und Ollama bewusst aktiv gelassen
+    - Login Items geprüft (7 Apps - 5 behalten, 2 manuell entfernen)
   - **Hinzugefügt**: 2025-12-25 (Session mit saga setup)
-  - **Abgeschlossen**: 2025-12-26 (Session 5) - Phase 1
+  - **Abgeschlossen**: 2025-12-31 (Session 6)
 
 - [x] **Dock Items Review & Cleanup** ✅ **ABGESCHLOSSEN (2025-12-31)**
   - **Durchgeführt**:
@@ -42,6 +45,19 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
   - **Ergebnis**: Alle Dock-Konfigurationen sind aktuell und korrekt
   - **Hinzugefügt**: 2025-12-25 (Session mit saga setup)
   - **Abgeschlossen**: 2025-12-31 (Session 6)
+
+- [ ] **"Fokus arbeiten" Shortcuts Deployment für Business Macs**
+  - **Was**: Apple Shortcuts Automatisierung die beim Login den Fokus auf "arbeiten" setzt
+  - **Aktuell**: Nur manuell erstellt auf einem Business Mac (UMB-L3VWMGM77F)
+  - **Ziel**: Automatisches Deployment via Ansible für neue Business Macs
+  - **Umsetzung**:
+    - Shortcut als `.shortcut` Datei exportieren
+    - In Repository speichern (`files/shortcuts/business_mac/`)
+    - Ansible Task erstellen (Copy + Import via shortcuts CLI oder AppleScript)
+    - Bei neuem Business Mac Setup automatisch installieren
+  - **Priorität**: Medium (Nice-to-have)
+  - **Siehe auch**: `/tmp/login_items_decisions.md` (Details)
+  - **Hinzugefügt**: 2025-12-31 (Session 6)
 
 - [ ] **Externe Abhängigkeiten Review & Entkopplungsstrategie**
   - **Aktuelle Abhängigkeiten**:
