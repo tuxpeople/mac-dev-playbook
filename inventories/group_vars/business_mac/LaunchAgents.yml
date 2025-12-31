@@ -1,0 +1,39 @@
+---
+# LaunchAgents to disable on Business Macs
+# These are merged with the base LaunchAgents.yml configuration
+# Review Date: 2025-12-31 (Business Mac UMB-L3VWMGM77F scan)
+
+launch_agents_to_disable:
+  # Microsoft Auto-Updaters (managed by Intune MDM)
+  - "com.microsoft.EdgeUpdater.wake"
+  - "com.microsoft.EdgeUpdater.update.system"
+  - "com.microsoft.EdgeUpdater.wake.system"
+  - "com.microsoft.update.agent"
+  - "com.microsoft.autoupdate.helper"
+  - "com.microsoft.OneDriveStandaloneUpdater"
+  - "com.microsoft.OneDriveStandaloneUpdaterDaemon"
+  - "com.microsoft.OneDriveUpdaterDaemon"
+  - "com.microsoft.teams.TeamsUpdaterDaemon"
+  - "com.microsoft.SyncReporter"
+  - "com.microsoft.office.licensingV2.helper"
+
+  # Logitech Auto-Updaters (optional - can also be kept)
+  - "com.logi.optionsplus.updater"
+
+  # OnVUE Secure Browser Monitor (only needed during exams)
+  - "com.testsys.SBMonitor"
+
+# Notes:
+# - Microsoft updaters are disabled because updates are managed by Intune MDM
+# - OnVUE is for online proctored exams - only enable when needed
+# - Snap Camera assistant kept running (used for video calls)
+#
+# Business-critical agents that MUST stay enabled:
+# - com.microsoft.intuneMDMAgent.* (Intune MDM)
+# - com.ws1.* (Workspace ONE MDM)
+# - com.sentinelone.* (SentinelOne Antivirus)
+# - com.qualys.* (Qualys Security Scanner)
+# - com.zscaler.tray (Zscaler VPN/Security)
+# - com.googlecode.munki.* (Munki Software Management)
+# - com.citrix.* (Citrix Workspace/VDI)
+# - at.obdev.littlesnitch.daemon (Little Snitch Firewall)

@@ -24,15 +24,15 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - Klarere Struktur - jede Datei hat einen Zweck
   - **Hinzugefügt**: 2025-12-26 (Session 5)
 
-- [ ] **LaunchAgents Tasks Review**
-  - **Problem**: Tasks in `tasks/post/_launchagents.yml` wurden lange nicht aktualisiert
-  - **Zu prüfen**:
-    - Welche LaunchAgents werden installiert?
-    - Sind alle noch relevant und funktionsfähig?
-    - Gibt es veraltete oder nicht mehr benötigte Agents?
-    - Konfiguration in `inventories/group_vars/macs/LaunchAgents.yml` reviewen
-  - **Ziel**: Aufräumen und auf aktuellen Stand bringen
+- [x] **LaunchAgents Tasks Review** ✅ **ABGESCHLOSSEN (2025-12-26)**
+  - **Phase 1**: Private Mac Review ✅ (Commits `6fb846c`, `6060075`)
+    - Cleanup: 30 → 6 agents (-80%)
+    - Task verbessert: Bessere Idempotenz
+    - Per-group Konfiguration: base + private_mac
+  - **Phase 2**: Business Mac Review ⏳ (TODO: 2025-12-31)
+    - Noch ausstehend: Scan auf Business Mac (UMB-L3VWMGM77F)
   - **Hinzugefügt**: 2025-12-25 (Session mit saga setup)
+  - **Abgeschlossen**: 2025-12-26 (Session 5) - Phase 1
 
 - [ ] **Dock Items Review & Cleanup**
   - **Problem**: Einige Apps in der Dock-Konfiguration existieren nicht mehr
@@ -107,9 +107,9 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
     - Broken Settings dokumentiert (Safari/Mail auf macOS 26.2)
     - Manuelle Checkliste erstellt für nicht automatisierbare Settings
     - Siehe: `docs/sessions/FINAL_MIGRATION_STATS_2025-12-24.md`
-  - **Phase 3: Dotfiles-Repo aufräumen** (offen)
-    - .macos.backup* Dateien entfernen
-    - Nur echte Dotfiles behalten
+  - **Phase 3: Dotfiles-Repo aufräumen** ✅ **ERLEDIGT (2025-12-31)**
+    - ✅ .macos.backup* Dateien entfernt (manuell)
+    - ✅ Nur echte Dotfiles behalten
 
 - [ ] **myenv Variable Refactoring** ⚠️ **NICHT KRITISCH - FUNKTIONIERT**
   - **Status**: Analysiert (2025-12-26) - Komplexer als erwartet
