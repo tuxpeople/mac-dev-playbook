@@ -4,13 +4,18 @@
     path: "{{myhomedir}}/iCloudDrive"
   register: icloud_mounted
 
-- name: Copy Open UMB App
+- name: Copy business apps from iCloudDrive
   ansible.builtin.copy:
-    src: "{{myhomedir}}/iCloudDrive/Allgemein/Open Umb.app"
+    src: "{{myhomedir}}/iCloudDrive/Allgemein/apps/{{ business_app }}"
     dest: "/Applications/"
     mode: 0755  # Apps need execute permission
     remote_src: "true"
   become: false
+  loop:
+    - "Open Umb.app"
+    - "Vertec.app"
+  loop_control:
+    loop_var: business_app
   when:
     - icloud_mounted.stat.exists
     - icloud_mounted.stat.isdir
