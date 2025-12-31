@@ -40,7 +40,17 @@ Der Code Review hat **72 Probleme** in 4 Schweregraden identifiziert:
 - M26 (Hostname Pattern): Verifiziert - Code ist korrekt
 - Tasks Reorganisation: 3 neue Dateien (finder, system, maintenance)
 
-**Verbleibend**: 0 CRITICAL + 0 HIGH + ~32 MEDIUM + **0 LOW** = **~32 Issues**
+**Update 2025-12-31 (Session 6 - Best Practices Cleanup)**:
+
+- **Hardcoded Pfade behoben** (8 Instanzen): `~/` → `{{ myhomedir }}`
+  - tasks/system.yml: Wallpaper Pfad
+  - tasks/finder.yml: 6× PlistBuddy Pfade
+  - tasks/post/business_mac-settings.yml: Teams Backgrounds Pfad
+- **Typo behoben**: "Backgounds" → "Backgrounds" in system.yml
+- **changed_when hinzugefügt**: business_mac-settings.yml cp command
+- **extra-packages.yml geprüft**: `~/.composer` Fallback ist korrekt (vom Composer-Modul expandiert)
+
+**Verbleibend**: 0 CRITICAL + 0 HIGH + ~28 MEDIUM + **0 LOW** = **~28 Issues**
 
 **Alle LOW Issues sind behoben! 🎉**
 

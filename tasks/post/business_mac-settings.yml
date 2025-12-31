@@ -33,6 +33,7 @@
     - icloud_apps_dir.stat.exists
   args:
     creates: "/Applications/{{ business_app }}"  # Make idempotent - only copy if not exists
+  changed_when: true  # Report as changed when app is copied (creates parameter handles idempotence)
 
 # https://www.jamf.com/jamf-nation/discussions/12302/active-directory-q-a
 - name: Set DSBindTimeout to 4
@@ -49,7 +50,7 @@
 - name: Install Teams backgrounds
   ansible.builtin.copy:
     src: "{{myhomedir}}/iCloudDrive/Multimedia/Backgrounds/Teams/"
-    dest: "~/Library/Application Support/Microsoft/Teams/Backgrounds/Uploads/"
+    dest: "{{ myhomedir }}/Library/Application Support/Microsoft/Teams/Backgrounds/Uploads/"
     mode: 0640
     remote_src: "true"
   become: false

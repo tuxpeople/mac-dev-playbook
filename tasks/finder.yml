@@ -4,22 +4,22 @@
 
 - name: Arrange Files by Kind
   shell: |
-    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
-    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind" {{ myhomedir }}/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy kind" {{ myhomedir }}/Library/Preferences/com.apple.finder.plist
   become: false
   changed_when: true
 
 - name: Set the Grid Spacing for Files
   shell: |
-    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 54" ~/Library/Preferences/com.apple.finder.plist
-    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:gridSpacing 30" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 54" {{ myhomedir }}/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:gridSpacing 30" {{ myhomedir }}/Library/Preferences/com.apple.finder.plist
   become: false
   changed_when: true
 
 - name: Use Smaller Icons
   shell: |
-    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 48" ~/Library/Preferences/com.apple.finder.plist
-    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 64" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 48" {{ myhomedir }}/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 64" {{ myhomedir }}/Library/Preferences/com.apple.finder.plist
   become: false
   changed_when: true
 
