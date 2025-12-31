@@ -34,16 +34,14 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
   - **Hinzugefügt**: 2025-12-25 (Session mit saga setup)
   - **Abgeschlossen**: 2025-12-26 (Session 5) - Phase 1
 
-- [ ] **Dock Items Review & Cleanup**
-  - **Problem**: Einige Apps in der Dock-Konfiguration existieren nicht mehr
-  - **Betroffen**: `inventories/group_vars/macs/dock.yml` (dockitems_persist)
-  - **Zu prüfen**:
-    - Welche Apps in dockitems_persist sind nicht mehr installiert?
-    - Welche neuen Apps sollten hinzugefügt werden?
-    - Sind die Pfade noch korrekt? (z.B. /Applications/ vs /System/Applications/)
-  - **Tasks**: `tasks/post/various-settings.yml` (dockutil)
-  - **Ziel**: Dock-Konfiguration aufräumen und aktualisieren
+- [x] **Dock Items Review & Cleanup** ✅ **ABGESCHLOSSEN (2025-12-31)**
+  - **Durchgeführt**:
+    - ✅ `private_mac/dock.yml`: Launchpad und Todoist entfernt (Commit `32cf52d`)
+    - ✅ `business_mac/dock.yml`: Alle 17 Apps geprüft - alle existieren
+    - ✅ `macs/dock.yml`: Bereits sauber (dockitems_persist leer)
+  - **Ergebnis**: Alle Dock-Konfigurationen sind aktuell und korrekt
   - **Hinzugefügt**: 2025-12-25 (Session mit saga setup)
+  - **Abgeschlossen**: 2025-12-31 (Session 6)
 
 - [ ] **Externe Abhängigkeiten Review & Entkopplungsstrategie**
   - **Aktuelle Abhängigkeiten**:
