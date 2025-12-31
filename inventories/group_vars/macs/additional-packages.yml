@@ -20,3 +20,8 @@ pip_packages: []
 # - name: mkdocs
 #   state: present # present/absent/latest, default: present
 #   version: "0.16.3" # default: N/A
+uv_packages:
+  - name: mcp-sync
+    state: present
+# - name: ruff
+#   state: latest # present/absent/latest, default: present

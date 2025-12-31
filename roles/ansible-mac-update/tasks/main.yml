@@ -19,3 +19,8 @@
   tags:
     - ssh
   when: ssh
+
+- include_tasks: uv.yml
+  tags:
+    - uv
+  when: uv

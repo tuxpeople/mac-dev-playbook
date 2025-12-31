@@ -9,6 +9,7 @@
     kubectl: true
     ssh: true
     gpg: true
+    uv: true
     homebrew_cask_upgrade_all_packages: true
 
   environment:

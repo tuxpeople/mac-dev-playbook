@@ -1,34 +1,90 @@
 ---
 - name: Install global Composer packages.
   composer:
-    command: "{{ (item.state | default('present') == 'absent') | ternary('remove', 'require') }}"
-    arguments: "{{ item.name | default(item) }} {{ item.version | default('@stable') }}"
+    command: "{{ (composer_pkg.state | default('present') == 'absent') | ternary('remove', 'require') }}"
+    arguments: "{{ composer_pkg.name | default(composer_pkg) }} {{ composer_pkg.version | default('@stable') }}"
     # Ansible 2.4 supports `global_command` making `working_dir` optional.
     working_dir: "{{ lookup('env', 'COMPOSER_HOME') | default('~/.composer', true) }}"
   loop: "{{ composer_packages }}"
+  loop_control:
+    loop_var: composer_pkg
+    label: "{{ composer_pkg.name | default(composer_pkg) }}"
 
 - name: Install global NPM packages.
   npm:
-    name: "{{ item.name | default(item) }}"
-    state: "{{ item.state | default('present') }}"
-    version: "{{ item.version | default(omit) }}"
+    name: "{{ npm_pkg.name | default(npm_pkg) }}"
+    state: "{{ npm_pkg.state | default('present') }}"
+    version: "{{ npm_pkg.version | default(omit) }}"
     global: true
-    executable: "{{ item.executable | default(omit) }}"
+    executable: "{{ npm_pkg.executable | default(omit) }}"
   loop: "{{ npm_packages }}"
+  loop_control:
+    loop_var: npm_pkg
+    label: "{{ npm_pkg.name | default(npm_pkg) }}"
 
 - name: Install global Pip packages.
   pip:
-    name: "{{ item.name | default(item) }}"
-    state: "{{ item.state | default('present') }}"
-    version: "{{ item.version | default(omit) }}"
-    executable: "{{ item.executable | default('pip3') }}"
+    name: "{{ pip_pkg.name | default(pip_pkg) }}"
+    state: "{{ pip_pkg.state | default('present') }}"
+    version: "{{ pip_pkg.version | default(omit) }}"
+    executable: "{{ pip_pkg.executable | default('pip3') }}"
   loop: "{{ pip_packages }}"
+  loop_control:
+    loop_var: pip_pkg
+    label: "{{ pip_pkg.name | default(pip_pkg) }}"
 
 - name: Install global Ruby gems.
   gem:
-    name: "{{ item.name | default(item) }}"
-    state: "{{ item.state | default('present') }}"
-    version: "{{ item.version | default(omit) }}"
+    name: "{{ gem_pkg.name | default(gem_pkg) }}"
+    state: "{{ gem_pkg.state | default('present') }}"
+    version: "{{ gem_pkg.version | default(omit) }}"
     user_install: false
-    executable: "{{ item.executable | default(omit) }}"
+    executable: "{{ gem_pkg.executable | default(omit) }}"
   loop: "{{ gem_packages }}"
+  loop_control:
+    loop_var: gem_pkg
+    label: "{{ gem_pkg.name | default(gem_pkg) }}"
+
+- name: Check if uv tools are already installed
+  ansible.builtin.shell: "uv tool list --quiet 2>/dev/null | grep -q '^{{ uv_tool.name }}$' && echo 'installed' || echo 'missing'"
+  loop: "{{ uv_packages }}"
+  loop_control:
+    loop_var: uv_tool
+    label: "{{ uv_tool.name }}"
+  register: uv_tool_check
+  changed_when: false
+  failed_when: false
+
+- name: Install global uv tools
+  ansible.builtin.command:
+    cmd: "uv tool install {{ uv_tool.item.name }}"
+  loop: "{{ uv_tool_check.results }}"
+  loop_control:
+    loop_var: uv_tool
+    label: "{{ uv_tool.item.name }}"
+  when: uv_tool.stdout == 'missing' and (uv_tool.item.state | default('present')) != 'absent'
+  register: uv_install_result
+  changed_when: true
+
+- name: Upgrade uv tools to latest version
+  ansible.builtin.command:
+    cmd: "uv tool upgrade {{ uv_tool.item.name }}"
+  loop: "{{ uv_tool_check.results }}"
+  loop_control:
+    loop_var: uv_tool
+    label: "{{ uv_tool.item.name }}"
+  when: uv_tool.stdout == 'installed' and (uv_tool.item.state | default('present')) == 'latest'
+  register: uv_upgrade_result
+  changed_when: "'Already up-to-date' not in uv_upgrade_result.stdout"
+  failed_when: false
+
+- name: Uninstall uv tools
+  ansible.builtin.command:
+    cmd: "uv tool uninstall {{ uv_tool.item.name }}"
+  loop: "{{ uv_tool_check.results }}"
+  loop_control:
+    loop_var: uv_tool
+    label: "{{ uv_tool.item.name }}"
+  when: uv_tool.stdout == 'installed' and (uv_tool.item.state | default('present')) == 'absent'
+  register: uv_uninstall_result
+  changed_when: true

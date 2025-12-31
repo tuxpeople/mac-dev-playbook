@@ -1,0 +1,24 @@
+---
+# Update all uv tools
+- name: Test for installed uv
+  ansible.builtin.stat:
+    path: "{{ mybrewbindir }}/uv"
+  register: uv_exists
+  become: false
+
+- name: Upgrade all uv tools
+  ansible.builtin.command:
+    cmd: "{{ mybrewbindir }}/uv tool upgrade --all"
+  become: false
+  when: uv_exists.stat.exists
+  register: uv_upgrade_result
+  changed_when: "'Upgraded' in uv_upgrade_result.stdout or 'Installed' in uv_upgrade_result.stdout"
+  failed_when: false
+
+- name: Report uv upgrade results
+  ansible.builtin.debug:
+    msg: "{{ uv_upgrade_result.stdout_lines }}"
+  when:
+    - uv_exists.stat.exists
+    - uv_upgrade_result.stdout_lines is defined
+    - uv_upgrade_result.stdout_lines | length > 0
