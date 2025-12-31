@@ -42,13 +42,13 @@
 
 - name: Check if Teams backgrounds source directory exists
   ansible.builtin.stat:
-    path: "{{myhomedir}}/iCloudDrive/Multimedia/Backgounds/Teams/"
+    path: "{{myhomedir}}/iCloudDrive/Multimedia/Backgrounds/Teams/"
   register: teams_backgrounds_src
   changed_when: false
 
 - name: Install Teams backgrounds
   ansible.builtin.copy:
-    src: "{{myhomedir}}/iCloudDrive/Multimedia/Backgounds/Teams/"
+    src: "{{myhomedir}}/iCloudDrive/Multimedia/Backgrounds/Teams/"
     dest: "~/Library/Application Support/Microsoft/Teams/Backgrounds/Uploads/"
     mode: 0640
     remote_src: "true"
