@@ -85,6 +85,20 @@ Langfristige Aufgaben und Ideen für zukünftige Sessions.
   - **Priorität**: Low-Medium
   - **Hinzugefügt**: 2025-12-31 (Session 6)
 
+- [ ] **MEDIUM Issues aus IMPROVEMENTS.md abarbeiten**
+  - **Was**: Verbleibende Best-Practice Verstöße beheben
+  - **Status**: ~32 MEDIUM Issues verbleiben (von ursprünglich 41)
+  - **Bereits behoben**: Alle CRITICAL (8) + HIGH (5) + LOW (2) Issues ✅
+  - **Kategorien der verbleibenden MEDIUM Issues**:
+    - Wartbarkeitsprobleme
+    - Best Practice Verstöße (Ansible, Shell, YAML)
+    - Code-Qualität Verbesserungen
+    - Redundante/deprecated Patterns
+  - **Siehe**: `docs/analysis/IMPROVEMENTS.md` für vollständige Liste
+  - **Priorität**: Low-Medium (funktioniert alles, aber Code könnte besser sein)
+  - **Vorgehen**: Issues priorisieren und schrittweise abarbeiten
+  - **Hinzugefügt**: 2025-12-31 (Session 6)
+
 - [ ] **Externe Abhängigkeiten Review & Entkopplungsstrategie**
   - **Aktuelle Abhängigkeiten**:
     - **iCloud Drive**: Dotfiles (ssh_keys, ssh_config, bin-scripts), filelists, licensed fonts
