@@ -42,6 +42,7 @@ Der Code Review hat **72 Probleme** in 4 Schweregraden identifiziert:
 
 **Update 2025-12-31 (Session 6 - Best Practices Cleanup)**:
 
+**Commit 1 (330b0d3) - Hardcoded Paths:**
 - **Hardcoded Pfade behoben** (8 Instanzen): `~/` → `{{ myhomedir }}`
   - tasks/system.yml: Wallpaper Pfad
   - tasks/finder.yml: 6× PlistBuddy Pfade
@@ -50,7 +51,16 @@ Der Code Review hat **72 Probleme** in 4 Schweregraden identifiziert:
 - **changed_when hinzugefügt**: business_mac-settings.yml cp command
 - **extra-packages.yml geprüft**: `~/.composer` Fallback ist korrekt (vom Composer-Modul expandiert)
 
-**Verbleibend**: 0 CRITICAL + 0 HIGH + ~28 MEDIUM + **0 LOW** = **~28 Issues**
+**Commit 2 (c9e1d7f) - Loop Labels & FQCN:**
+- **Loop labels hinzugefügt** (9 Loops): Besseres Debugging
+  - tasks/post/printers.yml: 7 loops mit descriptive labels
+  - tasks/post/business_mac-settings.yml: 2 loops mit labels
+- **Deprecated Syntax ersetzt**: Short-form → FQCN (ansible.builtin.*)
+  - tasks/system.yml: 2× shell, 1× lineinfile
+  - tasks/finder.yml: 4× shell
+  - tasks/post/business_mac-settings.yml: 1× shell
+
+**Verbleibend**: 0 CRITICAL + 0 HIGH + ~22 MEDIUM + **0 LOW** = **~22 Issues**
 
 **Alle LOW Issues sind behoben! 🎉**
 
