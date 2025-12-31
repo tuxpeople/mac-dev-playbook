@@ -40,6 +40,12 @@
   become: true
   changed_when: true
 
+- name: Check if Teams backgrounds source directory exists
+  ansible.builtin.stat:
+    path: "{{myhomedir}}/iCloudDrive/Multimedia/Backgounds/Teams/"
+  register: teams_backgrounds_src
+  changed_when: false
+
 - name: Install Teams backgrounds
   ansible.builtin.copy:
     src: "{{myhomedir}}/iCloudDrive/Multimedia/Backgounds/Teams/"
@@ -48,8 +54,8 @@
     remote_src: "true"
   become: false
   when:
-    - icloud_mounted.stat.exists
-    - icloud_mounted.stat.isdir
+    - teams_backgrounds_src.stat.exists
+    - teams_backgrounds_src.stat.isdir
 
 # Login Items Management
 - name: Get current Login Items
