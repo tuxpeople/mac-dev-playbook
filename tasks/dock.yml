@@ -51,6 +51,7 @@
 - name: Run dockutil installer
   ansible.builtin.shell: 'installer -pkg "/tmp/dockutil.pkg" -target /'
   become: true
+  changed_when: true
   when:
     - github_personal_token is defined
     - dockutil_latest_version.stdout is defined

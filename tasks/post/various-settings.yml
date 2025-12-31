@@ -18,6 +18,7 @@
   loop: "{{ (unload_launchagents | default([])) + (private_mac_launchagents | default([])) + (launch_agents_to_disable | default([])) }}"
   loop_control:
     loop_var: agent
+    label: "{{ agent | basename }}"
   tags: ['launchagents']
 
 # macOS Defaults (generic loop from defaults.yml config)

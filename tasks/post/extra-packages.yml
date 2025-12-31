@@ -9,11 +9,14 @@
 
 - name: Install global Composer packages
   composer:
-    command: "{{ (item.state | default('present') == 'absent') | ternary('remove', 'require') }}"
-    arguments: "{{ item.name | default(item) }} {{ item.version | default('@stable') }}"
+    command: "{{ (composer_pkg.state | default('present') == 'absent') | ternary('remove', 'require') }}"
+    arguments: "{{ composer_pkg.name | default(composer_pkg) }} {{ composer_pkg.version | default('@stable') }}"
     # Ansible 2.4 supports `global_command` making `working_dir` optional.
     working_dir: "{{ lookup('env', 'COMPOSER_HOME') | default('~/.composer', true) }}"
   loop: "{{ composer_packages }}"
+  loop_control:
+    loop_var: composer_pkg
+    label: "{{ composer_pkg.name | default(composer_pkg) }}"
   when:
     - composer_check.rc == 0
     - composer_packages is defined
@@ -29,12 +32,15 @@
 
 - name: Install global NPM packages
   npm:
-    name: "{{ item.name | default(item) }}"
-    state: "{{ item.state | default('present') }}"
-    version: "{{ item.version | default(omit) }}"
+    name: "{{ npm_pkg.name | default(npm_pkg) }}"
+    state: "{{ npm_pkg.state | default('present') }}"
+    version: "{{ npm_pkg.version | default(omit) }}"
     global: true
-    executable: "{{ item.executable | default(omit) }}"
+    executable: "{{ npm_pkg.executable | default(omit) }}"
   loop: "{{ npm_packages }}"
+  loop_control:
+    loop_var: npm_pkg
+    label: "{{ npm_pkg.name | default(npm_pkg) }}"
   when:
     - npm_check.rc == 0
     - npm_packages is defined
@@ -50,11 +56,14 @@
 
 - name: Install global Pip packages
   pip:
-    name: "{{ item.name | default(item) }}"
-    state: "{{ item.state | default('present') }}"
-    version: "{{ item.version | default(omit) }}"
-    executable: "{{ item.executable | default('pip3') }}"
+    name: "{{ pip_pkg.name | default(pip_pkg) }}"
+    state: "{{ pip_pkg.state | default('present') }}"
+    version: "{{ pip_pkg.version | default(omit) }}"
+    executable: "{{ pip_pkg.executable | default('pip3') }}"
   loop: "{{ pip_packages }}"
+  loop_control:
+    loop_var: pip_pkg
+    label: "{{ pip_pkg.name | default(pip_pkg) }}"
   when:
     - pip_check.rc == 0
     - pip_packages is defined
@@ -70,12 +79,15 @@
 
 - name: Install global Ruby gems
   gem:
-    name: "{{ item.name | default(item) }}"
-    state: "{{ item.state | default('present') }}"
-    version: "{{ item.version | default(omit) }}"
+    name: "{{ gem_pkg.name | default(gem_pkg) }}"
+    state: "{{ gem_pkg.state | default('present') }}"
+    version: "{{ gem_pkg.version | default(omit) }}"
     user_install: false
-    executable: "{{ item.executable | default(omit) }}"
+    executable: "{{ gem_pkg.executable | default(omit) }}"
   loop: "{{ gem_packages }}"
+  loop_control:
+    loop_var: gem_pkg
+    label: "{{ gem_pkg.name | default(gem_pkg) }}"
   when:
     - gem_check.rc == 0
     - gem_packages is defined

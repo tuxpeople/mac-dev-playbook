@@ -43,8 +43,11 @@
   become: false
 
 - name: Uninstalling Krew plugins
-  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew uninstall {{ item }}"
-  with_items: "{{ uninstall_krew_plugins }}"
+  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew uninstall {{ krew_plugin }}"
+  loop: "{{ uninstall_krew_plugins }}"
+  loop_control:
+    loop_var: krew_plugin
+    label: "{{ krew_plugin }}"
   when: uninstall_krew_plugins is defined and krew_exists.stat.exists
   become: false
   changed_when: true
@@ -56,8 +59,11 @@
   become: false
 
 - name: Install Krew plugins
-  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew install {{ item }}"
-  with_items: "{{ krew_plugins }}"
+  ansible.builtin.shell: "{{ mybrewbindir }}/kubectl krew install {{ krew_plugin }}"
+  loop: "{{ krew_plugins }}"
+  loop_control:
+    loop_var: krew_plugin
+    label: "{{ krew_plugin }}"
   when: krew_plugins is defined and krew_exists.stat.exists
   become: false
   register: krew_install_result
