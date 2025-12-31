@@ -51,7 +51,7 @@ Der Code Review hat **72 Probleme** in 4 Schweregraden identifiziert:
 - **changed_when hinzugefügt**: business_mac-settings.yml cp command
 - **extra-packages.yml geprüft**: `~/.composer` Fallback ist korrekt (vom Composer-Modul expandiert)
 
-**Commit 2 (c9e1d7f) - Loop Labels & FQCN:**
+**Commit 2 (c9e1d7f) - Loop Labels & FQCN (Batch 1):**
 - **Loop labels hinzugefügt** (9 Loops): Besseres Debugging
   - tasks/post/printers.yml: 7 loops mit descriptive labels
   - tasks/post/business_mac-settings.yml: 2 loops mit labels
@@ -60,7 +60,16 @@ Der Code Review hat **72 Probleme** in 4 Schweregraden identifiziert:
   - tasks/finder.yml: 4× shell
   - tasks/post/business_mac-settings.yml: 1× shell
 
-**Verbleibend**: 0 CRITICAL + 0 HIGH + ~22 MEDIUM + **0 LOW** = **~22 Issues**
+**Commit 3 (8c8aa1f) - FQCN Migration (Batch 2):**
+- **Deprecated Syntax ersetzt** (18 Änderungen in 5 Dateien):
+  - tasks/dock.yml: 9× (2× homebrew, 6× shell, 1× get_url)
+  - tasks/osx.yml: 1× command
+  - tasks/post/iterm2.yml: 5× (2× copy, 3× shell)
+  - tasks/post/private_mac-settings.yml: 1× shell
+  - tasks/post/vscode.yml: 2× (1× shell, 1× file)
+- **Gesamt FQCN Migration**: 26 Module (8 Commit 2 + 18 Commit 3)
+
+**Verbleibend**: 0 CRITICAL + 0 HIGH + ~16 MEDIUM + **0 LOW** = **~16 Issues**
 
 **Alle LOW Issues sind behoben! 🎉**
 
