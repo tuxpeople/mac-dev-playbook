@@ -9,6 +9,7 @@ dotfiles_files:
   - .bash_prompt
   - .bashrc
   - .config/ghorg
+  - .config/git
   - .curlrc
   - .exports
   - .functions
@@ -24,3 +25,4 @@ dotfiles_files:
   - .wgetrc
   - .vimrc
   - .k9s
+  - .zshrc
