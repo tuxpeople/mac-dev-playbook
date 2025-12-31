@@ -30,11 +30,12 @@ This installs:
 - Essential CLI tools (git, bash, jq, node)
 - 1Password app
 
-**Phase 2 - Manual Setup (5-10 min):**
+**Phase 2 - Manual Setup (2-5 min):**
 
 1. Open 1Password and sign in
 2. Wait for iCloud Drive to sync (optional)
-3. Add vault password to keychain: `~/iCloudDrive/Allgemein/bin/add_vault_password`
+
+That's it! The Ansible vault password will be automatically read from 1Password in Phase 3.
 
 **Phase 3 - Full Configuration (Automated):**
 
@@ -56,9 +57,13 @@ After initial setup, use the `macapply` script to apply configuration changes:
 ./scripts/macapply
 
 # Apply only specific parts (faster)
-./scripts/macapply --tags homebrew
-./scripts/macapply --tags dock
-./scripts/macapply --tags osx
+./scripts/macapply --tags homebrew    # Homebrew packages
+./scripts/macapply --tags dock        # Dock configuration
+./scripts/macapply --tags osx         # macOS settings
+./scripts/macapply --tags fonts       # Font installation
+./scripts/macapply --tags dotfiles    # Dotfiles sync
+
+# See CLAUDE.md for complete list of available tags
 
 # Dry run (see what would change)
 ./scripts/macapply --check --diff

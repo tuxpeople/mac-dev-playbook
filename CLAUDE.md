@@ -111,18 +111,32 @@ cd /tmp/git
 ./scripts/macapply
 
 # Or apply only specific parts (faster)
-./scripts/macapply --tags homebrew    # Only Homebrew packages
-./scripts/macapply --tags dock        # Only Dock configuration
-./scripts/macapply --tags finder      # Only Finder settings
-./scripts/macapply --tags system      # Only System settings (Touch ID, SSH, wallpaper)
-./scripts/macapply --tags maintenance # Only maintenance tasks
-./scripts/macapply --tags osx         # Only macOS settings
+./scripts/macapply --tags homebrew       # Homebrew packages
+./scripts/macapply --tags dotfiles       # Dotfiles sync
+./scripts/macapply --tags dock           # Dock configuration
+./scripts/macapply --tags finder         # Finder settings
+./scripts/macapply --tags system         # System settings (Touch ID, SSH, wallpaper)
+./scripts/macapply --tags maintenance    # Maintenance tasks
+./scripts/macapply --tags osx            # macOS settings
+./scripts/macapply --tags fonts          # Font installation
+./scripts/macapply --tags extra-packages # Extra packages (npm, pip, gem, composer)
+./scripts/macapply --tags post           # Post-provision tasks (all custom tasks)
 
 # Dry run (see what would change)
 ./scripts/macapply --check --diff
 
-# Available tags: homebrew, dotfiles, mas, dock, finder, system, maintenance, osx, fonts, extra-packages, post
-# Note: mas tag is currently disabled in plays/full.yml
+# Available tags (complete list):
+# - homebrew: Homebrew packages from group_vars and Brewfiles
+# - dotfiles: Sync dotfiles repository
+# - dock: Dock configuration (dockitems)
+# - finder: Finder settings
+# - system: System settings (Touch ID, SSH, wallpaper, LaunchAgents)
+# - maintenance: Maintenance tasks
+# - osx: macOS defaults and settings
+# - fonts: Font installation (common, private, licensed)
+# - extra-packages: Extra packages (npm, pip, gem, composer)
+# - post: All post-provision tasks (includes finder, system, maintenance, and custom tasks)
+# - mas: Mac App Store apps (CURRENTLY DISABLED - see plays/full.yml comments)
 ```
 
 ### Daily Updates (Maintenance)
@@ -347,6 +361,98 @@ printers:
 - Use `./scripts/macrun printers` to avoid sudo issues when running tasks individually
 - For pull-printing systems (like Follow2Print), the username in the URI is for job assignment, not authentication
 - AirPrint/DNS-SD printers are auto-discovered and don't require PPD files
+
+## Business Mac App Deployment
+
+This repository supports deploying custom apps to business Macs from iCloudDrive. This is useful for Safari web apps, internal tools, or apps not available via Homebrew.
+
+### Overview
+
+**Configuration**: `tasks/post/business_mac-settings.yml`
+
+**Storage Location**: `~/iCloudDrive/Allgemein/apps/`
+
+**Deployment Target**: `/Applications/`
+
+### Current Apps
+
+Two Safari web apps are deployed to business Macs:
+
+1. **Open Umb.app** - UMB web application (Position 1 in Dock)
+2. **Vertec.app** - Vertec time tracking (Position 3 in Dock)
+
+### How It Works
+
+The deployment process:
+
+```yaml
+- name: Copy business apps from iCloudDrive
+  ansible.builtin.copy:
+    src: "{{myhomedir}}/iCloudDrive/Allgemein/apps/{{ business_app }}"
+    dest: "/Applications/"
+    mode: 0755  # Apps need execute permission
+    remote_src: "true"
+  loop:
+    - "Open Umb.app"
+    - "Vertec.app"
+  loop_control:
+    loop_var: business_app
+```
+
+### Adding a New Business App
+
+1. **Save the app to iCloudDrive**:
+   ```bash
+   # For Safari web apps: File > Add to Dock
+   # Then move the .app from Applications to iCloudDrive
+   mv "/Applications/Your App.app" ~/iCloudDrive/Allgemein/apps/
+   ```
+
+2. **Add to deployment list** in `tasks/post/business_mac-settings.yml`:
+   ```yaml
+   loop:
+     - "Open Umb.app"
+     - "Vertec.app"
+     - "Your App.app"  # Add your new app
+   ```
+
+3. **Add to Dock** (optional) in `inventories/group_vars/business_mac/dock.yml`:
+   ```yaml
+   - name: "Your App"
+     path: "\"/Applications/Your App.app\""
+     pos: 4  # Choose position
+   ```
+
+4. **Apply configuration**:
+   ```bash
+   ./scripts/macapply
+   ```
+
+### Why This Approach?
+
+**Advantages**:
+- Apps sync automatically via iCloudDrive to all business Macs
+- Works for Safari web apps (not in Homebrew)
+- Works for internal/proprietary apps
+- Version controlled via git (deployment config)
+- Single source of truth (iCloudDrive)
+
+**When to Use**:
+- Safari web apps (company intranets, web tools)
+- Internal company apps not in Homebrew
+- Licensed apps stored in iCloudDrive
+
+**When NOT to Use**:
+- Apps available in Homebrew → Use Brewfile instead
+- Apps in Mac App Store → Use mas_installed_apps (if enabled)
+- Universal apps for all Macs → Add to general homebrew packages
+
+### Notes
+
+- Apps require execute permissions (`mode: 0755`)
+- Safari web apps are regular `.app` bundles and work like native apps
+- Deployment runs during business_mac-settings tasks
+- iCloudDrive must be mounted and synced before deployment
 
 ## Workflow Notes
 

@@ -15,12 +15,14 @@
         - ansible_become_pass is not defined or ansible_become_pass | length == 0
         - onepassword_sudo_item is defined
       become: false
+      tags: always
 
     - name: Ensure /private/etc/sudoers.d exists
       file:
         path: '/private/etc/sudoers.d'
         state: directory
       become: true
+      tags: always
 
     - name: Add temporary passwordless sudo permissions
       ansible.builtin.copy:
@@ -29,12 +31,15 @@
         validate: /usr/sbin/visudo -csf %s
         mode: 0440
       become: true
+      tags: always
 
     - name: Gather system facts
       ansible.builtin.setup:
       become: true
+      tags: always
 
     - import_tasks: ../tasks/pre/additional-facts.yml
+      tags: always
     - import_tasks: ../tasks/pre/baseconfig.yml
 
     - name: Validate required variables are defined
@@ -165,3 +170,4 @@
             state: absent
           become: true
           ignore_errors: true
+          tags: always

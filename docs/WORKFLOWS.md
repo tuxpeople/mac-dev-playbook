@@ -153,11 +153,16 @@ cd /tmp/git
 macapply
 
 # Only specific parts (using tags)
-macapply --tags homebrew     # Only Homebrew packages
-macapply --tags dotfiles     # Only dotfiles
-macapply --tags dock         # Only Dock configuration
-macapply --tags osx          # Only macOS settings
-macapply --tags post         # Only post-provision tasks
+macapply --tags homebrew       # Homebrew packages
+macapply --tags dotfiles       # Dotfiles sync
+macapply --tags dock           # Dock configuration
+macapply --tags finder         # Finder settings
+macapply --tags system         # System settings (Touch ID, SSH, wallpaper)
+macapply --tags maintenance    # Maintenance tasks
+macapply --tags osx            # macOS settings
+macapply --tags fonts          # Font installation
+macapply --tags extra-packages # Extra packages (npm, pip, gem, composer)
+macapply --tags post           # Post-provision tasks (all custom tasks)
 
 # Multiple tags
 macapply --tags homebrew,dotfiles,dock
@@ -173,17 +178,17 @@ macapply -vvv  # Very verbose
 
 **Available tags**:
 
-- `homebrew` - Homebrew packages and casks
-- `dotfiles` - Dotfiles synchronization
-- `mas` - Mac App Store apps (if enabled)
-- `dock` - Dock configuration
-- `sudoers` - Sudoers configuration
-- `terminal` - Terminal settings
-- `osx` - macOS system settings
-- `fonts` - Font installation
-- `extra-packages` - Extra packages (composer, gem, npm, pip)
-- `sublime-text` - Sublime Text configuration
-- `post` - Post-provision tasks
+- `homebrew` - Homebrew packages from group_vars and Brewfiles
+- `dotfiles` - Sync dotfiles repository
+- `dock` - Dock configuration (dockitems)
+- `finder` - Finder settings
+- `system` - System settings (Touch ID, SSH, wallpaper, LaunchAgents)
+- `maintenance` - Maintenance tasks
+- `osx` - macOS defaults and settings
+- `fonts` - Font installation (common, private, licensed)
+- `extra-packages` - Extra packages (npm, pip, gem, composer)
+- `post` - All post-provision tasks (includes finder, system, maintenance, and custom tasks)
+- `mas` - Mac App Store apps (CURRENTLY DISABLED - see plays/full.yml comments)
 
 **Duration**: 5-30 minutes (depending on what changed)
 

@@ -1,49 +1,43 @@
 dockitems:
-  - name: "Launchpad"
-    path: /System/Applications/Launchpad.app
-    pos: 1
   - name: "Safari"
     path: /Applications/Safari.app
-    pos: 2
+    pos: 1
   - name: "Mail"
     path: /System/Applications/Mail.app
-    pos: 3
+    pos: 2
   - name: "Visual Studio Code"
     path: "\"/Applications/Visual Studio Code.app\""
-    pos: 4
+    pos: 3
   - name: "Messages"
     path: /System/Applications/Messages.app
-    pos: 5
+    pos: 4
   - name: "Calendar"
     path: /System/Applications/Calendar.app
-    pos: 6
+    pos: 5
   - name: "Notes"
     path: /System/Applications/Notes.app
-    pos: 7
+    pos: 6
   - name: "Photos"
     path: /System/Applications/Photos.app
-    pos: 8
-  - name: "Todoist"
-    path: /Applications/Todoist.app
-    pos: 9
+    pos: 7
   - name: "iTerm"
     path: /Applications/iTerm.app
-    pos: 10
+    pos: 8
   - name: "Terminal"
     path: /System/Applications/Utilities/Terminal.app
-    pos: 11
+    pos: 9
   - name: "Console"
     path: /System/Applications/Utilities/Console.app
-    pos: 12
+    pos: 10
   - name: "App Store"
     path: "\"/System/Applications/App Store.app\""
-    pos: 13
+    pos: 11
   - name: "System Settings"
     path: "\"/System/Applications/System Settings.app\""
-    pos: 14
+    pos: 12
   - name: "Applications Folder"
     path: /Applications --section others
-    pos: 15
+    pos: 13
   - name: "Downloads Folder"
     path: ~/Downloads --section others
-    pos: 16
+    pos: 14
