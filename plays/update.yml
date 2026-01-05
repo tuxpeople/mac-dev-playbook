@@ -61,10 +61,6 @@
     - name: Main update execution with guaranteed sudo cleanup
       block:
 
-        - name: Update dotfiles
-          include_role:
-            name: geerlingguy.dotfiles
-
         - name: Update Homebrew packages
           include_role:
             name: geerlingguy.mac.homebrew
