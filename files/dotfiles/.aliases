@@ -103,6 +103,11 @@ alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
 # Clear DNS cache
 alias emptydns="sudo killall -HUP mDNSResponder; sleep 2"
 
+# YouTube video downloader aliases using yt-dlp format selection H.264 + AAC in MP4
+alias yt-dlp-mp4='yt-dlp \
+  -f "bestvideo[vcodec~='\''^avc1'\'' ][ext=mp4]+bestaudio[acodec~='\''^mp4a'\'' ]/best[ext=mp4]" \
+  --merge-output-format mp4'
+
 # Empty the Trash on all mounted volumes and the main HDD.
 # Also, clear Apple’s System Logs to improve shell startup speed.
 # Finally, clear download history from quarantine. https://mths.be/bum
