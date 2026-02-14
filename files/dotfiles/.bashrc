@@ -1,4 +1,6 @@
 [ -n "$PS1" ] && source ~/.bash_profile;
 #. "$HOME/.op"
 
-. "$HOME/.cargo/env"
+if [ -d $HOME/.cargo/env ]; then
+	source $HOME/.cargo/env
+fi
