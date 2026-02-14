@@ -62,8 +62,13 @@
       block:
 
         - name: Update Homebrew packages
-          include_role:
-            name: geerlingguy.mac.homebrew
+          block:
+            - name: Run Homebrew role
+              import_role:
+                name: geerlingguy.mac.homebrew
+          module_defaults:
+            ansible.builtin.file:
+              follow: false
 
         - name: Run Mac updates
           include_role:
