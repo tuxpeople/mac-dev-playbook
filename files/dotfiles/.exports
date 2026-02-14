@@ -18,3 +18,42 @@ export GPG_TTY=$(tty);
 
 # Hide the “default interactive shell is now zsh” warning on macOS.
 export BASH_SILENCE_DEPRECATION_WARNING=1;
+
+# Defensively normalize locale variables (Terminal.app can inject broken values).
+if command -v locale >/dev/null 2>&1; then
+	available_locales="$(locale -a 2>/dev/null || true)"
+
+	is_valid_locale() {
+		local candidate="$1"
+		[ -n "$candidate" ] && printf '%s\n' "$available_locales" | grep -Fxq "$candidate"
+	}
+
+	for var in LANG LC_CTYPE LC_COLLATE; do
+		val="${!var:-}"
+		if [ -n "$val" ] && ! is_valid_locale "$val"; then
+			unset "$var"
+		fi
+	done
+
+	# Empty LC_ALL is invalid and can trigger bash setlocale warnings.
+	if [ "${LC_ALL+x}" = x ] && [ -z "${LC_ALL}" ]; then
+		unset LC_ALL
+	fi
+
+	if [ -z "${LANG:-}" ]; then
+		if is_valid_locale "de_CH.UTF-8"; then
+			export LANG="de_CH.UTF-8"
+		elif is_valid_locale "C.UTF-8"; then
+			export LANG="C.UTF-8"
+		else
+			export LANG="en_US.UTF-8"
+		fi
+	fi
+
+	[ -z "${LC_CTYPE:-}" ] && export LC_CTYPE="${LANG}"
+	[ -z "${LC_COLLATE:-}" ] && export LC_COLLATE="${LANG}"
+	unset LC_ALL
+
+	unset -f is_valid_locale
+	unset available_locales
+fi
