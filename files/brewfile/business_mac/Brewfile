@@ -416,10 +416,6 @@ cask "bricklink-studio"
 cask "codex"
 # Universal database tool and SQL client
 cask "dbeaver-community"
-# Drivers for DisplayLink docks, adapters and monitors
-cask "displaylink"
-# Enables DisplayLink screens prior to login
-cask "displaylink-login-extension"
 # Online diagram software
 cask "drawio"
 # Web browser
@@ -439,9 +435,7 @@ cask "little-snitch"
 # Software for Logitech devices
 cask "logi-options+"
 # Provides updates to various Microsoft products
-cask "microsoft-auto-update"
-# Meet, chat, call, and collaborate in just one place
-cask "microsoft-teams"
+# cask "microsoft-auto-update"
 # Orchestrates virtual Ubuntu instances
 cask "multipass"
 # Rename a list of files quickly
@@ -507,10 +501,6 @@ mas "LanScan", id: 472226235
 mas "Lightweight PDF", id: 1450640351
 mas "Magnet", id: 441258766
 mas "Matter", id: 1548677272
-mas "Microsoft Excel", id: 462058435
-mas "Microsoft OneNote", id: 784801555
-mas "Microsoft Outlook", id: 985367838
-mas "Microsoft PowerPoint", id: 462062816
 mas "Microsoft To Do", id: 1274495053
 mas "MindNode Classic", id: 1289197285
 mas "Numbers", id: 409203825
