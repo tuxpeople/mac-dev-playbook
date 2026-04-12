@@ -1,259 +1,197 @@
 #!/bin/bash
 #
-#  Use it with this in MacOS Terminal (not iTerm2 if already insalled, as iTerm will be quit ;-) )
+#  Bootstrap a new Mac — Phase 1
+#  Run in Terminal (not iTerm2):
 #    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)"
 #
-set -e
+set -euo pipefail
 
-_step_counter=0
-function step() {
-        _step_counter=$(( _step_counter + 1 ))
-        printf '\n\033[1;36m%d) %s\033[0m\n' $_step_counter "$@" >&2  # bold cyan
-}
-
-function installcli() {
-  # Check if already installed
-  if xcode-select -p &>/dev/null; then
-    echo "✓ Command Line Tools already installed at: $(xcode-select -p)"
-    return 0
-  fi
-
-  # https://gist.github.com/ChristopherA/a598762c3967a1f77e9ecb96b902b5db
-  echo "Installing Command Line Tools..."
-  echo "This may require a restart of this script after installation completes."
-
-  touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-  sudo /usr/sbin/softwareupdate -ia
-  rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-
-  # Try xcode-select --install as fallback
-  if ! xcode-select -p &>/dev/null; then
-    echo "Triggering GUI installation dialog..."
-    xcode-select --install 2>/dev/null || true
-    echo ""
-    echo "⚠️  Command Line Tools installation may require manual completion."
-    echo "   If a dialog appeared, click 'Install' and wait for completion."
-    echo "   Then re-run this script:"
-    echo "   /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/tuxpeople/mac-dev-playbook/master/init.sh)\""
-    echo ""
-    read -r -p "Press enter if installation is complete, or Ctrl+C to exit and restart later..."
-  fi
-
-  # Verify installation
-  if ! xcode-select -p &>/dev/null; then
-    echo "❌ ERROR: Command Line Tools installation failed or incomplete"
-    echo "   Please install manually and re-run this script"
-    exit 1
-  fi
-
-  echo "✓ Command Line Tools installed successfully"
-}
-
-step "Check prerequisites"
-
-# Pre-flight checks
-echo "Running pre-flight checks..."
-
-# Check if user is admin
-if ! groups | grep -q admin; then
-  echo "❌ ERROR: Current user is not an administrator"
-  echo "   This script requires admin privileges"
-  exit 1
-fi
-echo "✓ User has admin privileges"
-
-# Check internet connectivity
-if ! ping -c 1 -W 2 github.com > /dev/null 2>&1; then
-  echo "❌ ERROR: No internet connection detected"
-  echo "   This script requires internet to download dependencies"
-  exit 1
-fi
-echo "✓ Internet connection available"
-
-# Check disk space (require at least 10GB free)
-AVAILABLE_SPACE=$(df -g / | tail -1 | awk '{print $4}')
-if [[ "${AVAILABLE_SPACE}" -lt 10 ]]; then
-  echo "⚠️  WARNING: Low disk space (${AVAILABLE_SPACE}GB available)"
-  echo "   Recommended: At least 10GB free space"
-  read -r -p "Continue anyway? (y/N): " continue_low_space
-  if [[ "${continue_low_space}" != "y" && "${continue_low_space}" != "Y" ]]; then
-    echo "Aborting. Please free up disk space first."
-    exit 1
-  fi
-else
-  echo "✓ Sufficient disk space (${AVAILABLE_SPACE}GB available)"
-fi
-
-echo ""
-echo "Enter the hostname: "
-read -r newhostname
-echo ""
-[ ! -d "/Library/Developer/CommandLineTools" ] && installcli
-
-step "Preparing system"
-echo " - Preparing repository"
-
-# Define target directory for permanent location
+# ── Constants ────────────────────────────────────────────────────────────────
+REPO_URL="https://github.com/tuxpeople/mac-dev-playbook.git"
 REPO_DIR="${HOME}/development/github/tuxpeople/mac-dev-playbook"
+VENV_NAME="mac-dev-playbook-venv"
 
-# Clean up existing directory if present (from previous run)
-if [ -d "${REPO_DIR}" ]; then
-  echo "   Removing existing ${REPO_DIR} directory"
-  rm -rf "${REPO_DIR}"
+# ── Helpers ──────────────────────────────────────────────────────────────────
+step() { printf '\n\033[1;36m▶ %s\033[0m\n' "$*" >&2; }
+ok()   { printf '  \033[0;32m✓ %s\033[0m\n' "$*" >&2; }
+die()  { printf '  \033[0;31m✗ %s\033[0m\n' "$*" >&2; exit 1; }
+
+# ── Trap: restore vault/config files on any exit ─────────────────────────────
+SECRETS_FILE=""
+HOST_VARS_FILE=""
+ANSIBLE_CFG=""
+
+restore_bootstrap_files() {
+    [[ -n "${SECRETS_FILE}"  && -f "${SECRETS_FILE}.bootstrap_disabled"  ]] && \
+        mv "${SECRETS_FILE}.bootstrap_disabled"  "${SECRETS_FILE}"
+    [[ -n "${HOST_VARS_FILE}" && -f "${HOST_VARS_FILE}.bootstrap_disabled" ]] && \
+        mv "${HOST_VARS_FILE}.bootstrap_disabled" "${HOST_VARS_FILE}"
+    [[ -n "${ANSIBLE_CFG}"   && -f "${ANSIBLE_CFG}.bootstrap_disabled"   ]] && \
+        mv "${ANSIBLE_CFG}.bootstrap_disabled"   "${ANSIBLE_CFG}"
+}
+trap restore_bootstrap_files EXIT
+
+# ── Pre-flight ───────────────────────────────────────────────────────────────
+step "Pre-flight checks"
+groups | grep -q admin || die "Current user is not an administrator"
+ok "Admin privileges confirmed"
+ping -c1 -W2 github.com &>/dev/null || die "No internet connection"
+ok "Internet connection available"
+
+# ── Hostname ─────────────────────────────────────────────────────────────────
+step "Hostname"
+printf '  Enter new hostname (leave empty to keep "%s"): ' "$(hostname -s)"
+read -r newhostname
+[[ -z "${newhostname}" ]] && newhostname="$(hostname -s)"
+
+# ── Xcode Command Line Tools ─────────────────────────────────────────────────
+step "Xcode Command Line Tools"
+if xcode-select -p &>/dev/null; then
+    ok "Already installed: $(xcode-select -p)"
+else
+    xcode-select --install 2>/dev/null || true
+    echo "  Waiting for installation (click 'Install' in the dialog)..."
+    until xcode-select -p &>/dev/null; do sleep 5; done
+    ok "Installed"
 fi
 
-# Create parent directories
-if ! mkdir -p "${HOME}/development/github/tuxpeople"; then
-  echo "❌ ERROR: Failed to create parent directories"
-  echo "   Check permissions and disk space"
-  exit 1
+# ── Homebrew ─────────────────────────────────────────────────────────────────
+step "Homebrew"
+if command -v brew &>/dev/null; then
+    ok "Already installed"
+else
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    ok "Installed"
 fi
 
-echo " - Cloning Repo to ${REPO_DIR}"
-if ! git clone https://github.com/tuxpeople/mac-dev-playbook.git "${REPO_DIR}"; then
-  echo "❌ ERROR: Failed to clone repository"
-  echo "   Check internet connection and GitHub access"
-  exit 1
+# Make Homebrew available in this session
+if [[ -x "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-echo " - Upgrading PIP"
-PYTHON_BIN="/Library/Developer/CommandLineTools/usr/bin/python3"
-if ! ${PYTHON_BIN} -m pip install --upgrade pip --user; then
-  echo "❌ ERROR: Failed to upgrade pip"
-  echo "   Check Python installation: ${PYTHON_BIN}"
-  exit 1
-fi
+# ── pyenv + 1Password ────────────────────────────────────────────────────────
+step "pyenv, pyenv-virtualenv, 1Password"
+brew install pyenv pyenv-virtualenv 1password 1password-cli
+ok "Installed"
 
-echo " - Installing Ansible"
-if ! ${PYTHON_BIN} -m pip install --user --requirement "${REPO_DIR}/requirements.txt"; then
-  echo "❌ ERROR: Failed to install Ansible dependencies"
-  echo "   Check ${REPO_DIR}/requirements.txt and internet connection"
-  exit 1
+# ── Clone / update repository ────────────────────────────────────────────────
+step "Repository"
+mkdir -p "${HOME}/development/github/tuxpeople"
+if [[ -d "${REPO_DIR}/.git" ]]; then
+    git -C "${REPO_DIR}" pull --ff-only
+    ok "Updated: ${REPO_DIR}"
+else
+    git clone "${REPO_URL}" "${REPO_DIR}"
+    ok "Cloned: ${REPO_DIR}"
 fi
-PATH="/usr/local/bin:$(${PYTHON_BIN} -m site --user-base)/bin:$PATH"
-export PATH
-
-echo " - Installing Ansible requirements"
-if ! ansible-galaxy install -r "${REPO_DIR}/requirements.yml"; then
-  echo "❌ ERROR: Failed to install Ansible Galaxy requirements"
-  echo "   Check ${REPO_DIR}/requirements.yml and internet connection"
-  exit 1
-fi
-
-echo " - Setting max open files"
 cd "${REPO_DIR}"
-sudo cp files/system/limit.maxfiles.plist /Library/LaunchDaemons
-sudo cp files/system/limit.maxproc.plist /Library/LaunchDaemons
-sudo chown root:wheel /Library/LaunchDaemons/limit.maxfiles.plist
-sudo chown root:wheel /Library/LaunchDaemons/limit.maxproc.plist
+
+# ── Python environment ───────────────────────────────────────────────────────
+step "Python environment"
+PYTHON_VERSION="$(cat .python-version)"
+echo "  Installing Python ${PYTHON_VERSION} via pyenv (may take a few minutes)..."
+
+export PYENV_ROOT="${HOME}/.pyenv"
+export PATH="${PYENV_ROOT}/bin:${PATH}"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+pyenv install --skip-existing "${PYTHON_VERSION}"
+ok "Python ${PYTHON_VERSION} ready"
+
+if ! pyenv versions | grep -q "^  ${VENV_NAME}$"; then
+    pyenv virtualenv "${PYTHON_VERSION}" "${VENV_NAME}"
+    ok "Virtualenv '${VENV_NAME}' created"
+else
+    ok "Virtualenv '${VENV_NAME}' already exists"
+fi
+
+# Activate: add venv bin directly to PATH (reliable in non-interactive scripts)
+export PATH="${PYENV_ROOT}/versions/${VENV_NAME}/bin:${PATH}"
+
+pip install --quiet --upgrade pip
+pip install --quiet -r requirements.txt
+ok "Requirements installed (ansible: $(ansible --version | head -n1))"
+
+# ── Ansible Galaxy requirements ──────────────────────────────────────────────
+step "Ansible Galaxy requirements"
+ansible-galaxy install -r requirements.yml
+ok "Galaxy requirements installed"
+
+# ── System file limits ───────────────────────────────────────────────────────
+step "System file limits"
+sudo cp files/system/limit.maxfiles.plist /Library/LaunchDaemons/
+sudo cp files/system/limit.maxproc.plist  /Library/LaunchDaemons/
+sudo chown root:wheel \
+    /Library/LaunchDaemons/limit.maxfiles.plist \
+    /Library/LaunchDaemons/limit.maxproc.plist
 sudo launchctl load -w /Library/LaunchDaemons/limit.maxfiles.plist
 sudo launchctl load -w /Library/LaunchDaemons/limit.maxproc.plist
+ok "File limits configured"
 
-if [[ -n "${newhostname}" ]]; then
-  sudo scutil --set HostName "${newhostname}"
-  sudo scutil --set LocalHostName "${newhostname}"
-  sudo scutil --set ComputerName "${newhostname}"
-  sudo dscacheutil -flushcache
-else
-  newhostname="$(hostname)"
-fi
+# ── Set hostname ─────────────────────────────────────────────────────────────
+step "Setting hostname to '${newhostname}'"
+sudo scutil --set HostName      "${newhostname}"
+sudo scutil --set LocalHostName "${newhostname}"
+sudo scutil --set ComputerName  "${newhostname}"
+sudo dscacheutil -flushcache
+ok "Hostname set"
 
-step "Preparing Ansible configuration"
-
-# Check if host_vars file exists in the repo
+# ── Validate host configuration ──────────────────────────────────────────────
+step "Host configuration"
 HOST_VARS_FILE="${REPO_DIR}/inventories/host_vars/${newhostname}.yml"
-
 if [[ ! -f "${HOST_VARS_FILE}" ]]; then
-  echo ""
-  echo "⚠️  WARNING: No host configuration found!"
-  echo "Expected file: inventories/host_vars/${newhostname}.yml"
-  echo ""
-  echo "You should create this file BEFORE running init.sh:"
-  echo "  1. Use: ./scripts/create-host-config.sh ${newhostname}"
-  echo "  2. Or: Copy inventories/host_vars/TEMPLATE.yml to inventories/host_vars/${newhostname}.yml"
-  echo "  3. Commit and push to git"
-  echo ""
-  read -r -p "Continue anyway? (y/N): " continue_setup
-  if [[ "${continue_setup}" != "y" && "${continue_setup}" != "Y" ]]; then
-    echo "Aborting setup. Please create host configuration first."
+    printf '\n  \033[0;31m✗ No host config found: inventories/host_vars/%s.yml\033[0m\n' "${newhostname}" >&2
+    echo ""
+    echo "  Create it before running init.sh:"
+    echo "    cp inventories/host_vars/TEMPLATE.yml inventories/host_vars/${newhostname}.yml"
+    echo "  Then commit + push, and re-run this script."
     exit 1
-  fi
+fi
+ok "Found: inventories/host_vars/${newhostname}.yml"
+
+# ── Bootstrap Playbook ───────────────────────────────────────────────────────
+step "Bootstrap Playbook (Phase 1)"
+echo "  Temporarily hiding vault-encrypted files (will be restored automatically)..."
+
+SECRETS_FILE="${REPO_DIR}/inventories/group_vars/macs/secrets.yml"
+ANSIBLE_CFG="${REPO_DIR}/ansible.cfg"
+
+[[ -f "${SECRETS_FILE}" ]]   && mv "${SECRETS_FILE}"   "${SECRETS_FILE}.bootstrap_disabled"
+[[ -f "${HOST_VARS_FILE}" ]] && mv "${HOST_VARS_FILE}" "${HOST_VARS_FILE}.bootstrap_disabled"
+
+# Remove vault_password_file from ansible.cfg (script doesn't exist yet)
+if [[ -f "${ANSIBLE_CFG}" ]]; then
+    cp "${ANSIBLE_CFG}" "${ANSIBLE_CFG}.bootstrap_disabled"
+    grep -v vault_password_file "${ANSIBLE_CFG}.bootstrap_disabled" > "${ANSIBLE_CFG}"
 fi
 
-step "Running Bootstrap Playbook (Phase 1)"
+echo "  You will be prompted for your sudo password..."
+ansible-playbook plays/bootstrap.yml \
+    -i inventories \
+    -l "${newhostname}" \
+    --connection=local \
+    --ask-become-pass
 
-echo "This will install:"
-echo "  - Homebrew"
-echo "  - Essential CLI tools (git, bash, jq, node)"
-echo "  - 1Password app"
-echo ""
-echo "No vault password or iCloud sync required for this phase."
-echo ""
+# (trap will restore vault files on EXIT)
 
-# Temporarily hide vault-encrypted files to prevent Ansible from trying to decrypt them
-# Bootstrap doesn't need vault secrets, so we move them aside
-SECRETS_FILE="inventories/group_vars/macs/secrets.yml"
-HOST_VARS_FILE="inventories/host_vars/${newhostname}.yml"
-ANSIBLE_CONFIG_FILE="ansible.cfg"
+# ── Done ─────────────────────────────────────────────────────────────────────
+printf '\n\033[1;32m%s\033[0m\n' "══════════════════════════════════════════"
+printf '\033[1;32m%s\033[0m\n'   "  Bootstrap Phase 1 complete!"
+printf '\033[1;32m%s\033[0m\n'   "══════════════════════════════════════════"
+cat << EOF
 
-if [[ -f "${SECRETS_FILE}" ]]; then
-  mv "${SECRETS_FILE}" "${SECRETS_FILE}.bootstrap_disabled"
-fi
+Next steps (Phase 2 — manual, ~5 min):
+  1. Open 1Password and sign in
+  2. Enable CLI integration in 1Password:
+       Settings → Developer → "Integrate with 1Password CLI"
+  3. Verify op works:  op account list
+  4. Wait for iCloud Drive to sync (optional)
 
-if [[ -f "${HOST_VARS_FILE}" ]]; then
-  mv "${HOST_VARS_FILE}" "${HOST_VARS_FILE}.bootstrap_disabled"
-fi
+Then Phase 3 (automated):
+  cd ${REPO_DIR}
+  ./scripts/macapply
 
-if [[ -f "${ANSIBLE_CONFIG_FILE}" ]]; then
-  mv "${ANSIBLE_CONFIG_FILE}" "${ANSIBLE_CONFIG_FILE}.bootstrap_disabled"
-  grep -v vault_password_file "${ANSIBLE_CONFIG_FILE}.bootstrap_disabled" > "${ANSIBLE_CONFIG_FILE}"
-fi
-
-# Run bootstrap playbook (no vault needed)
-# Use --ask-become-pass for interactive sudo password (ok for Phase 1)
-echo "You'll be prompted for your sudo password during bootstrap..."
-ansible-playbook plays/bootstrap.yml -i inventories -l "${newhostname}" --connection=local --ask-become-pass
-
-# Restore vault-encrypted files
-if [[ -f "${SECRETS_FILE}.bootstrap_disabled" ]]; then
-  mv "${SECRETS_FILE}.bootstrap_disabled" "${SECRETS_FILE}"
-fi
-
-if [[ -f "${HOST_VARS_FILE}.bootstrap_disabled" ]]; then
-  mv "${HOST_VARS_FILE}.bootstrap_disabled" "${HOST_VARS_FILE}"
-fi
-
-if [[ -f "${ANSIBLE_CONFIG_FILE}.bootstrap_disabled" ]]; then
-  mv "${ANSIBLE_CONFIG_FILE}.bootstrap_disabled" "${ANSIBLE_CONFIG_FILE}"
-fi
-
-echo ""
-echo "=========================================="
-echo "✅ Bootstrap Phase 1 Complete!"
-echo "=========================================="
-echo ""
-echo "Next Steps (Phase 2 - Manual):"
-echo ""
-echo "  1. Grant Full Disk Access to Terminal (required for Phase 3):"
-echo "     • Open System Settings → Privacy & Security → Full Disk Access"
-echo "     • Click (+) and add Terminal.app"
-echo "     • Required for SSH setup and system settings"
-echo ""
-echo "  2. Log into Mac App Store (if you use MAS apps):"
-echo "     • Some apps in Brewfile may come from App Store"
-echo "     • Open App Store and sign in"
-echo ""
-echo "  3. Open 1Password and sign in:"
-echo "     • 1Password was installed to /Applications"
-echo "     • Sign in with your account credentials"
-echo ""
-echo "  4. Wait for iCloud Drive to sync (optional):"
-echo "     • If you use iCloud for dotfiles/SSH keys"
-echo "     • Or skip if you don't use iCloud sync"
-echo ""
-echo "Then run Phase 3 (Full Configuration):"
-echo "  (Vault password will be automatically read from 1Password)"
-echo "  cd ~/development/github/tuxpeople/mac-dev-playbook"
-echo "  ./scripts/macapply"
-echo ""
-echo "=========================================="
+EOF
