@@ -194,6 +194,7 @@ echo ""
 # Bootstrap doesn't need vault secrets, so we move them aside
 SECRETS_FILE="inventories/group_vars/macs/secrets.yml"
 HOST_VARS_FILE="inventories/host_vars/${newhostname}.yml"
+ANSIBLE_CONFIG_FILE="ansible.cfg"
 
 if [[ -f "${SECRETS_FILE}" ]]; then
   mv "${SECRETS_FILE}" "${SECRETS_FILE}.bootstrap_disabled"
@@ -201,6 +202,11 @@ fi
 
 if [[ -f "${HOST_VARS_FILE}" ]]; then
   mv "${HOST_VARS_FILE}" "${HOST_VARS_FILE}.bootstrap_disabled"
+fi
+
+if [[ -f "${ANSIBLE_CONFIG_FILE}" ]]; then
+  mv "${ANSIBLE_CONFIG_FILE}" "${ANSIBLE_CONFIG_FILE}.bootstrap_disabled"
+  grep -v vault_password_file "${ANSIBLE_CONFIG_FILE}.bootstrap_disabled" > "${ANSIBLE_CONFIG_FILE}"
 fi
 
 # Run bootstrap playbook (no vault needed)
@@ -215,6 +221,10 @@ fi
 
 if [[ -f "${HOST_VARS_FILE}.bootstrap_disabled" ]]; then
   mv "${HOST_VARS_FILE}.bootstrap_disabled" "${HOST_VARS_FILE}"
+fi
+
+if [[ -f "${ANSIBLE_CONFIG_FILE}.bootstrap_disabled" ]]; then
+  mv "${ANSIBLE_CONFIG_FILE}.bootstrap_disabled" "${ANSIBLE_CONFIG_FILE}"
 fi
 
 echo ""
