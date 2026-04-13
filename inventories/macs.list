@@ -1,6 +1,7 @@
 [macs:children]
 business_mac
 private_mac
+test_mac
 
 [business_mac]
 UMB-L3VWMGM77F
@@ -10,3 +11,6 @@ UMB-HQRC4M4WK2
 odin
 thor
 saga
+
+[test_mac]
+test-mac

@@ -1,0 +1,122 @@
+#!/bin/bash
+#
+# tart-test — Test init.sh in a fresh tart macOS VM
+#
+# Usage:
+#   ./scripts/tart-test                        # Interactive SSH session
+#   ./scripts/tart-test --hostname mytest-mac  # Custom test hostname
+#   ./scripts/tart-test --keep                 # Keep VM after test (for inspection)
+#   BASE_VM=my-base ./scripts/tart-test        # Use custom base VM name
+#
+# Requirements:
+#   brew install cirruslabs/cli/tart
+#
+# First run: pulls the macOS base image (~24GB), subsequent runs clone instantly.
+#
+set -euo pipefail
+
+# ── Config (override via env vars) ───────────────────────────────────────────
+BASE_VM="${BASE_VM:-base-mac}"
+BASE_IMAGE="${BASE_IMAGE:-ghcr.io/cirruslabs/macos-sequoia-base:latest}"
+TEST_VM="test-$(date +%Y%m%d-%H%M%S)"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SSH_USER="admin"
+BOOT_WAIT="${BOOT_WAIT:-90}"
+
+# ── Helpers ──────────────────────────────────────────────────────────────────
+step() { printf '\n\033[1;36m▶ %s\033[0m\n' "$*"; }
+ok()   { printf '  \033[0;32m✓ %s\033[0m\n' "$*"; }
+info() { printf '  \033[0;34m→ %s\033[0m\n' "$*"; }
+die()  { printf '  \033[0;31m✗ %s\033[0m\n' "$*" >&2; exit 1; }
+
+# ── Argument parsing ──────────────────────────────────────────────────────────
+TEST_HOSTNAME="test-mac"
+KEEP_VM=false
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --hostname) TEST_HOSTNAME="$2"; shift 2 ;;
+        --keep)     KEEP_VM=true; shift ;;
+        --help)
+            sed -n '3,12p' "$0" | sed 's/^# \?//'
+            exit 0
+            ;;
+        *) die "Unknown option: $1. Use --help for usage." ;;
+    esac
+done
+
+# ── Cleanup trap ─────────────────────────────────────────────────────────────
+cleanup() {
+    echo ""
+    if tart list 2>/dev/null | grep -q "^${TEST_VM} "; then
+        if [[ "${KEEP_VM}" == true ]]; then
+            info "VM '${TEST_VM}' kept for inspection (tart run ${TEST_VM})"
+            info "Delete when done: tart delete ${TEST_VM}"
+        else
+            step "Cleaning up"
+            tart delete "${TEST_VM}"
+            ok "VM '${TEST_VM}' deleted"
+        fi
+    fi
+}
+trap cleanup EXIT
+
+# ── Pre-flight ────────────────────────────────────────────────────────────────
+step "Pre-flight"
+command -v tart &>/dev/null || die "tart not installed: brew install cirruslabs/cli/tart"
+ok "tart: $(tart --version)"
+ok "Repo: ${REPO_DIR}"
+ok "Test hostname: ${TEST_HOSTNAME}"
+ok "Test VM name: ${TEST_VM}"
+
+# ── Base VM ───────────────────────────────────────────────────────────────────
+step "Base VM"
+if tart list 2>/dev/null | grep -q "^${BASE_VM} "; then
+    ok "Base VM '${BASE_VM}' exists"
+else
+    echo "  Base VM '${BASE_VM}' not found — pulling ${BASE_IMAGE}"
+    echo "  (This is a one-time download of ~24GB)"
+    tart clone "${BASE_IMAGE}" "${BASE_VM}"
+    ok "Base VM pulled and saved as '${BASE_VM}'"
+fi
+
+# ── Clone ─────────────────────────────────────────────────────────────────────
+step "Cloning base VM → ${TEST_VM}"
+tart clone "${BASE_VM}" "${TEST_VM}"
+ok "Cloned (copy-on-write, instant)"
+
+# ── Start VM ──────────────────────────────────────────────────────────────────
+step "Starting VM"
+info "Repo directory shared into VM at: /Volumes/My Shared Files/repo/"
+tart run "${TEST_VM}" --dir=repo:"${REPO_DIR}" &
+TART_PID=$!
+ok "VM running (PID: ${TART_PID})"
+
+# ── Wait for boot ─────────────────────────────────────────────────────────────
+step "Waiting for VM to boot"
+info "Watching for IP (up to ${BOOT_WAIT}s)..."
+VM_IP=""
+WAITED=0
+while [[ -z "${VM_IP}" && ${WAITED} -lt ${BOOT_WAIT} ]]; do
+    VM_IP="$(tart ip "${TEST_VM}" 2>/dev/null || true)"
+    [[ -z "${VM_IP}" ]] && sleep 5 && WAITED=$((WAITED + 5))
+done
+[[ -z "${VM_IP}" ]] && die "VM did not get an IP within ${BOOT_WAIT}s"
+ok "VM IP: ${VM_IP}"
+
+# ── SSH connection info ───────────────────────────────────────────────────────
+SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -o PubkeyAuthentication=no"
+
+step "Ready — running init.sh in VM"
+cat << EOF
+
+  Password for all sudo prompts: admin
+
+  init.sh --hostname ${TEST_HOSTNAME}
+  Shared repo: /Volumes/My Shared Files/repo/
+
+EOF
+
+# Run init.sh directly via SSH (-t allocates TTY for sudo prompts)
+# shellcheck disable=SC2086
+ssh -t ${SSH_OPTS} "${SSH_USER}@${VM_IP}" \
+    "/bin/bash '/Volumes/My Shared Files/repo/init.sh' --hostname '${TEST_HOSTNAME}'"

@@ -16,6 +16,26 @@ step() { printf '\n\033[1;36m▶ %s\033[0m\n' "$*" >&2; }
 ok()   { printf '  \033[0;32m✓ %s\033[0m\n' "$*" >&2; }
 die()  { printf '  \033[0;31m✗ %s\033[0m\n' "$*" >&2; exit 1; }
 
+# ── Argument parsing ─────────────────────────────────────────────────────────
+newhostname=""
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --hostname)
+            newhostname="$2"
+            shift 2
+            ;;
+        --help)
+            echo "Usage: init.sh [--hostname <name>]"
+            echo ""
+            echo "  --hostname <name>   Set hostname non-interactively (useful for testing)"
+            exit 0
+            ;;
+        *)
+            die "Unknown option: $1"
+            ;;
+    esac
+done
+
 # ── Trap: restore vault/config files on any exit ─────────────────────────────
 SECRETS_FILE=""
 HOST_VARS_FILE=""
@@ -40,9 +60,13 @@ ok "Internet connection available"
 
 # ── Hostname ─────────────────────────────────────────────────────────────────
 step "Hostname"
-printf '  Enter new hostname (leave empty to keep "%s"): ' "$(hostname -s)"
-read -r newhostname
-[[ -z "${newhostname}" ]] && newhostname="$(hostname -s)"
+if [[ -n "${newhostname}" ]]; then
+    ok "Using hostname from --hostname flag: ${newhostname}"
+else
+    printf '  Enter new hostname (leave empty to keep "%s"): ' "$(hostname -s)"
+    read -r newhostname
+    [[ -z "${newhostname}" ]] && newhostname="$(hostname -s)"
+fi
 
 # ── Xcode Command Line Tools ─────────────────────────────────────────────────
 step "Xcode Command Line Tools"

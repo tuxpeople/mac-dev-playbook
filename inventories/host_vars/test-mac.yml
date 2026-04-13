@@ -1,0 +1,9 @@
+---
+# Test VM configuration for tart-based testing
+# Used by: scripts/tart-test
+# Credentials: admin / admin (Cirrus Labs base image defaults)
+
+ansible_user: admin
+
+# ansible_become_pass is not set here — init.sh uses --ask-become-pass
+# For Phase 3 testing (macapply), enter 'admin' when prompted
