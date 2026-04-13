@@ -45,16 +45,29 @@ while [[ $# -gt 0 ]]; do
 done
 
 # ── Cleanup trap ─────────────────────────────────────────────────────────────
+TART_PID=""
 cleanup() {
     echo ""
+    # Stop background tart process if still running
+    if [[ -n "${TART_PID}" ]] && kill -0 "${TART_PID}" 2>/dev/null; then
+        tart stop "${TEST_VM}" 2>/dev/null || true
+        wait "${TART_PID}" 2>/dev/null || true
+    fi
     if tart list 2>/dev/null | grep -q "^${TEST_VM} "; then
         if [[ "${KEEP_VM}" == true ]]; then
-            info "VM '${TEST_VM}' kept for inspection (tart run ${TEST_VM})"
-            info "Delete when done: tart delete ${TEST_VM}"
+            info "VM '${TEST_VM}' kept (--keep flag set)"
         else
-            step "Cleaning up"
-            tart delete "${TEST_VM}"
-            ok "VM '${TEST_VM}' deleted"
+            echo ""
+            printf '  Delete test VM "%s"? (y/N): ' "${TEST_VM}"
+            read -r answer < /dev/tty || answer="n"
+            if [[ "${answer}" == "y" || "${answer}" == "Y" ]]; then
+                tart delete "${TEST_VM}" 2>/dev/null || true
+                ok "VM '${TEST_VM}' deleted"
+            else
+                info "VM '${TEST_VM}' kept for Phase 2/3 testing"
+                info "  Resume: tart run ${TEST_VM}"
+                info "  Delete when done: tart delete ${TEST_VM}"
+            fi
         fi
     fi
 }

@@ -5,6 +5,7 @@
 - name: "Set timezone"
   community.general.timezone:
     name: "{{ timezone }}"
+  ignore_errors: true  # May fail in VMs (systemsetup runs but verification fails)
 
 - name: Configure NTP
   block:
