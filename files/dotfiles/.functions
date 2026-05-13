@@ -2,7 +2,7 @@
 
 mergepr() {
   local ids
-  ids=$(command gh pr list 2>/dev/null | grep -E "feat|fix|chore" | awk '{print $1}')
+  ids=$(command gh pr list 2>/dev/null | grep -E "feat|fix|chore|github-action|deps|container|mise" | awk '{print $1}')
   [ -z "$ids" ] && { echo "Keine passenden PRs gefunden."; return 0; }
   for i in $ids; do
     command gh pr merge "$i" -d -m
