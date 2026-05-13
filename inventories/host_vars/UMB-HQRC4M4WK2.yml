@@ -1,2 +1,3 @@
 ansible_user: thomas.deutsch
-onepassword_sudo_item: "op://UMB/UMB AD Account ohne Domain/a8232769641491556"
+onepassword_sudo_item: "UMB AD Account ohne Domain"
+onepassword_sudo_vault: "UMB"

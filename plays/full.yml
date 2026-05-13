@@ -10,7 +10,7 @@
   pre_tasks:
     - name: Load sudo password from 1Password
       ansible.builtin.set_fact:
-        ansible_become_pass: "{{ lookup('community.general.onepassword', onepassword_sudo_item, errors='warn') }}"
+        ansible_become_pass: "{{ lookup('community.general.onepassword', onepassword_sudo_item, vault=onepassword_sudo_vault | default(omit), errors='warn') }}"
       when:
         - ansible_become_pass is not defined or ansible_become_pass | length == 0
         - onepassword_sudo_item is defined
