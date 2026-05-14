@@ -72,7 +72,7 @@
       become: false
 
     - name: Load GitHub token from 1Password (batch with other 1Password prompts)
-      ansible.builtin.shell: op read "{{ onepassword_github_token_ref }}"
+      ansible.builtin.shell: "{{ mybrewbindir }}/op read '{{ onepassword_github_token_ref }}'"
       register: github_token_result
       no_log: true
       become: false
