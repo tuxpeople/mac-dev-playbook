@@ -7,8 +7,6 @@ tap "fluxcd/tap"
 tap "gabrie30/utils"
 tap "go-task/tap"
 tap "hashicorp/tap"
-tap "homebrew/cask"
-tap "homebrew/core"
 tap "johanhaleby/kubetail"
 tap "mfuentesg/tap"
 tap "norwoodj/tap"
@@ -486,36 +484,6 @@ cask "webex-meetings"
 cask "wireshark-app"
 # Application for generating TOTP and HOTP codes
 cask "yubico-authenticator"
-mas "1Password for Safari", id: 1569813296
-mas "Agenda", id: 1287445660
-mas "Apple Configurator", id: 1037126344
-mas "DaisyDisk", id: 411643860
-mas "Dipper", id: 6450242673
-mas "Exporter", id: 1099120373
-mas "ForkLift", id: 412448059
-mas "FruitJuice", id: 671736912
-mas "Irvue", id: 1039633667
-mas "Keynote", id: 409183694
-mas "Kubeterm", id: 6450548861
-mas "LanScan", id: 472226235
-mas "Lightweight PDF", id: 1450640351
-mas "Magnet", id: 441258766
-mas "Matter", id: 1548677272
-mas "Microsoft To Do", id: 1274495053
-mas "MindNode Classic", id: 1289197285
-mas "Numbers", id: 409203825
-mas "Pages", id: 409201541
-mas "PDFCombo", id: 1030461463
-mas "PDFScanner", id: 410968114
-mas "Reeder", id: 1529448980
-mas "SQLPro for SQLite", id: 586001240
-mas "Swift Playground", id: 1496833156
-mas "TextSniper", id: 1528890965
-mas "Toggl Track", id: 1291898086
-# TODO: Unibox möglicherweise mal entfernen
-mas "Unibox", id: 702816521
-mas "VMware Remote Console", id: 1230249825
-mas "WireGuard", id: 1451685025
 vscode "4ops.terraform"
 vscode "albert.tabout"
 vscode "anthropic.claude-code"
@@ -534,8 +502,6 @@ vscode "exiasr.hadolint"
 vscode "fcrespo82.markdown-table-formatter"
 vscode "fnando.linter"
 vscode "foxundermoon.shell-format"
-vscode "github.copilot"
-vscode "github.copilot-chat"
 vscode "github.vscode-github-actions"
 vscode "github.vscode-pull-request-github"
 vscode "gitlab.gitlab-workflow"
