@@ -4,6 +4,9 @@ export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
 
 #export GITHUB_TOKEN=$(op read op://Private/mwh2l5r44jahhh53gb6i4d4kbe/personal_token_with_repo)
 
+export OP_SSH_PRIVATE_REF="op://Private/id_rsa/Private-Key"
+export OP_SSH_PUBLIC_REF="op://Private/id_rsa/public key"
+
 # Homebrew path
 if [ "$(uname -m)" == "arm64" ]; then
 	eval $(/opt/homebrew/bin/brew shellenv bash)
