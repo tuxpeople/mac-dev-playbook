@@ -110,3 +110,10 @@ source ~/.orbstack/shell/init.bash 2>/dev/null || :
 
 # 1Password SSH agent — required for devcontainer SSH agent forwarding
 export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+if [[ "$(uname -s)" == "Darwin" ]] && command -v podman >/dev/null 2>&1; then
+	mkdir -p "$HOME/bin"
+
+	if [[ ! -e "$HOME/bin/docker" ]]; then
+		ln -s "$(command -v podman)" "$HOME/bin/docker"
+	fi
+fi
