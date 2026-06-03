@@ -104,9 +104,11 @@ if [ -f "$HOME/.cargo/env" ]; then
 	source "$HOME/.cargo/env"
 fi
 
-# Added by OrbStack: command-line tools and integration
-# This won't be added again if you remove it.
-source ~/.orbstack/shell/init.bash 2>/dev/null || :
+if [ -f "$HOME/.orbstack/shell/init.bash" ]; then
+	# Added by OrbStack: command-line tools and integration
+	# This won't be added again if you remove it.
+	source "$HOME/.orbstack/shell/init.bash" 2>/dev/null || :
+fi
 
 # 1Password SSH agent — required for devcontainer SSH agent forwarding
 export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
