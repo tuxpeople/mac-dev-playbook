@@ -264,3 +264,60 @@ podman() {
   fi
 }
 # ---- Ende Wrapper ----
+
+
+# ---- Docker Wrapper für Lima auf macOS ----
+# Optional konfigurierbar (via Umgebungsvariablen)
+# LIMA_INSTANCE (Standard: docker)
+# LIMA_SOCKET (Standard: $HOME/.lima/<instance>/sock/docker.sock)
+# LIMA_TIMEOUT (Sekunden, Standard: 90)
+
+docker() {
+  # Erster Versuch: echten docker-Binary-Aufruf
+  local errfile; errfile="$(mktemp -t dockerwrap.XXXXXX)"
+
+  if command docker "$@" 2> >(tee -a "$errfile" >&2); then
+    rm -f "$errfile"
+    return 0
+  fi
+  local status=$?
+
+  # Nur bei Verbindungsfehlern automatisch Lima starten
+  if grep -qiE \
+    '(cannot connect to the docker daemon|is the docker daemon running|error during connect|dial unix .+docker\.sock: connect: (connection refused|no such file or directory))' \
+    "$errfile"; then
+    rm -f "$errfile"
+
+    local inst="${LIMA_INSTANCE:-docker}"
+    local sock="${LIMA_SOCKET:-$HOME/.lima/${inst}/sock/docker.sock}"
+    local timeout="${LIMA_TIMEOUT:-90}"
+
+    echo "docker: Daemon nicht erreichbar. Starte Lima-Instanz '${inst}'..." >&2
+    if ! command limactl start "$inst" >/dev/null 2>&1; then
+      echo "docker: Konnte Lima-Instanz '${inst}' nicht starten." >&2
+      return $status
+    fi
+
+    # Auf den Socket & responsive Daemon warten
+    local t=0
+    while (( t < timeout )); do
+      if [ -S "$sock" ] && command docker -H "unix://$sock" version >/dev/null 2>&1; then
+        break
+      fi
+      sleep 1; t=$((t+1))
+    done
+    if (( t >= timeout )); then
+      echo "docker: Timeout (${timeout}s) beim Warten auf ${sock}." >&2
+      return $status
+    fi
+
+    # Erneut ausführen (respektiert deinen aktuellen Context)
+    command docker "$@"
+    return $?
+  else
+    # Kein Verbindungsfehler → Originalfehler durchreichen
+    rm -f "$errfile"
+    return $status
+  fi
+}
+# ---- Ende Wrapper ----
