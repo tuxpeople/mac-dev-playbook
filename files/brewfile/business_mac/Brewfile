@@ -34,6 +34,8 @@ brew "bash-completion@2"
 brew "bat"
 # Cross platform file encryption utility using blowfish
 brew "bcrypt"
+# Dotfile manager with 1Password integration
+brew "chezmoi"
 # CLI to install, manage & troubleshoot Kubernetes clusters running Cilium
 brew "cilium-cli"
 # Cloudflare Tunnel client (formerly Argo Tunnel)

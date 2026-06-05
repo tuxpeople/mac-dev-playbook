@@ -1,26 +1,3 @@
 ---
-# Dotfiles are managed from files/dotfiles/ directory (no external repo)
-# Symlinks are created from files/dotfiles/ to home directory
-dotfiles_files:
-  - .aliases
-  - .ansible.cfg
-  - .bash_profile
-  - .bash_prompt
-  - .bashrc
-  - .config/ghorg
-  - .curlrc
-  - .exports
-  - .functions
-  - .gitattributes
-  - .git_config
-  - .gitconfig
-  - .gitignore
-  - .gvimrc
-  - .inputrc
-  - .macos
-  - .screenrc
-  - .tmux.conf
-  - .wgetrc
-  - .vimrc
-  - .k9s
-  - .zshrc
+configure_dotfiles: true
+# Dotfiles managed via chezmoi: https://github.com/tuxpeople/dotfiles

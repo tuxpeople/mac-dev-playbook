@@ -44,6 +44,8 @@ brew "bcrypt"
 brew "brew-gem"
 # Translates human-readable Butane Configs into machine-readable Ignition Configs
 brew "butane"
+# Dotfile manager with 1Password integration
+brew "chezmoi"
 # CLI to install, manage & troubleshoot Kubernetes clusters running Cilium
 brew "cilium-cli"
 # Cloudflare Tunnel client (formerly Argo Tunnel)
