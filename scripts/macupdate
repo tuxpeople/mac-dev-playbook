@@ -231,6 +231,18 @@ run_playbook() {
   fi
 }
 
+# Update dotfiles via chezmoi
+update_dotfiles() {
+  if command -v chezmoi &>/dev/null && [ -f "${HOME}/.config/chezmoi/chezmoi.toml" ]; then
+    log "Updating dotfiles via chezmoi"
+    if chezmoi update --no-pager 2>/dev/null; then
+      log "  ✓ Dotfiles updated"
+    else
+      log_warn "chezmoi update failed (1Password not available?)"
+    fi
+  fi
+}
+
 # Spotify quarantine workaround
 fix_spotify_quarantine() {
   # https://github.com/Homebrew/homebrew-cask/issues/161665
@@ -274,6 +286,7 @@ main() {
   run_playbook
 
   # Post-playbook tasks
+  update_dotfiles
   fix_spotify_quarantine
   update_cmdb
 

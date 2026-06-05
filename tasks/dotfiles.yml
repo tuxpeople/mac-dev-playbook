@@ -2,7 +2,7 @@
 - name: Initialize chezmoi from dotfiles repo
   ansible.builtin.command:
     cmd: chezmoi init https://github.com/tuxpeople/dotfiles.git
-    creates: "{{ myhomedir }}/.local/share/chezmoi"
+    creates: "{{ myhomedir }}/.config/chezmoi/chezmoi.toml"
   become: false
 
 - name: Apply dotfiles via chezmoi
