@@ -5,15 +5,4 @@
   changed_when: false
   ignore_errors: true
   become: true
-- name: Creates settings directory
-  ansible.builtin.file:
-    path: "{{ myhomedir }}/Library/Application Support/Code/User/"
-    state: directory
-  become: false
-
-- name: Copy settings
-  ansible.builtin.template:
-    src: "../files/VSCode/settings.json.j2"
-    dest: "{{ myhomedir }}/Library/Application Support/Code/User/settings.json"
-    owner: "{{ ansible_user }}"
-  become: false
+# settings.json is managed by chezmoi (tuxpeople/dotfiles)

@@ -56,10 +56,4 @@
     - bbedit_app.stat.exists
     - not (bbedit_tool.stat.exists | default(false))
 
-- name: Install BBEdit color themes
-  ansible.builtin.copy:
-    src: ../files/bbedit/
-    dest: "{{ myhomedir }}/Library/Containers/com.barebones.bbedit/Data/Library/Application Support/BBEdit/Color Schemes/"
-    mode: '0750'
-  become: false
-  when: bbedit_app.stat.exists
+# BBEdit color schemes are managed by chezmoi (tuxpeople/dotfiles)
