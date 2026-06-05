@@ -435,7 +435,7 @@ brew "oven-sh/bun/bun"
 # CLI for out-of-band management of Kubernetes nodes created by Talos
 brew "siderolabs/tap/talosctl"
 # Persistent volume migration plugin for Kubernetes
-brew "utkuozdemir/pv-migrate/pv-migrate"
+cask "utkuozdemir/pv-migrate/pv-migrate"
 # GitOps support for Kubernetes
 brew "weaveworks/tap/gitops"
 # Password manager that keeps all passwords secure behind one password

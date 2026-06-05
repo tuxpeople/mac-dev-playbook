@@ -395,7 +395,7 @@ brew "mfuentesg/tap/ksd"
 # Automatically generate markdown documentation for helm charts
 brew "norwoodj/tap/helm-docs"
 # Persistent volume migration plugin for Kubernetes
-brew "utkuozdemir/pv-migrate/pv-migrate"
+cask "utkuozdemir/pv-migrate/pv-migrate"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
 # Command-line interface for 1Password
