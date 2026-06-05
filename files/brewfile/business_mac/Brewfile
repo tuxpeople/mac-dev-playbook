@@ -505,6 +505,7 @@ cask "yubico-authenticator"
 mas "1Password for Safari", id: 1569813296
 mas "Agenda", id: 1287445660
 mas "Apple Configurator", id: 1037126344
+mas "DaisyDisk", id: 411643860
 mas "Dipper", id: 6450242673
 mas "Exporter", id: 1099120373
 mas "GarageBand", id: 682658836
@@ -514,6 +515,7 @@ mas "Keynote", id: 409183694
 mas "kubeterm", id: 6450548861
 mas "LanScan", id: 472226235
 mas "Lightweight PDF", id: 1450640351
+mas "Magnet", id: 441258766
 mas "Microsoft To Do", id: 1274495053
 mas "MindNode Classic", id: 1289197285
 mas "Numbers", id: 409203825
@@ -522,6 +524,7 @@ mas "PDFCombo", id: 1030461463
 mas "PDFScanner", id: 410968114
 mas "Save to Matter", id: 1548677272
 mas "Swift Playground", id: 1496833156
+mas "TextSniper", id: 1528890965
 mas "Toggl Track", id: 1291898086
 mas "VMware Remote Console", id: 1230249825
 mas "WireGuard", id: 1451685025
