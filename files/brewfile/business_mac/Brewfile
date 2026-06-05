@@ -7,6 +7,7 @@ tap "fluxcd/tap"
 tap "gabrie30/utils"
 tap "go-task/tap"
 tap "hashicorp/tap"
+tap "hauler-dev/tap"
 tap "johanhaleby/kubetail"
 tap "mfuentesg/tap"
 tap "norwoodj/tap"
@@ -34,7 +35,7 @@ brew "bash-completion@2"
 brew "bat"
 # Cross platform file encryption utility using blowfish
 brew "bcrypt"
-# Dotfile manager with 1Password integration
+# Manage your dotfiles across multiple diverse machines, securely
 brew "chezmoi"
 # CLI to install, manage & troubleshoot Kubernetes clusters running Cilium
 brew "cilium-cli"
@@ -42,6 +43,10 @@ brew "cilium-cli"
 brew "cloudflared"
 # Home for the Cluster Management API work, a subproject of sig-cluster-lifecycle
 brew "clusterctl"
+# Linux virtual machines
+brew "lima"
+# Container runtimes on MacOS (and Linux) with minimal setup
+brew "colima"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
 # Container Signing
@@ -50,12 +55,14 @@ brew "cosign"
 brew "crane"
 # Cluster ssh tool for Terminal.app
 brew "csshx"
+# Suite of command-line tools for converting to and working with CSV
+brew "csvkit"
 # Validate and define text-based and dynamic configuration
 brew "cue"
-# Tool for downloading RTMP streaming media
-brew "rtmpdump"
 # Get a file from an HTTP, HTTPS or FTP server
 brew "curl"
+# Reference implementation for the Development Containers specification
+brew "devcontainer"
 # Passphrases to remember
 brew "diceware"
 # Load/unload environment variables based on $PWD
@@ -66,9 +73,7 @@ brew "docker"
 brew "e2fsprogs"
 # Perl lib for reading and writing EXIF metadata
 brew "exiftool"
-# Multi-format archive and compression library
-brew "libarchive"
-# Play, record, convert, and stream audio and video
+# Play, record, convert, and stream select audio and video codecs
 brew "ffmpeg"
 # Collection of GNU find, xargs, and locate
 brew "findutils"
@@ -130,7 +135,7 @@ brew "httperf"
 brew "httpie"
 # Website copier/offline browser
 brew "httrack"
-# Tools and libraries to manipulate images in many formats
+# Tools and libraries to manipulate images in select formats
 brew "imagemagick"
 # Migrate or backup IMAP mail accounts
 brew "imapsync"
@@ -180,8 +185,8 @@ brew "lcdf-typetools"
 brew "lft"
 # Sophisticated file transfer program
 brew "lftp"
-# Linux virtual machines
-brew "lima"
+# Multi-format archive and compression library
+brew "libarchive"
 # Lynx-like WWW browser that supports tables, menus, etc.
 brew "links"
 # Rainbows and unicorns in your console!
@@ -204,8 +209,6 @@ brew "minio-mc"
 brew "mise"
 # Move, copy, append, and link multiple files
 brew "mmv"
-# Add or remove items to the Finder sidebar
-cask "mysides"
 # Collection of tools that nobody wrote when UNIX was young
 brew "moreutils"
 # Remote terminal application
@@ -252,6 +255,8 @@ brew "pinentry-mac"
 brew "pkgconf"
 # Tool for managing OCI containers and pods
 brew "podman"
+# Alternative to docker-compose using podman
+brew "podman-compose"
 # Kubernetes cluster resource sanitizer
 brew "popeye"
 # Framework for managing multi-language pre-commit hooks
@@ -294,6 +299,8 @@ brew "ripgrep"
 brew "rsnapshot"
 # Utility that provides fast incremental file transfer
 brew "rsync"
+# Tool for downloading RTMP streaming media
+brew "rtmpdump"
 # Powerful, clean, object-oriented scripting language
 brew "ruby"
 # Terminal multiplexer with VT100/ANSI terminal emulation
@@ -352,6 +359,8 @@ brew "trivy"
 brew "unrtf"
 # Extraction utility for .zip compressed archives
 brew "unzip"
+# Extremely fast Python package installer and resolver, written in Rust
+brew "uv"
 # Creates fully functional virtual k8s cluster inside host k8s cluster's namespace
 brew "vcluster"
 # Disaster recovery for Kubernetes resources and persistent volumes
@@ -395,16 +404,16 @@ brew "mfuentesg/tap/ksd"
 # Automatically generate markdown documentation for helm charts
 brew "norwoodj/tap/helm-docs"
 # Persistent volume migration plugin for Kubernetes
-cask "utkuozdemir/pv-migrate/pv-migrate"
+brew "utkuozdemir/pv-migrate/pv-migrate", link: false
 # Password manager that keeps all passwords secure behind one password
-cask "1password"
+cask "1password", args: { appdir: "/Applications" }
 # Command-line interface for 1Password
-cask "1password-cli"
+cask "1password-cli", args: { appdir: "/Applications" }
 # Apple TV Aerial screensaver
 cask "aerial"
 # Tool to flash OS images to SD cards & USB drives
 cask "balenaetcher"
-# 3D model slicing software for 3D printers, maintained by Bambu Lab (TODO: entfernen zu einem späteren Zeitpunkt)
+# 3D model slicing software for 3D printers, maintained by Bambu Lab
 cask "bambu-studio"
 # Compact TeX distribution as alternative to the full TeX Live / MacTeX
 cask "basictex"
@@ -412,6 +421,10 @@ cask "basictex"
 cask "bbedit"
 # Build, render, and create LEGO instructions
 cask "bricklink-studio"
+# Anthropic's official Claude AI desktop app
+cask "claude"
+# Terminal-based AI coding assistant
+cask "claude-code"
 # OpenAI's coding agent that runs in your terminal
 cask "codex"
 # Universal database tool and SQL client
@@ -426,6 +439,8 @@ cask "font-roboto-mono"
 cask "google-chrome"
 # Tools to protect your emails and files
 cask "gpg-suite"
+# Hauler: Airgap Swiss Army Knife
+cask "hauler-dev/tap/hauler"
 # Automated organisation
 cask "hazel"
 # Terminal emulator as alternative to Apple's Terminal app
@@ -434,10 +449,9 @@ cask "iterm2"
 cask "little-snitch"
 # Software for Logitech devices
 cask "logi-options+"
-# Provides updates to various Microsoft products
-# cask "microsoft-auto-update"
 # Orchestrates virtual Ubuntu instances
 cask "multipass"
+cask "mysides"
 # Rename a list of files quickly
 cask "namechanger"
 # WiFi site survey software and WiFi scanner
@@ -452,6 +466,8 @@ cask "omnissa-horizon-client"
 cask "pocket-casts"
 # Browse, manage, inspect containers and images
 cask "podman-desktop"
+# Persistent volume migration plugin for Kubernetes
+cask "utkuozdemir/pv-migrate/pv-migrate"
 # Workspace simplifier - to organize your workspace and boost your productivity
 cask "rambox"
 # Archive manager for data compression and backups
@@ -482,10 +498,35 @@ cask "visual-studio-code"
 cask "vlc"
 # Video communication and virtual meeting platform
 cask "webex-meetings"
+# Connect to Windows
+cask "windows-app"
 # Network protocol analyzer
 cask "wireshark-app"
-# Application for generating TOTP and HOTP codes
+# Full-featured companion app to the YubiKey
 cask "yubico-authenticator"
+mas "1Password for Safari", id: 1569813296
+mas "Agenda", id: 1287445660
+mas "Apple Configurator", id: 1037126344
+mas "Dipper", id: 6450242673
+mas "Exporter", id: 1099120373
+mas "GarageBand", id: 682658836
+mas "iMovie", id: 408981434
+mas "Irvue", id: 1039633667
+mas "Keynote", id: 409183694
+mas "kubeterm", id: 6450548861
+mas "LanScan", id: 472226235
+mas "Lightweight PDF", id: 1450640351
+mas "Microsoft To Do", id: 1274495053
+mas "MindNode Classic", id: 1289197285
+mas "Numbers", id: 409203825
+mas "Pages", id: 409201541
+mas "PDFCombo", id: 1030461463
+mas "PDFScanner", id: 410968114
+mas "Save to Matter", id: 1548677272
+mas "Swift Playground", id: 1496833156
+mas "Toggl Track", id: 1291898086
+mas "VMware Remote Console", id: 1230249825
+mas "WireGuard", id: 1451685025
 vscode "4ops.terraform"
 vscode "albert.tabout"
 vscode "anthropic.claude-code"
@@ -511,7 +552,6 @@ vscode "golang.go"
 vscode "hashicorp.terraform"
 vscode "irarainey.applicationregistrations"
 vscode "irongeek.vscode-env"
-#vscode "joaompinto.vscode-graphviz"
 vscode "kennylong.kubernetes-yaml-formatter"
 vscode "lunuan.kubernetes-templates"
 vscode "mechatroner.rainbow-csv"
@@ -570,7 +610,20 @@ vscode "tfsec.tfsec"
 vscode "timonwong.shellcheck"
 vscode "usernamehw.errorlens"
 vscode "vscode-icons-team.vscode-icons"
-#vscode "will-stone.in-any-case"
 vscode "yzane.markdown-pdf"
 vscode "yzdann.k8s-snippets"
 vscode "yzhang.markdown-all-in-one"
+go "golang.org/x/tools/gopls"
+krew "access-matrix"
+krew "get-all"
+krew "graph"
+krew "images"
+krew "konfig"
+krew "minio"
+krew "mtail"
+krew "neat"
+krew "pod-lens"
+krew "prune-unused"
+krew "score"
+krew "snap"
+krew "starboard"
