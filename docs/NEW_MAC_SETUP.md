@@ -128,8 +128,8 @@ After Phase 1 completes, you'll see instructions for manual steps:
    - Sign in with your account credentials
 
 2. **Wait for iCloud Drive to sync** (optional):
-   - If you use iCloud for dotfiles/SSH keys, wait for sync to complete
-   - Skip this if you don't use iCloud sync
+   - If you use iCloud for fonts or licensed apps, wait for sync to complete
+   - Dotfiles and SSH config are managed via chezmoi (no iCloud needed)
 
 That's it! The Ansible Vault password will be automatically read from 1Password during Phase 3.
 
@@ -147,7 +147,7 @@ cd /tmp/git
 The macapply script (`plays/full.yml`) will:
 
 1. ✅ Install all Brewfile packages (hundreds of apps)
-2. ✅ Configure dotfiles (with SSH keys from iCloud)
+2. ✅ Deploy dotfiles via chezmoi (SSH config, gitconfig, ghorg — secrets from 1Password)
 3. ✅ Configure Hazel (with license from 1Password)
 4. ✅ Configure Dock
 5. ✅ Apply macOS settings

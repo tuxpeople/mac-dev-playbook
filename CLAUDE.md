@@ -68,9 +68,10 @@ Located in `roles/`:
 Defined in `requirements.yml`:
 
 - `elliotweiser.osx-command-line-tools`: Ensures Xcode CLI tools are installed
-- `geerlingguy.dotfiles`: Manages dotfiles repository sync
 - `geerlingguy.mac` collection: Provides homebrew, mas, and dock roles
 - `aadl.softwareupdate`: macOS software update automation
+
+**Dotfiles** are managed separately via [chezmoi](https://www.chezmoi.io/) from [github.com/tuxpeople/dotfiles](https://github.com/tuxpeople/dotfiles) — not via Ansible roles. chezmoi handles 1Password secret injection and host-specific templates (business vs. private).
 
 ## Common Commands
 
@@ -216,7 +217,7 @@ ansible-playbook main.yml -i inventories -l $(hostname) --connection=local --tag
 
 - **inventories/group_vars/macs/brew.yml**: Homebrew packages and casks for all Macs
 - **inventories/group_vars/macs/dock.yml**: Dock configuration
-- **inventories/group_vars/macs/dotfiles.yml**: Dotfiles repository settings
+- **inventories/group_vars/macs/dotfiles.yml**: chezmoi configuration (enables dotfiles deployment)
 - **inventories/group_vars/macs/fonts.yml**: Font management configuration (common, private, licensed)
 - **inventories/group_vars/macs/general.yml**: Core settings (timezone, Python interpreter, paths)
 - **inventories/group_vars/macs/LaunchAgents.yml**: macOS LaunchAgent definitions

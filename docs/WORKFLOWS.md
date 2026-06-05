@@ -101,7 +101,7 @@ That's it! Vault password will be automatically read from 1Password in Phase 3.
 
 1. Runs `plays/full.yml` with all dependencies available
 2. Installs all Brewfile packages (hundreds of apps)
-3. Configures dotfiles (with SSH keys from iCloud)
+3. Deploys dotfiles via chezmoi (SSH config, gitconfig, ghorg — with 1Password secrets)
 4. Configures Hazel (with license from 1Password)
 5. Applies Dock settings, macOS settings, fonts
 6. Clones GitHub repositories
@@ -132,7 +132,7 @@ cd /tmp/git
 
 - Added a new Homebrew package to `brew.yml`
 - Changed Dock settings in `dock.yml`
-- Updated dotfiles configuration
+- Updated dotfiles (edit in `~/development/github/tuxpeople/dotfiles`, then `chezmoi apply`)
 - Added new post-provision tasks
 - Changed macOS settings in `tasks/osx.yml`
 - Added new fonts
@@ -180,7 +180,7 @@ macapply -vvv  # Very verbose
 **Available tags**:
 
 - `homebrew` - Homebrew packages from group_vars and Brewfiles
-- `dotfiles` - Sync dotfiles repository
+- `dotfiles` - Deploy dotfiles via chezmoi (init + apply)
 - `dock` - Dock configuration (dockitems)
 - `finder` - Finder settings
 - `system` - System settings (Touch ID, SSH, wallpaper)

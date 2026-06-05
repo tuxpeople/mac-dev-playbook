@@ -1,4 +1,7 @@
 ---
+> **VERALTET** (2026-06-05): Dotfiles werden seit Juni 2026 via [chezmoi](https://github.com/tuxpeople/dotfiles) verwaltet.
+> `geerlingguy.dotfiles` und der Symlink-Ansatz sind nicht mehr aktiv. Diese Datei ist historische Referenz.
+
 # Dotfiles vs. Ansible Repo - Struktur-Analyse
 
 **Analysiert am**: 2025-10-24
