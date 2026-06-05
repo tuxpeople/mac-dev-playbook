@@ -288,7 +288,7 @@ main() {
   # Post-playbook tasks
   update_dotfiles
   fix_spotify_quarantine
-  update_cmdb
+  # update_cmdb # not working currently
 
   log "========================================"
   log "macupdate completed successfully!"
