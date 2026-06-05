@@ -403,8 +403,6 @@ brew "johanhaleby/kubetail/kubetail"
 brew "mfuentesg/tap/ksd"
 # Automatically generate markdown documentation for helm charts
 brew "norwoodj/tap/helm-docs"
-# Persistent volume migration plugin for Kubernetes
-brew "utkuozdemir/pv-migrate/pv-migrate", link: false
 # Password manager that keeps all passwords secure behind one password
 cask "1password", args: { appdir: "/Applications" }
 # Command-line interface for 1Password
