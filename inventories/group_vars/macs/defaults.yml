@@ -5,9 +5,9 @@
 defaults:
 - domain: com.apple.dock
   key: tilesize
-  name: Set Dock tile size to 36 points
+  name: Set Dock tile size to 32 points
   type: int
-  value: '36'
+  value: '32'
 - domain: com.apple.dock
   key: orientation
   name: Change Dock's position to the bottom of the screen
@@ -15,9 +15,9 @@ defaults:
   value: bottom
 - domain: com.apple.dock
   key: autohide
-  name: Always display the Dock
+  name: Auto-hide the Dock
   type: bool
-  value: 'false'
+  value: 'true'
 - domain: com.apple.screensaver
   key: idleTime
   name: Disable the Screensaver
@@ -370,6 +370,16 @@ defaults:
 - domain: com.apple.dock
   key: wvous-bl-modifier
   name: wvous-bl-modifier
+  type: int
+  value: '0'
+- domain: com.apple.dock
+  key: wvous-br-corner
+  name: wvous-br-corner
+  type: int
+  value: '14'
+- domain: com.apple.dock
+  key: wvous-br-modifier
+  name: wvous-br-modifier
   type: int
   value: '0'
 - domain: NSGlobalDomain
