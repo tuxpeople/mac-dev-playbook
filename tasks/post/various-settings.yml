@@ -34,6 +34,19 @@
     loop_var: default_setting
     label: "{{ default_setting['name'] }}"
 
+# Restart apps so all defaults take effect immediately (hot corners, status bar, etc.)
+- name: Restart Finder to apply settings
+  ansible.builtin.command: killall Finder
+  changed_when: false
+  become: false
+  failed_when: false
+
+- name: Restart Dock to apply settings (hot corners, etc.)
+  ansible.builtin.command: killall Dock
+  changed_when: false
+  become: false
+  failed_when: false
+
 # Maintenance Tasks
 - name: Import Maintenance tasks
   ansible.builtin.import_tasks: ../maintenance.yml

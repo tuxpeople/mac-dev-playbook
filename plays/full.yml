@@ -142,9 +142,6 @@
         - import_tasks: ../tasks/extra-packages.yml
           tags: ['extra-packages']
 
-        - import_tasks: ../tasks/dock.yml
-          tags: ['dock']
-
         - import_tasks: ../tasks/post/various-settings.yml
           tags: ['post']
 
@@ -155,6 +152,10 @@
               tags: ['post']
           loop: "{{ post_provision_tasks | default([]) }}"
           tags: ['post']
+
+        # Dock runs last so all apps (incl. iCloud-deployed apps like Vertec.app) exist
+        - import_tasks: ../tasks/dock.yml
+          tags: ['dock']
 
       rescue:
         - name: Log playbook failure

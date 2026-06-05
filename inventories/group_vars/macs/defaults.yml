@@ -333,6 +333,16 @@ defaults:
   type: bool
   value: 'false'
 - domain: com.apple.dock
+  key: magnification
+  name: Enable Dock magnification
+  type: bool
+  value: 'true'
+- domain: com.apple.dock
+  key: largesize
+  name: Dock magnification size
+  type: float
+  value: '72'
+- domain: com.apple.dock
   key: wvous-tl-corner
   name: wvous-tl-corner
   type: int

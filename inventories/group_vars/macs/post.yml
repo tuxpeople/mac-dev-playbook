@@ -4,7 +4,6 @@
 # Note: Dock configuration moved to tasks/dock.yml (separate file with dock tag)
 post_provision_tasks:
   - ../tasks/post/user-config.yml
-  - ../tasks/post/various-settings.yml
   - ../tasks/post/bbedit.yml
   - ../tasks/post/github.yml
   - ../tasks/post/dotfiles-remote-ssh.yml
