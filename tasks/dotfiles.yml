@@ -1,12 +1,12 @@
 ---
-- name: Initialize chezmoi from dotfiles repo
+- name: Initialize/update chezmoi from dotfiles repo
   ansible.builtin.command:
     cmd: chezmoi init https://github.com/tuxpeople/dotfiles.git
-    creates: "{{ myhomedir }}/.config/chezmoi/chezmoi.toml"
   become: false
+  changed_when: false
 
 - name: Apply dotfiles via chezmoi
   ansible.builtin.command:
-    cmd: chezmoi apply --no-pager
+    cmd: chezmoi apply --no-pager --force
   become: false
   changed_when: false
