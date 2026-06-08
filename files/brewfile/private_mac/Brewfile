@@ -514,8 +514,6 @@ cask "rar"
 cask "raspberry-pi-imager"
 # Remote management solution
 cask "royal-tsx"
-# Tool for sending personal documents to Kindles from Macs
-cask "send-to-kindle"
 # MySQL/MariaDB database management platform
 cask "sequel-ace"
 # Team communication and collaboration software
