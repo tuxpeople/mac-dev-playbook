@@ -1,22 +1,22 @@
-tap "1password/tap"
-tap "buo/cask-upgrade"
-tap "carvel-dev/carvel", "https://github.com/carvel-dev/homebrew.git"
-tap "devopyio/yamlfmt"
-tap "emqx/mqttx"
-tap "fluxcd/tap"
-tap "gabrie30/utils"
-tap "go-task/tap"
-tap "hashicorp/tap"
-tap "hauler-dev/tap"
-tap "johanhaleby/kubetail"
-tap "mfuentesg/tap"
-tap "norwoodj/tap"
-tap "nrlquaker/createzap"
-tap "siderolabs/tap"
-tap "tuxpeople/personal"
-tap "utkuozdemir/pv-migrate"
-tap "vmware-tanzu/tanzu"
-tap "weaveworks/tap"
+tap "1password/tap", trusted: true
+tap "buo/cask-upgrade", trusted: true
+tap "carvel-dev/carvel", "https://github.com/carvel-dev/homebrew.git", trusted: true
+tap "devopyio/yamlfmt", trusted: true
+tap "emqx/mqttx", trusted: true
+tap "fluxcd/tap", trusted: true
+tap "gabrie30/utils", trusted: true
+tap "go-task/tap", trusted: true
+tap "hashicorp/tap", trusted: true
+tap "hauler-dev/tap", trusted: true
+tap "johanhaleby/kubetail", trusted: true
+tap "mfuentesg/tap", trusted: true
+tap "norwoodj/tap", trusted: true
+tap "nrlquaker/createzap", trusted: true
+tap "siderolabs/tap", trusted: true
+tap "tuxpeople/personal", trusted: true
+tap "utkuozdemir/pv-migrate", trusted: true
+tap "vmware-tanzu/tanzu", trusted: true
+tap "weaveworks/tap", trusted: true
 # Simple, modern, secure file encryption
 brew "age"
 # Utility to check whether MAC addresses are already taken on a LAN
@@ -387,6 +387,24 @@ brew "ykman"
 brew "yq"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
+# Imgpkg
+brew "carvel-dev/carvel/imgpkg"
+# Formats yaml files.
+brew "devopyio/yamlfmt/yamlfmt"
+# Flux CLI
+brew "fluxcd/tap/flux"
+# Quickly clone an entire org/users repositories into one directory
+brew "gabrie30/utils/ghorg"
+# Packer
+brew "hashicorp/tap/packer"
+# Vault
+brew "hashicorp/tap/vault"
+# Tail logs from multiple Kubernetes pods at the same time
+brew "johanhaleby/kubetail/kubetail"
+# ksd` is a tool, whose aim is help you to visualize in text plain your kubernetes secrets, either `yaml` or `json` outputs.
+brew "mfuentesg/tap/ksd"
+# Automatically generate markdown documentation for helm charts
+brew "norwoodj/tap/helm-docs"
 # Password manager that keeps all passwords secure behind one password
 cask "1password", args: { appdir: "/Applications" }
 # Command-line interface for 1Password
@@ -449,7 +467,7 @@ cask "pocket-casts"
 # Browse, manage, inspect containers and images
 cask "podman-desktop"
 # Persistent volume migration plugin for Kubernetes
-cask "utkuozdemir/pv-migrate/pv-migrate", trusted: true
+cask "utkuozdemir/pv-migrate/pv-migrate"
 # Workspace simplifier - to organize your workspace and boost your productivity
 cask "rambox"
 # Archive manager for data compression and backups
