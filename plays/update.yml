@@ -66,6 +66,8 @@
             - name: Run Homebrew role
               import_role:
                 name: geerlingguy.mac.homebrew
+              environment:
+                HOMEBREW_NO_REQUIRE_TAP_TRUST: "1"
           module_defaults:
             ansible.builtin.file:
               follow: false
