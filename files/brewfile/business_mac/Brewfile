@@ -1,6 +1,6 @@
 tap "1password/tap"
 tap "buo/cask-upgrade"
-tap "carvel-dev/carvel"
+tap "carvel-dev/carvel", "https://github.com/carvel-dev/homebrew.git"
 tap "devopyio/yamlfmt"
 tap "emqx/mqttx"
 tap "fluxcd/tap"
@@ -69,6 +69,8 @@ brew "diceware"
 brew "direnv"
 # Pack, ship and run any application as a lightweight container
 brew "docker"
+# Isolated development environments using Docker
+brew "docker-compose"
 # Utilities for the ext2, ext3, and ext4 file systems
 brew "e2fsprogs"
 # Perl lib for reading and writing EXIF metadata
@@ -385,24 +387,6 @@ brew "ykman"
 brew "yq"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
-# Imgpkg
-brew "carvel-dev/carvel/imgpkg"
-# Formats yaml files.
-brew "devopyio/yamlfmt/yamlfmt"
-# Flux CLI
-brew "fluxcd/tap/flux"
-# Quickly clone an entire org/users repositories into one directory
-brew "gabrie30/utils/ghorg"
-# Packer
-brew "hashicorp/tap/packer"
-# Vault
-brew "hashicorp/tap/vault"
-# Tail logs from multiple Kubernetes pods at the same time
-brew "johanhaleby/kubetail/kubetail"
-# ksd` is a tool, whose aim is help you to visualize in text plain your kubernetes secrets, either `yaml` or `json` outputs.
-brew "mfuentesg/tap/ksd"
-# Automatically generate markdown documentation for helm charts
-brew "norwoodj/tap/helm-docs"
 # Password manager that keeps all passwords secure behind one password
 cask "1password", args: { appdir: "/Applications" }
 # Command-line interface for 1Password
@@ -465,7 +449,7 @@ cask "pocket-casts"
 # Browse, manage, inspect containers and images
 cask "podman-desktop"
 # Persistent volume migration plugin for Kubernetes
-cask "utkuozdemir/pv-migrate/pv-migrate"
+cask "utkuozdemir/pv-migrate/pv-migrate", trusted: true
 # Workspace simplifier - to organize your workspace and boost your productivity
 cask "rambox"
 # Archive manager for data compression and backups
@@ -522,6 +506,7 @@ mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 mas "PDFCombo", id: 1030461463
 mas "PDFScanner", id: 410968114
+mas "reMarkable", id: 1276493162
 mas "Save to Matter", id: 1548677272
 mas "Swift Playground", id: 1496833156
 mas "TextSniper", id: 1528890965
