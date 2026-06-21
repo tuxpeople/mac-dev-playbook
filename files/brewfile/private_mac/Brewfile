@@ -1,23 +1,23 @@
-tap "1password/tap"
-tap "aquasecurity/trivy"
-tap "buo/cask-upgrade"
-tap "carvel-dev/carvel"
-tap "devopyio/yamlfmt"
-tap "emqx/mqttx"
-tap "fluxcd/tap"
-tap "gabrie30/utils"
-tap "go-task/tap"
-tap "hashicorp/tap"
-tap "johanhaleby/kubetail"
-tap "mfuentesg/tap"
-tap "norwoodj/tap"
-tap "nrlquaker/createzap"
-tap "oven-sh/bun"
-tap "siderolabs/tap"
-tap "tuxpeople/personal"
-tap "utkuozdemir/pv-migrate"
-tap "vmware-tanzu/tanzu"
-tap "weaveworks/tap"
+tap "1password/tap", trusted: true
+tap "aquasecurity/trivy", trusted: true
+tap "buo/cask-upgrade", trusted: true
+tap "carvel-dev/carvel", trusted: true
+tap "devopyio/yamlfmt", trusted: true
+tap "emqx/mqttx", trusted: true
+tap "fluxcd/tap", trusted: true
+tap "gabrie30/utils", trusted: true
+tap "go-task/tap", trusted: true
+tap "hashicorp/tap", trusted: true
+tap "johanhaleby/kubetail", trusted: true
+tap "mfuentesg/tap", trusted: true
+tap "norwoodj/tap", trusted: true
+tap "nrlquaker/createzap", trusted: true
+tap "oven-sh/bun", trusted: true
+tap "siderolabs/tap", trusted: true
+tap "tuxpeople/personal", trusted: true
+tap "utkuozdemir/pv-migrate", trusted: true
+tap "vmware-tanzu/tanzu", trusted: true
+tap "weaveworks/tap", trusted: true
 # Simple, modern, secure file encryption
 brew "age"
 # Utility to check whether MAC addresses are already taken on a LAN
