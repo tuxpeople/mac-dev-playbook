@@ -371,7 +371,7 @@ brew "terraform-ls"
 # Terraform version manager inspired by rbenv
 brew "tfenv"
 # Linter for Terraform files
-brew "tflint"
+#brew "tflint"
 # Static analysis security scanner for your terraform code
 brew "tfsec"
 # Virtual Private Network (VPN) tool
