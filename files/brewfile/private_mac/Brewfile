@@ -552,14 +552,14 @@ mas "DaisyDisk", id: 411643860
 mas "Goodnotes", id: 1444383602
 mas "iMovie", id: 408981434
 mas "Irvue", id: 1039633667
-mas "Keynote", id: 409183694
+# mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
 mas "LanScan", id: 472226235
 mas "Lightweight PDF", id: 1450640351
 mas "Magnet", id: 441258766
 mas "Matter", id: 1548677272
-mas "Numbers", id: 409203825
-mas "Pages", id: 409201541
+# mas "Numbers", id: 409203825
+# mas "Pages", id: 409201541
 mas "PDFScanner", id: 410968114
 mas "Reeder", id: 1529448980
 mas "Sid Meier's Railroads!", id: 536502825
