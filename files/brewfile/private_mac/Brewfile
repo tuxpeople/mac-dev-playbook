@@ -419,7 +419,7 @@ brew "devopyio/yamlfmt/yamlfmt"
 # Flux CLI
 brew "fluxcd/tap/flux"
 # Task runner / simpler Make alternative written in Go
-brew "go-task/tap/go-task"
+brew "go-task"
 # Packer
 brew "hashicorp/tap/packer"
 # Vault
