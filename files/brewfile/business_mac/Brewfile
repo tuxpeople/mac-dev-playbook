@@ -440,11 +440,13 @@ cask "google-chrome"
 # Tools to protect your emails and files
 cask "gpg-suite"
 # Hauler: Airgap Swiss Army Knife
-cask "hauler-dev/tap/hauler"
+cask "hauler-dev/tap/hauler", trusted: true
 # Automated organisation
 cask "hazel"
 # Terminal emulator as alternative to Apple's Terminal app
 cask "iterm2"
+# Password manager app
+cask "keepassxc"
 # Host-based application firewall
 cask "little-snitch"
 # Software for Logitech devices
@@ -467,7 +469,7 @@ cask "pocket-casts"
 # Browse, manage, inspect containers and images
 cask "podman-desktop"
 # Persistent volume migration plugin for Kubernetes
-cask "utkuozdemir/pv-migrate/pv-migrate"
+cask "utkuozdemir/pv-migrate/pv-migrate", trusted: true
 # Workspace simplifier - to organize your workspace and boost your productivity
 cask "rambox"
 # Archive manager for data compression and backups
@@ -498,6 +500,8 @@ cask "visual-studio-code"
 cask "vlc"
 # Video communication and virtual meeting platform
 cask "webex-meetings"
+# Menu bar app for USB-C cable diagnostics
+cask "whatcable"
 # Connect to Windows
 cask "windows-app"
 # Network protocol analyzer

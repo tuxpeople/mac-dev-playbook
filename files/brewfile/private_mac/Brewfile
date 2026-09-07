@@ -536,6 +536,8 @@ cask "vagrant"
 cask "visual-studio-code"
 # Multimedia player
 cask "vlc"
+# Menu bar app for USB-C cable diagnostics
+cask "whatcable"
 # Network protocol analyzer
 cask "wireshark-app"
 mas "1Password for Safari", id: 1569813296
