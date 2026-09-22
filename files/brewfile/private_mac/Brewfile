@@ -427,7 +427,8 @@ brew "hashicorp/tap/vault"
 # Tail logs from multiple Kubernetes pods at the same time
 brew "johanhaleby/kubetail/kubetail"
 # ksd` is a tool, whose aim is help you to visualize in text plain your kubernetes secrets, either `yaml` or `json` outputs.
-brew "mfuentesg/tap/ksd"
+# Error: No available formula with the name "mfuentesg/tap/ksd"
+# brew "mfuentesg/tap/ksd"
 # Automatically generate markdown documentation for helm charts
 brew "norwoodj/tap/helm-docs"
 # Incredibly fast JavaScript runtime, bundler, transpiler and package manager - all in one.
