@@ -255,13 +255,33 @@ fix_spotify_quarantine() {
   fi
 }
 
-# Update CMDB (optional)
+# Report this Mac using the shared homelab role (optional, best effort).
 update_cmdb() {
-  local cmdb_script="${HOME}/iCloudDrive/Allgemein/bin/update_cmdb"
+  case "${MACUPDATE_CMDB_ENABLED:-true}" in
+    0|false|no) return 0 ;;
+  esac
 
-  if [ -f "${cmdb_script}" ]; then
-    log "Running CMDB update"
-    "${cmdb_script}" || log_warn "CMDB update failed"
+  local automation_dir="${HOMELAB_AUTOMATION_DIR:-${REPO_DIR}/../homelab-automation}"
+  local playbook="ansible/proxmox/playbooks/cmdb-report-local.yml"
+  if [ ! -f "${automation_dir}/${playbook}" ]; then
+    log_warn "CMDB reporting skipped: ${automation_dir}/${playbook} not found; set HOMELAB_AUTOMATION_DIR"
+    return 0
+  fi
+
+  log "Reporting this Mac to the CMDB"
+  if (
+    cd "${automation_dir}" || exit 1
+    export ANSIBLE_CONFIG="${PWD}/ansible.cfg"
+    export ANSIBLE_ROLES_PATH="${PWD}/ansible/proxmox/roles"
+    # macupdate does not activate homelab-automation's mise environment.
+    export SOPS_AGE_KEY_FILE="${SOPS_AGE_KEY_FILE:-${HOME}/.config/sops/age/keys.txt}"
+    ansible-playbook "${playbook}" \
+      -i ansible/proxmox/inventory/localhost.yml \
+      --limit localhost --connection=local
+  ); then
+    log "  ✓ CMDB updated"
+  else
+    log_warn "CMDB reporting failed; check connectivity, community.sops, sops and the age key"
   fi
 }
 
@@ -288,7 +308,7 @@ main() {
   # Post-playbook tasks
   update_dotfiles
   fix_spotify_quarantine
-  # update_cmdb # not working currently
+  update_cmdb
 
   log "========================================"
   log "macupdate completed successfully!"

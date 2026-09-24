@@ -8,5 +8,7 @@ roles:
     version: master
 
 collections:
+  - name: community.sops
+    version: "2.2.7"
   - name: geerlingguy.mac
     version: 4.2.0

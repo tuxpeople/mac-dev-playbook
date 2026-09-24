@@ -319,7 +319,23 @@ This fork has significantly diverged from the original geerlingguy/mac-dev-playb
 
 ### Custom Workflows
 
-- **`macupdate`** (`scripts/macupdate`): Daily maintenance script (updates packages, system, dotfiles)
+- **`macupdate`** (`scripts/macupdate`): Daily maintenance script (updates packages, system, dotfiles), followed by best-effort CMDB reporting.
+
+  CMDB reporting uses the `cmdb_report` role from a sibling `homelab-automation`
+  checkout. Set `HOMELAB_AUTOMATION_DIR` to an absolute checkout path if the
+  repositories are elsewhere; no username-specific path is required. Keep that
+  checkout current so it contains `cmdb-report-local.yml`. The reporting step
+  does not clone or update it automatically.
+
+  `community.sops` is installed with this repository's Ansible requirements.
+  The `sops` executable and access to the homelab SOPS age key are also required.
+  `SOPS_AGE_KEY_FILE` defaults to `$HOME/.config/sops/age/keys.txt` for reporting;
+  an existing override is preserved. The API token comes from the homelab
+  encrypted inventory variables, never from command-line arguments.
+
+  Set `MACUPDATE_CMDB_ENABLED=false` to disable reporting. Missing checkouts or
+  reporting failures produce a warning without failing the Mac update. The
+  local host is reported under its Ansible hostname fact as `physical`.
 - **`macapply`** (`scripts/macapply`): Apply configuration changes (runs `plays/full.yml` with tags)
 - **`init.sh`**: Bootstrap script for fresh Mac setup
 
