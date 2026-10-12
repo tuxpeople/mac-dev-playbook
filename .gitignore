@@ -15,3 +15,6 @@ __pycache__/
 # Licensed fonts (cannot be redistributed)
 # Keep these in iCloud or other private storage
 files/fonts/licensed/
+
+# Unknown stuff
+default.profraw
