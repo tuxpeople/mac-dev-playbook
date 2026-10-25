@@ -1,24 +1,33 @@
 #!/bin/bash
 # Writes Homebrew metrics for the node_exporter textfile collector.
 # Deployed by tasks/node_exporter.yml, run hourly by a LaunchAgent.
-# Usage: node_exporter_textfile_homebrew.sh <homebrew prefix> <textfile dir>
+# Usage: node_exporter_textfile_homebrew.sh <homebrew prefix> <textfile dir> [max age hours]
 set -euo pipefail
 
 prefix=$1
 dir=$2
+max_age_hours=${3:-12}
 brew="$prefix/bin/brew"
 jq="$prefix/bin/jq"
 
-# No auto-update: the counts reflect the metadata of the last `brew update`
-# (macupdate); homebrew_last_update_timestamp_seconds shows how old it is.
+# brew outdated only compares against the local package metadata. Refresh it
+# with `brew update` once it is older than max_age_hours (updates metadata and
+# brew itself, installs nothing). If that fails (offline, brew lock held by an
+# interactive brew), keep counting with the old metadata;
+# homebrew_last_update_timestamp_seconds shows how old it is.
 export HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ENV_HINTS=1
+fetch_head="$("$brew" --repository)/.git/FETCH_HEAD"
+last_update=$(stat -f %m "$fetch_head" 2>/dev/null || echo 0)
+if (($(date +%s) - last_update > max_age_hours * 3600)); then
+  "$brew" update --quiet >/dev/null 2>&1 || true
+  last_update=$(stat -f %m "$fetch_head" 2>/dev/null || echo 0)
+fi
 
 json=$("$brew" outdated --json=v2 --greedy)
 formulae=$("$jq" '.formulae | length' <<<"$json")
 casks=$("$jq" '.casks | length' <<<"$json")
 installed_formulae=$("$brew" list --formula -1 | wc -l | tr -d ' ')
 installed_casks=$("$brew" list --cask -1 | wc -l | tr -d ' ')
-last_update=$(stat -f %m "$("$brew" --repository)/.git/FETCH_HEAD" 2>/dev/null || echo 0)
 
 # Write to a temp file in the same directory and rename it, so node_exporter
 # never reads a half-written file. On failure the previous file stays and

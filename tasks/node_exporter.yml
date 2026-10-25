@@ -95,6 +95,7 @@
               <string>{{ _node_exporter_prefix }}/var/node_exporter/node_exporter_textfile_homebrew.sh</string>
               <string>{{ _node_exporter_prefix }}</string>
               <string>{{ _node_exporter_prefix }}/var/node_exporter/textfile</string>
+              <string>{{ node_exporter_textfile_brew_update_hours }}</string>
             </array>
             <key>StartInterval</key>
             <integer>{{ node_exporter_textfile_interval }}</integer>

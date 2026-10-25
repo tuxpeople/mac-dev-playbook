@@ -13,6 +13,9 @@ node_exporter_basic_auth_op_vault: Homelab
 # is always set. A LaunchAgent runs files/scripts/node_exporter_textfile_homebrew.sh
 # (outdated formulae/casks) every node_exporter_textfile_interval seconds.
 node_exporter_textfile_interval: 3600
+# The script runs `brew update` first when the package metadata is older than
+# this, so the outdated counts stay current between macupdate runs.
+node_exporter_textfile_brew_update_hours: 12
 
 # Additional command line flags, one per entry
 node_exporter_extra_args: []
