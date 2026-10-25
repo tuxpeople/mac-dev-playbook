@@ -2,20 +2,30 @@
 # Basic auth and flags for the Homebrew node_exporter service.
 # The service wrapper (opt/node_exporter/bin/node_exporter_brew_services) reads
 # its flags from etc/node_exporter.args; brew upgrades leave etc/ untouched.
+# The Homebrew prefix is detected here instead of using mybrewbindir, which
+# depends on facts that are not gathered with `--tags node_exporter`.
 
-- name: Check whether Homebrew node_exporter is installed
+- name: Look for the Homebrew node_exporter service wrapper
   ansible.builtin.stat:
-    path: "{{ mybrewbindir | dirname }}/opt/node_exporter/bin/node_exporter_brew_services"
-  register: _node_exporter_wrapper
+    path: "{{ item }}/opt/node_exporter/bin/node_exporter_brew_services"
+  loop:
+    - /opt/homebrew
+    - /usr/local
+  register: _node_exporter_wrappers
   become: false
 
+- name: Set Homebrew prefix of node_exporter
+  ansible.builtin.set_fact:
+    _node_exporter_prefix: >-
+      {{ _node_exporter_wrappers.results | selectattr('stat.exists') | map(attribute='item') | first | default('') }}
+
 - name: Configure Homebrew node_exporter
-  when: _node_exporter_wrapper.stat.exists
+  when: _node_exporter_prefix | length > 0
   become: false
   block:
     - name: Write node_exporter web config (basic auth)
       ansible.builtin.copy:
-        dest: "{{ mybrewbindir | dirname }}/etc/node_exporter.web.yml"
+        dest: "{{ _node_exporter_prefix }}/etc/node_exporter.web.yml"
         mode: "0600"
         content: |
           # Managed by mac-dev-playbook (tasks/node_exporter.yml)
@@ -26,16 +36,16 @@
 
     - name: Write node_exporter flags
       ansible.builtin.copy:
-        dest: "{{ mybrewbindir | dirname }}/etc/node_exporter.args"
+        dest: "{{ _node_exporter_prefix }}/etc/node_exporter.args"
         mode: "0644"
         content: |
-          --web.config.file={{ mybrewbindir | dirname }}/etc/node_exporter.web.yml
+          --web.config.file={{ _node_exporter_prefix }}/etc/node_exporter.web.yml
           {% for arg in node_exporter_extra_args %}
           {{ arg }}
           {% endfor %}
       register: _node_exporter_args
 
     - name: Restart node_exporter service
-      ansible.builtin.command: "{{ mybrewbindir }}/brew services restart node_exporter"
+      ansible.builtin.command: "{{ _node_exporter_prefix }}/bin/brew services restart node_exporter"
       when: _node_exporter_web_config.changed or _node_exporter_args.changed
       changed_when: true
