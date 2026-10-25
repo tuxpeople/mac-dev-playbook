@@ -142,6 +142,9 @@
         - import_tasks: ../tasks/extra-packages.yml
           tags: ['extra-packages']
 
+        - import_tasks: ../tasks/node_exporter.yml
+          tags: ['node_exporter']
+
         - import_tasks: ../tasks/post/various-settings.yml
           tags: ['post']
 

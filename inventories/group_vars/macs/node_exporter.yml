@@ -1,0 +1,14 @@
+---
+# Homebrew node_exporter (installed via the Brewfiles), scraped by Prometheus
+# from homelab-automation (group node_exporter_scrape_hosts, job
+# node-exporter-unmanaged). Configured by tasks/node_exporter.yml.
+
+# Basic auth: the bcrypt hash comes from 1Password (field "bcrypt"); the
+# matching password is read there by homelab-automation for Prometheus.
+node_exporter_basic_auth_user: prometheus
+node_exporter_basic_auth_op_item: "node_exporter Basic Auth"
+node_exporter_basic_auth_op_vault: Homelab
+
+# Additional command line flags, one per entry, e.g.
+#   - "--collector.textfile.directory=/opt/homebrew/var/node_exporter/textfile"
+node_exporter_extra_args: []
