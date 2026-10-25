@@ -18,6 +18,7 @@
   ansible.builtin.set_fact:
     _node_exporter_prefix: >-
       {{ _node_exporter_wrappers.results | selectattr('stat.exists') | map(attribute='item') | first | default('') }}
+    _node_exporter_textfile_label: ch.tdeutsch.node-exporter-textfile-homebrew
 
 - name: Configure Homebrew node_exporter
   when: _node_exporter_prefix | length > 0
@@ -30,9 +31,25 @@
         content: |
           # Managed by mac-dev-playbook (tasks/node_exporter.yml)
           basic_auth_users:
-            {{ node_exporter_basic_auth_user }}: '{{ lookup("community.general.onepassword", node_exporter_basic_auth_op_item, field="bcrypt", vault=node_exporter_basic_auth_op_vault) }}'
+            {{ node_exporter_basic_auth_user }}: '{{ _bcrypt }}'
+      vars:
+        _bcrypt: >-
+          {{ lookup("community.general.onepassword", node_exporter_basic_auth_op_item,
+                    field="bcrypt", vault=node_exporter_basic_auth_op_vault) }}
       no_log: true
       register: _node_exporter_web_config
+
+    - name: Create node_exporter textfile directory
+      ansible.builtin.file:
+        path: "{{ _node_exporter_prefix }}/var/node_exporter/textfile"
+        state: directory
+        mode: "0755"
+
+    - name: Install textfile scripts
+      ansible.builtin.copy:
+        src: "{{ playbook_dir | dirname }}/files/scripts/node_exporter_textfile_homebrew.sh"
+        dest: "{{ _node_exporter_prefix }}/var/node_exporter/node_exporter_textfile_homebrew.sh"
+        mode: "0755"
 
     - name: Write node_exporter flags
       ansible.builtin.copy:
@@ -40,6 +57,7 @@
         mode: "0644"
         content: |
           --web.config.file={{ _node_exporter_prefix }}/etc/node_exporter.web.yml
+          --collector.textfile.directory={{ _node_exporter_prefix }}/var/node_exporter/textfile
           {% for arg in node_exporter_extra_args %}
           {{ arg }}
           {% endfor %}
@@ -48,4 +66,56 @@
     - name: Restart node_exporter service
       ansible.builtin.command: "{{ _node_exporter_prefix }}/bin/brew services restart node_exporter"
       when: _node_exporter_web_config.changed or _node_exporter_args.changed
+      changed_when: true
+
+    # LaunchAgent for the textfile scripts. HOME and UID via commands, because
+    # the facts behind myhomedir are not gathered with `--tags node_exporter`.
+    - name: Read home directory and UID
+      ansible.builtin.command: "{{ item }}"
+      loop:
+        - printenv HOME
+        - id -u
+      register: _node_exporter_user
+      changed_when: false
+
+    - name: Write textfile LaunchAgent
+      ansible.builtin.copy:
+        dest: "{{ _node_exporter_user.results[0].stdout }}/Library/LaunchAgents/{{ _node_exporter_textfile_label }}.plist"
+        mode: "0644"
+        content: |
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <!-- Managed by mac-dev-playbook (tasks/node_exporter.yml) -->
+          <plist version="1.0">
+          <dict>
+            <key>Label</key>
+            <string>{{ _node_exporter_textfile_label }}</string>
+            <key>ProgramArguments</key>
+            <array>
+              <string>{{ _node_exporter_prefix }}/var/node_exporter/node_exporter_textfile_homebrew.sh</string>
+              <string>{{ _node_exporter_prefix }}</string>
+              <string>{{ _node_exporter_prefix }}/var/node_exporter/textfile</string>
+            </array>
+            <key>StartInterval</key>
+            <integer>{{ node_exporter_textfile_interval }}</integer>
+            <key>RunAtLoad</key>
+            <true/>
+            <key>StandardErrorPath</key>
+            <string>{{ _node_exporter_prefix }}/var/log/node_exporter_textfile.log</string>
+          </dict>
+          </plist>
+      register: _node_exporter_textfile_plist
+
+    - name: Check whether the textfile LaunchAgent is loaded
+      ansible.builtin.command: "launchctl print gui/{{ _node_exporter_user.results[1].stdout }}/{{ _node_exporter_textfile_label }}"
+      register: _node_exporter_textfile_loaded
+      changed_when: false
+      failed_when: false
+
+    - name: (Re)load the textfile LaunchAgent
+      ansible.builtin.shell: >-
+        launchctl bootout gui/{{ _node_exporter_user.results[1].stdout }}/{{ _node_exporter_textfile_label }} 2>/dev/null;
+        launchctl bootstrap gui/{{ _node_exporter_user.results[1].stdout }}
+        "{{ _node_exporter_user.results[0].stdout }}/Library/LaunchAgents/{{ _node_exporter_textfile_label }}.plist"
+      when: _node_exporter_textfile_plist.changed or _node_exporter_textfile_loaded.rc != 0
       changed_when: true

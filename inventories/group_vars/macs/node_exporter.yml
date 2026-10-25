@@ -9,6 +9,10 @@ node_exporter_basic_auth_user: prometheus
 node_exporter_basic_auth_op_item: "node_exporter Basic Auth"
 node_exporter_basic_auth_op_vault: Homelab
 
-# Additional command line flags, one per entry, e.g.
-#   - "--collector.textfile.directory=/opt/homebrew/var/node_exporter/textfile"
+# Textfile collector: --collector.textfile.directory=<prefix>/var/node_exporter/textfile
+# is always set. A LaunchAgent runs files/scripts/node_exporter_textfile_homebrew.sh
+# (outdated formulae/casks) every node_exporter_textfile_interval seconds.
+node_exporter_textfile_interval: 3600
+
+# Additional command line flags, one per entry
 node_exporter_extra_args: []
