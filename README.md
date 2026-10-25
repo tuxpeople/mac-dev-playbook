@@ -328,10 +328,11 @@ This fork has significantly diverged from the original geerlingguy/mac-dev-playb
   does not clone or update it automatically.
 
   `community.sops` is installed with this repository's Ansible requirements.
-  The `sops` executable and access to the homelab SOPS age key are also required.
-  `SOPS_AGE_KEY_FILE` defaults to `$HOME/.config/sops/age/keys.txt` for reporting;
-  an existing override is preserved. The API token comes from the homelab
-  encrypted inventory variables, never from command-line arguments.
+  The `sops` executable (>= 3.10) and access to the homelab SOPS age key are also
+  required. `SOPS_AGE_KEY_CMD` defaults to reading the key from 1Password
+  (`op://Homelab/SOPS Key/private_key`); an existing override is preserved.
+  The API token comes from the homelab encrypted inventory variables, never from
+  command-line arguments.
 
   Set `MACUPDATE_CMDB_ENABLED=false` to disable reporting. Missing checkouts or
   reporting failures produce a warning without failing the Mac update. The

@@ -274,7 +274,8 @@ update_cmdb() {
     export ANSIBLE_CONFIG="${PWD}/ansible.cfg"
     export ANSIBLE_ROLES_PATH="${PWD}/ansible/proxmox/roles"
     # macupdate does not activate homelab-automation's mise environment.
-    export SOPS_AGE_KEY_FILE="${SOPS_AGE_KEY_FILE:-${HOME}/.config/sops/age/keys.txt}"
+    # The age key comes from 1Password (needs sops >= 3.10).
+    export SOPS_AGE_KEY_CMD="${SOPS_AGE_KEY_CMD:-op read 'op://Homelab/SOPS Key/private_key'}"
     ansible-playbook "${playbook}" \
       -i ansible/proxmox/inventory/localhost.yml \
       --limit localhost --connection=local
