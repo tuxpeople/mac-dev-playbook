@@ -107,7 +107,7 @@
   ansible.builtin.shell: |
     osascript -e 'tell application "System Events" to make login item at end with properties {path:"{{ login_item_to_add.path }}", hidden:{{ login_item_to_add.hidden | default(false) | lower }}}'
   loop:
-    - { name: "Fokus arbeiten", path: "{{ myhomedir }}/Applications/Fokus arbeiten.app", hidden: false }
+    - {name: "Fokus arbeiten", path: "{{ myhomedir }}/Applications/Fokus arbeiten.app", hidden: false}
   loop_control:
     loop_var: login_item_to_add
     label: "{{ login_item_to_add.name }}"

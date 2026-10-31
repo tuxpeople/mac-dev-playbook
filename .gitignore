@@ -5,7 +5,7 @@ roles/galaxy*
 config.yml
 .cache
 
-.ansible/.lock
+.ansible/
 
 # Python cache
 __pycache__/
