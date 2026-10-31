@@ -43,10 +43,10 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v7
 
-      - name: Set up Python 3.11.
+      - name: Set up Python 3.14.
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11.8'
+          python-version: '3.14.10'
 
       - name: Install requirements.txt.
         run: |
@@ -75,9 +75,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        # macos-11 and macos-12 runners no longer exist; jobs waited forever
         os:
-          - macos-12
-          - macos-11
+          - macos-15
 
     steps:
       - name: Check out the codebase.
@@ -92,10 +92,13 @@ jobs:
           sudo rm -rf /Applications/Google\ Chrome.app
           sudo rm -rf /usr/local/bin/firefox
 
+      - name: Set up Python 3.14.
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14.10'
+
       - name: Install test dependencies.
-        run: |
-          sudo pip3 install --upgrade pip
-          sudo pip3 install ansible
+        run: pip3 install -r requirements.txt
 
       - name: Set up the test environment.
         run: |
