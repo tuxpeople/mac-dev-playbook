@@ -17,16 +17,17 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v7
 
-      - name: Set up Python 3.
+      # '3.x' meant whatever was newest; Ansible did not run on Python 3.15
+      - name: Set up Python 3.14.
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.14.10'
 
       - name: Install test dependencies.
         run: |
           sudo apt-get update
           sudo apt-get install -y shellcheck
-          pip3 install yamllint ansible ansible-lint
+          pip3 install -r requirements.txt yamllint
 
       - name: Lint code.
         run: |
