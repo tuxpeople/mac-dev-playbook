@@ -250,7 +250,7 @@ This fork includes CI/CD testing via GitHub Actions. The CI pipeline runs:
 - `yamllint` - YAML syntax and formatting validation
 - `ansible-lint` - Ansible best practices validation
 - `shellcheck` - Shell script analysis
-- Integration tests on macOS runners
+- Syntax check of all playbooks (a real run needs Vault, 1Password and iCloud)
 
 You can also run macOS inside a VM for testing changes before applying to production Macs. Recommended virtualization tools:
 

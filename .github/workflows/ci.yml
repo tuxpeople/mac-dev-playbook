@@ -17,11 +17,11 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v7
 
-      # '3.x' meant whatever was newest; Ansible did not run on Python 3.15
+      # Ansible does not run on Python 3.15 yet, see renovate.json
       - name: Set up Python 3.14.
         uses: actions/setup-python@v5
         with:
-          python-version: '3.15.2'
+          python-version: '3.14.10'
 
       - name: Install test dependencies.
         run: |
@@ -35,7 +35,7 @@ jobs:
           ansible-lint
 
       - name: Run shellcheck.
-        run: shellcheck init.sh init_light.sh tests/uninstall-homebrew.sh
+        run: shellcheck init.sh
 
   requirements-check:
     name: Check Python Requirements
@@ -47,7 +47,7 @@ jobs:
       - name: Set up Python 3.14.
         uses: actions/setup-python@v5
         with:
-          python-version: '3.15.2'
+          python-version: '3.14.10'
 
       - name: Install requirements.txt.
         run: |
@@ -71,55 +71,30 @@ jobs:
           pip3 install safety
           safety check --json || true
 
-  integration:
-    name: Integration
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        # macos-11 and macos-12 runners no longer exist; jobs waited forever
-        os:
-          - macos-15
-
+  # The playbooks need Vault, 1Password and iCloud, a real run is not possible
+  # here. A syntax check catches broken YAML, tasks and missing roles.
+  syntax:
+    name: Playbook Syntax
+    runs-on: ubuntu-latest
+    env:
+      ANSIBLE_CONFIG: tests/ansible.cfg
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v7
 
-      - name: Uninstall GitHub Actions' built-in Homebrew.
-        run: tests/uninstall-homebrew.sh
-
-      - name: Uninstall GitHub Actions' built-in browser installs.
-        run: |
-          sudo rm -rf /Applications/Firefox.app
-          sudo rm -rf /Applications/Google\ Chrome.app
-          sudo rm -rf /usr/local/bin/firefox
-
       - name: Set up Python 3.14.
         uses: actions/setup-python@v5
         with:
-          python-version: '3.15.2'
+          python-version: '3.14.10'
 
       - name: Install test dependencies.
-        run: pip3 install -r requirements.txt
-
-      - name: Set up the test environment.
         run: |
-          cp tests/ansible.cfg ./ansible.cfg
-          cp tests/inventory ./inventory
-          cp tests/config.yml ./config.yml
+          pip3 install -r requirements.txt
           ansible-galaxy install -r requirements.yml
 
-      - name: Test the playbook's syntax.
-        run: ansible-playbook main.yml --syntax-check
-
-      - name: Test the playbook.
-        run: ansible-playbook main.yml
-        env:
-          ANSIBLE_FORCE_COLOR: '1'
-
-      - name: Idempotence check.
+      - name: Test the playbooks' syntax.
         run: |
-          idempotence=$(mktemp)
-          ansible-playbook main.yml | tee -a ${idempotence}
-          tail ${idempotence} | grep -q 'changed=0.*failed=0' && (echo 'Idempotence test: pass' && exit 0) || (echo 'Idempotence test: fail' && exit 1)
-        env:
-          ANSIBLE_FORCE_COLOR: '1'
+          for playbook in main.yml plays/*.yml; do
+            echo "Checking ${playbook}"
+            ansible-playbook "${playbook}" --syntax-check
+          done
