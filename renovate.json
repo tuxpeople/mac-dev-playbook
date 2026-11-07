@@ -55,6 +55,11 @@
       "labels": ["ansible-galaxy", "needs-testing"]
     },
     {
+      "description": "Python: stay on 3.14 until Ansible runs on 3.15 (init.sh installs .python-version on new Macs)",
+      "matchPackageNames": ["python", "actions/python-versions"],
+      "allowedVersions": "<3.15"
+    },
+    {
       "description": "GitHub Actions: auto-merge patch/minor",
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["patch", "minor"],
