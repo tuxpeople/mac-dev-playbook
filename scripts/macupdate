@@ -119,11 +119,28 @@ ensure_python() {
 setup_virtualenv() {
   log "Setting up virtualenv: ${VENV_NAME}"
 
-  # Check if virtualenv directory exists (more reliable than parsing pyenv output)
-  if [ -d "${PYENV_ROOT}/versions/${VENV_NAME}" ]; then
-    log "  ✓ Virtualenv ${VENV_NAME} already exists"
-  else
-    log "  + Creating virtualenv ${VENV_NAME}"
+  local venv_path="${PYENV_ROOT}/versions/${VENV_NAME}"
+  local installed_version=""
+
+  if [ -d "${venv_path}" ]; then
+    # Query the virtualenv's interpreter rather than the active pyenv version.
+    if [ -x "${venv_path}/bin/python" ]; then
+      installed_version=$("${venv_path}/bin/python" -c 'import platform; print(platform.python_version())' 2>/dev/null || true)
+    fi
+
+    if [ "${installed_version}" != "${PYTHON_VERSION}" ]; then
+      log_warn "Virtualenv ${VENV_NAME} uses Python ${installed_version:-unknown} (expected ${PYTHON_VERSION}); recreating"
+      pyenv uninstall -f "${VENV_NAME}" || {
+        log_error "Failed to remove outdated virtualenv ${VENV_NAME}"
+        exit 1
+      }
+    else
+      log "  ✓ Virtualenv ${VENV_NAME} already exists (Python ${installed_version})"
+    fi
+  fi
+
+  if [ ! -d "${venv_path}" ]; then
+    log "  + Creating virtualenv ${VENV_NAME} with Python ${PYTHON_VERSION}"
     pyenv virtualenv "${PYTHON_VERSION}" "${VENV_NAME}" || {
       log_error "Failed to create virtualenv"
       exit 1
