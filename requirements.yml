@@ -9,6 +9,6 @@ roles:
 
 collections:
   - name: community.sops
-    version: "2.2.7"
+    version: "2.5.1"
   - name: geerlingguy.mac
     version: 4.2.0
