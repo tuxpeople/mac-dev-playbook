@@ -18,6 +18,7 @@ tap "tuxpeople/personal", trusted: true
 tap "utkuozdemir/pv-migrate", trusted: true
 tap "vmware-tanzu/tanzu", trusted: true
 tap "weaveworks/tap", trusted: true
+tap "terraform-linters/tap", trusted: true
 # Simple, modern, secure file encryption
 brew "age"
 # Utility to check whether MAC addresses are already taken on a LAN
@@ -29,7 +30,7 @@ brew "at-spi2-core"
 # MPEG-4 command-line tool
 brew "atomicparsley"
 # Microsoft Azure CLI 2.0
-brew "azure-cli"
+cask "azure-cli"
 # Encode and decode base64 files
 brew "base64"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -371,7 +372,7 @@ brew "terraform-ls"
 # Terraform version manager inspired by rbenv
 brew "tfenv"
 # Linter for Terraform files
-#brew "tflint"
+cask "tflint"
 # Static analysis security scanner for your terraform code
 brew "tfsec"
 # Virtual Private Network (VPN) tool
