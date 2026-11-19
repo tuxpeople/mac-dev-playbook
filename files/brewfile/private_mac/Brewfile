@@ -232,7 +232,7 @@ brew "mas"
 # Utility for testing the memory subsystem
 brew "memtester"
 # Replacement for ls, cp and other commands for object storage
-brew "minio-mc"
+brew "s5cmd"
 # Polyglot runtime manager (asdf rust clone)
 brew "mise"
 # Move, copy, append, and link multiple files
@@ -263,8 +263,6 @@ brew "ngrep"
 brew "nmap"
 # Prometheus exporter for machine metrics
 brew "node_exporter", restart_service: :changed
-# Network performance measurement tool
-brew "nuttcp"
 # Oracle Cloud Infrastructure CLI
 brew "oci-cli"
 # OpenShift command-line interface tools
@@ -336,7 +334,7 @@ brew "sipcalc"
 # Editor of encrypted files
 brew "sops"
 # Command-line interface for https://speedtest.net bandwidth tests
-brew "speedtest-cli"
+brew "speedtest-go"
 # Add a public key to a remote machine's authorized_keys file
 brew "ssh-copy-id"
 # SSLv3/TLS network protocol analyzer
@@ -428,8 +426,7 @@ brew "hashicorp/tap/vault"
 # Tail logs from multiple Kubernetes pods at the same time
 brew "johanhaleby/kubetail/kubetail"
 # ksd` is a tool, whose aim is help you to visualize in text plain your kubernetes secrets, either `yaml` or `json` outputs.
-# Error: No available formula with the name "mfuentesg/tap/ksd"
-# brew "mfuentesg/tap/ksd"
+cask "mfuentesg/tap/ksd"
 # Automatically generate markdown documentation for helm charts
 brew "norwoodj/tap/helm-docs"
 # Incredibly fast JavaScript runtime, bundler, transpiler and package manager - all in one.
@@ -511,7 +508,7 @@ cask "podman-desktop"
 # Workspace simplifier - to organize your workspace and boost your productivity
 cask "rambox"
 # Archive manager for data compression and backups
-cask "rar"
+brew "sevenzip"
 # Imaging utility to install operating systems to a microSD card
 cask "raspberry-pi-imager"
 # Remote management solution
@@ -530,8 +527,6 @@ cask "tailscale-app"
 cask "teamviewer"
 # Manage the data on children's Ravensburger tip toi audio pen
 cask "tiptoi-manager"
-# Tool to install Linux/BSD distributions to a partition or USB drive
-cask "unetbootin"
 # Development environment
 cask "vagrant"
 # Open-source code editor
