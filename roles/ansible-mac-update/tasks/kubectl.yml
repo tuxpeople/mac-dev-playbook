@@ -95,7 +95,7 @@
 - name: Backup existing kubeconfig
   ansible.builtin.copy:
     src: "{{myhomedir}}/.kube/config"
-    dest: "{{myhomedir}}/.kube/config.backup.{{ ansible_date_time.epoch }}"
+    dest: "{{myhomedir}}/.kube/config.backup.{{ ansible_facts['date_time']['epoch'] }}"
     remote_src: yes
     mode: '0600'
   when: existing_kubeconfig.stat.exists

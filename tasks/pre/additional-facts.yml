@@ -17,13 +17,13 @@
 - name: Switch to local connection if this is the device
   set_fact:
     ansible_connection: local
-  when: ansible_hostname == controller_host
+  when: ansible_facts['hostname'] == controller_host
 
 - name: Check if this is a business or a private device
   block:
     - name: Set hostname
       set_fact:
-        myhostname: "{{ newhostname | default(ansible_hostname) }}"
+        myhostname: "{{ newhostname | default(ansible_facts['hostname']) }}"
 
     - name: "Default to private device"
       set_fact:
@@ -64,6 +64,6 @@
       set_fact:
         myhomedir: "{{ this_user_registered.home }}"
 
-- name: "Set fact mybrewbindir to {{ (ansible_machine == 'arm64') | ternary('/opt/homebrew', '/usr/local') }}/bin"
+- name: "Set fact mybrewbindir to {{ (ansible_facts['machine'] == 'arm64') | ternary('/opt/homebrew', '/usr/local') }}/bin"
   set_fact:
-    mybrewbindir: "{{ (ansible_machine == 'arm64') | ternary('/opt/homebrew', '/usr/local') }}/bin"
+    mybrewbindir: "{{ (ansible_facts['machine'] == 'arm64') | ternary('/opt/homebrew', '/usr/local') }}/bin"

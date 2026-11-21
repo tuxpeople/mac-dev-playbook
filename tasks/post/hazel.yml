@@ -12,7 +12,7 @@
     - name: Backup existing Hazel configuration
       copy:
         src: "{{ myhomedir }}/Library/Application Support/Hazel/"
-        dest: "{{ myhomedir }}/Library/Application Support/Hazel.backup-{{ ansible_date_time.iso8601_basic_short }}/"
+        dest: "{{ myhomedir }}/Library/Application Support/Hazel.backup-{{ ansible_facts['date_time']['iso8601_basic_short'] }}/"
         remote_src: yes
       when: hazel_backup_before_deploy | default(true)
       ignore_errors: yes
